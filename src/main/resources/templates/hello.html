@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello Web App</title>
+    </head>
+    <body>
+        <h1 th:text="${message}"></h1>
+        <div style="border: 1px solid #ccc; padding: 10px;">
+            <p>User: <span th:text="${user.name}"></span></p>
+            <p>Role: <span th:text="${user.role}"></span></p>
+            <p>Since: <span th:text="${user.experience}"></span></p>
+        </div>
+    </body>
+</html>
