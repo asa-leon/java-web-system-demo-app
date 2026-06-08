@@ -4,12 +4,22 @@
     <meta charset="UTF-8">
     <title>Hello Web App</title>
     </head>
+    
     <body>
         <h1 th:text="${message}"></h1>
-        <div style="border: 1px solid #ccc; padding: 10px;">
-            <p>User: <span th:text="${user.name}"></span></p>
-            <p>Role: <span th:text="${user.role}"></span></p>
-            <p>Since: <span th:text="${user.experience}"></span></p>
+
+        <form th:action="@{/submit}" method="post">
+            <label for="username">お名前を入力してください：</label>
+            <input type="text" id="username" name="username" required>
+            <button type="submit">送信</button>
+        </form>
+
+        <hr>
+
+        <div th:if="user != null">
+            <ul th:each="u : ${users}">
+                <li th:text="${u.name}">名前</li>
+            </ul>
         </div>
     </body>
 </html>
