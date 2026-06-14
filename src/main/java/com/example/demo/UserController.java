@@ -7,10 +7,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable; // URLの可変部分（パス）を扱うために必要
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestBody;
-
-
+import jakarta.validation.Valid; // バリデーション用1
+import org.springframework.validation.BindingResult; // バリデーション用2
 
 
 @Controller
@@ -52,7 +50,11 @@ public class UserController {
 
     // 2. 新規登録用の保存窓口：フォームから送信されたデータを保存する（POSTリクエスト）
     @PostMapping("/users/create")
-    public String createUser(User user) {
+    public String createUser(@Valid User user, BindingResult bindingResult) {
+        // 入力チェックでおかしな点（エラー）が見つかったら、フォーム画面に戻す
+        if (bindingResult.hasErrors()) {
+            return "user_form";
+        }
         
         // 防衛策：もし画面から意図しないIDが送られてきて、かつDBに既に存在していたらブロックする
         if (user.getId() != null && userRepository.existsById(user.getId())) {
@@ -67,7 +69,11 @@ public class UserController {
 
     // 3. 編集・更新用の保存窓口
     @PostMapping("/users/update")
-    public String updateUser(User user) {
+    public String updateUser(@Valid User user, BindingResult bindingResult) {
+        // 更新の時も同様にエラーがあればフォーム画面に戻す
+        if (bindingResult.hasErrors()) {
+            return "user_form";
+        }
         
         // 防御策：逆に、編集なのに「DBに存在しないID」だったら不正アクセスとして弾く
         if (user.getId() == null || !userRepository.existsById(user.getId())) {
