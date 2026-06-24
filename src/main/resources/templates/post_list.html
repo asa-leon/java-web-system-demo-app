@@ -116,12 +116,14 @@
             color: #ffffff;
         }
 
+        /* empty-message */
         .empty-message {
             color: #9ca3af;
             text-align: center;
             padding: 40px 0;
         }
 
+        /* search */
         .search-box {
             margin-bottom: 20px;
         }
@@ -163,6 +165,38 @@
             font-size: 0.95rem;
             line-height: 1.2;
         }
+
+        /* likes */
+        .post-actions {
+            display: flex; justify-content: flex-end; margin-top: 12px;
+        }
+        .post-actions form {
+            margin: 0;
+        }
+        
+        .like-button {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            color: #ffffff;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        .like-button:hover {
+            background: rgba(239, 68, 68, 0.2); /* ホバーするとほんのり赤くなる */
+            border-color: rgba(239, 68, 68, 0.4);
+            transform: scale(1.05); /* ほんの少し大きく */
+        }
+        .like-button:active {
+            transform: scale(0.95); /* クリックした瞬間にクシュッと縮む小気味良さ */
+        }
+
     </style>
 </head>
 
@@ -198,14 +232,21 @@
                 <span class="user-name">
                     <a th:href="@{/posts/user/{id}(id=${post.user.id})}" th:text="${post.user.name}"></a>
                 </span>
-                <span class="user-id" th:text="'(ID: ' + ${post.user.id} + ')'">(ID)</span>
+                <span class="user-id" th:text="'(ID: ' + ${post.user.id} + ')'"></span>
 
                 <span class="post-time" th:text="${#temporals.format(post.createdAt, 'yyyy/MM/dd（E） HH:mm:ss')}">
-                    2026/06/22 00:00:00
                 </span>
             </div>
 
-            <p class="post-content" th:text="${post.content}">ここに投稿内容が表示されます。</p>
+            <p class="post-content" th:text="${post.content}"></p>
+
+            <div class="post-actions">
+                <form th:action="@{/posts/{id}/like(id=${post.id})}" method="post">
+                    <button type="submit" class="like-button">
+                        ❤️ <span th:text="${post.likes}">0</span>
+                    </button>
+                </form>
+            </div>
 
             <form th:action="@{/posts/{id}/delete(id=${post.id})}" method="post" style="margin: 0;">
                 <button type="submit" class="delete-btn" onclick="return confirm('本当にこの投稿を削除しますか？')">
