@@ -14,6 +14,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class HelloController {
 
+    @GetMapping("/")
+    public String home() {
+        return "redirect:/posts";
+    }
+    
+
+
+/* 初期の動作確認用のコード
     private final UserService userService;
     // ロガーの定義（クラスごとに作成するのが一般的）
     private static final Logger log = LoggerFactory.getLogger(HelloController.class);
@@ -55,4 +63,5 @@ public class HelloController {
 
         return "hello";
     }
+ */
 }
