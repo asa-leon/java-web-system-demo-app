@@ -1,37 +1,161 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8">
-        <title>ユーザー新規登録</title>
-    </head>
-    <body>
-        <h1>ユーザー新規登録</h1>
+
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${user.id == null} ? 'ユーザー新規登録' : 'ユーザー情報編集'"></title>
+
+    <style>
+        /* 🌌 ベースの背景（ディープインディゴ世界観） */
+        body {
+            background-color: #001a41;
+            color: #f3f4f6;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* ✨ ガラスモルフィズム風コンテナ */
+        .card-container {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        /* 🚀 タイトル */
+        h2 {
+            color: #ffffff;
+            font-size: 1.6rem;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 24px;
+        }
+
+        /* 📁 フォームの入力グループ */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            color: #9ca3af;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        /* ⌨️ 入力フィールド */
+        .form-group input[type="text"],
+        .form-group input[type="email"] {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 26, 65, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="email"]:focus {
+            border-color: #3b82f6;
+        }
+
+        /* 🚨 エラーメッセージ */
+        .error-message {
+            color: #ff4a6b;
+            font-size: 0.85rem;
+            margin-top: 6px;
+            font-weight: bold;
+            display: block;
+        }
+
+        /* 🔵 ボタン */
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* 🔙 戻るリンク */
+        .nav-back {
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .nav-back a {
+            color: #38bdf8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-back a:hover {
+            color: #7dd3fc;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card-container">
+        <h2 th:text="${user.id == null} ? '👤 ユーザー新規登録' : '📝 ユーザー情報編集'"></h2>
 
         <form th:action="${user.id == null} ? @{/users/create} : @{/users/update}" th:object="${user}" method="post">
 
             <input type="hidden" th:field="*{id}"> <!-- ID用の隠し属性 -->
 
-            <div>
+            <div class="form-group">
                 <label for="name">名前：</label>
-                <input type="text" id="name" th:field="*{name}" required />
-                <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color: red;"></p>
+                <input type="text" id="name" th:field="*{name}" required placeholder="名前を入力してください..." />
+                <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-message"></div>
             </div>
-            
-            <br>
 
-            <div>
+            <div class="form-group">
                 <label for="email">メールアドレス：</label>
-                <input type="email" id="email" th:field="*{email}" required />
-                <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color: red;"></p>
+                <input type="email" id="email" th:field="*{email}" required placeholder="example@domain.com"/>
+                <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></div>
             </div>
 
-            <br>
-
-            <button type="submit">登録する</button>
+            <button type="submit" class="submit-btn" th:text="${user.id == null} ? '登録する' : '更新する'"></button>
         </form>
 
-        <br>
+        <div class="nav-back">
+            <a th:href="@{/users}">🔙 一覧に戻る</a>
+        </div>
+    </div>
 
-        <a th:href="@{/users}">一覧に戻る</a>
-    </body>
+</body>
+
 </html>
