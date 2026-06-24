@@ -10,11 +10,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 //import org.springframework.data.jpa.domain.Specification;
 //import org.springframework.data.domain.Sort;
 
-import org.springframework.web.bind.annotation.PathVariable;
 
 
 @Controller
@@ -131,7 +131,10 @@ public class PostController {
     
     // いいね！ボタンを押したときの処理
     @PostMapping("/posts/{id}/like")
-    public String likePost(@PathVariable("id") Long id) {
+    public String likePost(
+        @PathVariable("id") Long id,
+        @RequestHeader(value = "Referer", required = false) String referer) {// どこからアクセスされたかのURLを受け取る
+
         // 1. いいねされた投稿をIDで探す（見つからなければエラー）
         Post post = postRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Invalid post Id:" + id));
@@ -142,7 +145,16 @@ public class PostController {
         // 3. 状態が変わったらオブジェクトを上書き保存する（JPAのUpdate機能）
         postRepository.save(post);
 
-        // 4. 処理が終わったら、元のタイムライン画面にリダイレクト（再表示）
+        // 4. 戻り先を動的に判定する
+        if (referer != null) {
+            // 例："http://localhost:8000/posts/user/2"が来たら、
+            // ドメイン部分を削って "redirect:/posts/user/2" に修正する
+            String redirectPath = referer.replaceFirst("^https?://[^/]+", "");
+
+            return "redirect:" + redirectPath;
+        }
+
+        // 万が一、遷移元URLが取れなかった時の安全網（デフォルトはタイムライン）
         return "redirect:/posts";
     }
 }
