@@ -31,13 +31,16 @@ public class Post {
     // 投稿日時
     @jakarta.persistence.Column(name = "created_at", updatable = false)
     private java.time.LocalDateTime createdAt;
-
     // 保存される直前に、自動で現在日時をセットするアノテーション
     @jakarta.persistence.PrePersist
     protected void onCreate() {
         this.createdAt = java.time.LocalDateTime.now();
     }
 
+    // いいね数を保存するフィールド（初期値は0）
+    private int likes = 0;
+
+    /* getters and setters */
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -52,5 +55,15 @@ public class Post {
     }
     public void setCreatedAt(java.time.LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+    public void incrementLikes() {
+        this.likes++;
     }
 }

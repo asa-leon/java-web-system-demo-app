@@ -129,5 +129,20 @@ public class PostController {
         return "user_post_list";
     }
     
-    
+    // いいね！ボタンを押したときの処理
+    @PostMapping("/posts/{id}/like")
+    public String likePost(@PathVariable("id") Long id) {
+        // 1. いいねされた投稿をIDで探す（見つからなければエラー）
+        Post post = postRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid post Id:" + id));
+
+        // 2. いいね数を+1する（エンティティ内のメソッドを呼び出す）
+        post.incrementLikes();
+
+        // 3. 状態が変わったらオブジェクトを上書き保存する（JPAのUpdate機能）
+        postRepository.save(post);
+
+        // 4. 処理が終わったら、元のタイムライン画面にリダイレクト（再表示）
+        return "redirect:/posts";
+    }
 }
