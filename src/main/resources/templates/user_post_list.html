@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-    <head>
-        <meta charset="UTF-8">
-        <title>ユーザーの投稿一覧</title>
+<head>
+    <meta charset="UTF-8">
+    <title>ユーザーの投稿一覧</title>
 
-        <style>
-            /* 🌌 ベースの背景（ディープインディゴ世界観） */
+    <style>
+        /* 🌌 ベースの背景（ディープインディゴ世界観） */
         body {
             background-color: #001a41;
             color: #ffffff;
@@ -31,12 +31,14 @@
         .nav-back {
             margin-bottom: 24px;
         }
+
         .nav-back a {
             color: #3b82f6;
             text-decoration: none;
             font-size: 0.95rem;
             transition: color 0.2s;
         }
+
         .nav-back a:hover {
             color: #60a5fa;
             text-decoration: underline;
@@ -62,16 +64,19 @@
             font-size: 0.85rem;
             color: #9ca3af;
         }
+
         .user-name {
             font-weight: bold;
             color: #e5e7eb;
         }
+
         /* ➕ <style>タグの中に追記：ユーザー名リンクの装飾 */
         .user-name a {
             color: #e5e7eb;
             text-decoration: none;
             transition: color 0.2s;
         }
+
         .user-name a:hover {
             color: #60a5fa;
             text-decoration: underline;
@@ -93,32 +98,72 @@
             padding: 40px 0;
             font-size: 0.95rem;
         }
-        </style>
-    </head>
+        
+        /* likes */
+        .post-actions {
+            display: flex; justify-content: flex-end; margin-top: 12px;
+        }
+        .post-actions form {
+            margin: 0;
+        }
+        
+        .like-button {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            color: #ffffff;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        .like-button:hover {
+            background: rgba(239, 68, 68, 0.2); /* ホバーするとほんのり赤くなる */
+            border-color: rgba(239, 68, 68, 0.4);
+            transform: scale(1.05); /* ほんの少し大きく */
+        }
+        .like-button:active {
+            transform: scale(0.95); /* クリックした瞬間にクシュッと縮む小気味良さ */
+        }
+    </style>
+</head>
 
-    <body>
-        <div class="container">
+<body>
+    <div class="container">
 
-            <h2 th:text="${targetUser != null} ? '👤 ' + ${targetUser.name} + ' の投稿一覧' : '👤 ユーザーの投稿一覧'"></h2>
+        <h2 th:text="${targetUser != null} ? '👤 ' + ${targetUser.name} + ' の投稿一覧' : '👤 ユーザーの投稿一覧'"></h2>
 
-            <div class="nav-back">
-                <a th:href="@{/posts}">➔ 🌍 全体のタイムラインに戻る</a>
-            </div>
-
-            <div th:each="post : ${posts}" class="post-card">
-                <div class="post-meta">
-                    <span class="user-name">
-                        <a th:href="@{/posts/user/{id}(id=${post.user.id})}" th:text="${post.user.name}" ></a>
-                    </span>
-                    <span th:text="${#temporals.format(post.createdAt, 'yyyy/MM/dd（E） HH:mm:ss')}"></span>
-                </div>
-                <p th:text="${post.content}" class="post-content"></p>
-            </div>
-
-            <div th:if="${posts.isEmpty()}" class="empty-message">
-                まだ投稿がありません。
-            </div>
-
+        <div class="nav-back">
+            <a th:href="@{/posts}">➔ 🌍 全体のタイムラインに戻る</a>
         </div>
-    </body>
+
+        <div th:each="post : ${posts}" class="post-card">
+            <div class="post-meta">
+                <span class="user-name">
+                    <a th:href="@{/posts/user/{id}(id=${post.user.id})}" th:text="${post.user.name}"></a>
+                </span>
+                <span th:text="${#temporals.format(post.createdAt, 'yyyy/MM/dd（E） HH:mm:ss')}"></span>
+            </div>
+            <p th:text="${post.content}" class="post-content"></p>
+
+            <div class="post-actions">
+                <form th:action="@{/posts/{id}/like(id=${post.id})}" method="post">
+                    <button type="submit" class="like-button">
+                        ❤️ <span th:text="${post.likes}">0</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div th:if="${posts.isEmpty()}" class="empty-message">
+            まだ投稿がありません。
+        </div>
+
+    </div>
+</body>
+
 </html>
