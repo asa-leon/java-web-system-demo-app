@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>タイムライン</title>
+
+    <style>
+        body {
+            background-color: #001a41;
+            color: #f3f4f6;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h2 {
+            color: #ffffff;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* nav */
+        .nav-links {
+            margin-bottom: 20px;
+        }
+
+        .nav-links a {
+            color: #38bdf8;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #7dd3fc;
+            text-decoration: underline;
+        }
+
+        /* post card (alike glass-morphism) */
+        .post-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .user-name {
+            color: #60a5fa;
+            font-weight: bold;
+        }
+
+        .user-id {
+            color: #9ca3af;
+            font-size: 0.8rem;
+        }
+
+        .post-time {
+            color: #9ca3af;
+            font-size: 0.8rem;
+            margin-left: auto;
+        }
+
+        .post-content {
+            color: #e5e7eb;
+            font-size: 1.05rem;
+            line-height: 1.5;
+            margin: 0 0 15px 0;
+            word-wrap: break-word;
+        }
+
+        /* delete button */
+        .delete-btn {
+            color: #fca5a5;
+            background: transparent;
+            border: 1px solid rgba(248, 113, 113, 0.4);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0, 85rem;
+            transition: all 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: rgba(248, 113, 113, 0.2);
+            border-color: #f87171;
+            color: #ffffff;
+        }
+
+        .empty-message {
+            color: #9ca3af;
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .search-box form {
+            display: flex;
+            gap: 8px;
+        }
+
+        .search-box form input[type="text"] {
+            flex: 1;
+            padding: 10px 14px;
+            background: rgba(0, 26, 65, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .search-box form button[type="submit"] {
+            padding: 10px 16px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .search-box form a {
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #e5e7eb;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.95rem;
+            line-height: 1.2;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>💬 SNS タイムライン</h2>
+
+        <div class="search-box">
+            <form th:action="@{/posts}" method="get">
+                <input type="text" name="keyword" th:value="${keyword}" placeholder="投稿を検索...">
+                <button type="submit">
+                    🔍 検索
+                </button>
+
+                <a th:if="${keyword != null && !keyword.isEmpty()}" th:href="@{/posts}">
+                    ❌
+                </a>
+            </form>
+        </div>
+
+        <div class="nav-links">
+            <a th:href="@{/posts/new}">➕ 新しい文章を投稿する</a>
+            <a th:href="@{/users}">👤 ユーザー一覧</a>
+        </div>
+
+        <div th:if="${#lists.isEmpty(posts)}" class="empty-message">
+            <p>まだ投稿はありません。</p>
+        </div>
+
+        <div th:each="post : ${posts}" class="post-card">
+
+            <div class="post-header">
+                <span class="user-name" th:text="${post.user.name}">ユーザー名</span>
+                <span class="user-id" th:text="'(ID: ' + ${post.user.id} + ')'">(ID)</span>
+
+                <span class="post-time" th:text="${#temporals.format(post.createdAt, 'yyyy/MM/dd（E） HH:mm:ss')}">
+                    2026/06/22 00:00:00
+                </span>
+            </div>
+
+            <p class="post-content" th:text="${post.content}">ここに投稿内容が表示されます。</p>
+
+            <form th:action="@{/posts/{id}/delete(id=${post.id})}" method="post" style="margin: 0;">
+                <button type="submit" class="delete-btn" onclick="return confirm('本当にこの投稿を削除しますか？')">
+                    🗑️ 削除
+                </button>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

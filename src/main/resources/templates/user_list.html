@@ -3,35 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <title>ユーザー一覧</title>
+    <style>
+        /* 全体のベース（ディープインディゴの背景） */
+        body {
+            background-color: #001a41;
+            color: #f3f4f6;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* 中央のコンテンツコンテナ */
+        .container {
+            width: 100%;
+            max-width: 650px;
+        }
+
+        h2 {
+            color: #ffffff;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ナビゲーションリンク */
+        .nav-links {
+            margin-bottom: 24px;
+            display: flex;
+            gap: 15px;
+        }
+        .nav-links a {
+            color: #38bdf8;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover {
+            color: #7dd3fc;
+            text-decoration: underline;
+        }
+
+        /* ユーザーカード（ガラスモルフィズム風） */
+        .user-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .user-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-name {
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .user-badge {
+            background-color: rgba(96, 165, 250, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(96, 165, 250, 0.3);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .user-email {
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        /* 操作アクション（編集・削除ボタンエリア） */
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* 編集リンクボタン */
+        .edit-link {
+            color: #38bdf8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            padding: 6px 14px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .edit-link:hover {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: #38bdf8;
+            color: #ffffff;
+        }
+
+        /* 削除ボタン */
+        .delete-btn {
+            color: #fca5a5;
+            background: transparent;
+            border: 1px solid rgba(248, 113, 113, 0.4);
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .delete-btn:hover {
+            background: rgba(248, 113, 113, 0.15);
+            border-color: #f87171;
+            color: #ffffff;
+        }
+
+        .empty-message {
+            color: #9ca3af;
+            text-align: center;
+            padding: 40px 0;
+        }
+    </style>
 </head>
-
 <body>
-    <h1>登録ユーザー一覧</h1>
+    <div class="container">
+        <h2>👤 登録ユーザー一覧</h2>
 
-    <p><a th:href="@{/users/new}">➕ 新しいユーザーを登録する</a></p>
-    
-    <table border="1">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>名前</th>
-                <th>メールアドレス</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="user : ${users}">
-                <td th:text="${user.id}">1</td>
-                <td th:text="${user.name}">名前</td>
-                <td th:text="${user.email}">メール</td>
-                <td>
-                    <a th:href="@{/users/edit/{id}(id=${user.id})}">編集</a>
+        <div class="nav-links">
+            <a th:href="@{/posts}">💬 タイムライン</a>
+            <a th:href="@{/posts/new}">📝 新しい文章を投稿する</a>
+            <a th:href="@{/users/new}">➕ 新しいユーザーを登録する</a>
+        </div>
 
-                    <form th:action="@{/users/delete/{id}(id=${user.id})}" method="post" style="display: inline;">
-                        <button type="submit" onclick="return confirm('本当に削除してもよろしいですか？');">削除</button>
-                    </form>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+        <div th:if="${#lists.isEmpty(users)}" class="empty-message">
+            <p>登録されているユーザーはいません。</p>
+        </div>
+
+        <div th:each="user : ${users}" class="user-card">
+            
+            <div class="user-info">
+                <div class="user-meta">
+                    <span class="user-name" th:text="${user.name}">ユーザー名</span>
+                    <span class="user-badge" th:text="'ID: ' + ${user.id}">ID: 1</span>
+                </div>
+                <span class="user-email" th:text="${user.email}">email@example.com</span>
+            </div>
+            
+            <div class="user-actions">
+                <a th:href="@{/users/edit/{id}(id=${user.id})}" class="edit-link">編集</a>
+
+                <form th:action="@{/users/delete/{id}(id=${user.id})}" method="post" style="margin: 0;">
+                    <button type="submit" class="delete-btn" onclick="return confirm('本当に削除してもよろしいですか？');">
+                        削除
+                    </button>
+                </form>
+            </div>
+            
+        </div>
+    </div>
 </body>
 </html>
