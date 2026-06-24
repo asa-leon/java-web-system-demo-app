@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.domain.Sort;
+//import org.springframework.data.jpa.domain.Specification;
+//import org.springframework.data.domain.Sort;
 
-
+import org.springframework.web.bind.annotation.PathVariable;
 
 
 @Controller
@@ -112,5 +112,22 @@ public class PostController {
         
         return "redirect:/posts";
     }
+
+    // 特定のユーザーの投稿一覧を表示するルート
+    @GetMapping("/posts/user/{userId}")
+    public String userPostList(@PathVariable("userId") Long userId, Model model) {
+
+        // 1. 指定されたユーザーIDの投稿だけを最新順で取得
+        List<Post> posts = postRepository.findByUserIdOrderByCreatedAtDesc(userId);
+
+        // 2. 画面のタイトル等に表示するために、そのユーザーの名前も取得（任意）
+        if (!posts.isEmpty()) {
+            model.addAttribute("targetUser", posts.get(0).getUser());
+        }
+
+        model.addAttribute("posts", posts);
+        return "user_post_list";
+    }
+    
     
 }

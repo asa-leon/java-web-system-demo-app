@@ -69,6 +69,15 @@
             color: #60a5fa;
             font-weight: bold;
         }
+        .user-name a {
+            color: #e5e7eb;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .user-name a:hover {
+            color: #60a5fa;
+            text-decoration: underline;
+        }
 
         .user-id {
             color: #9ca3af;
@@ -186,7 +195,9 @@
         <div th:each="post : ${posts}" class="post-card">
 
             <div class="post-header">
-                <span class="user-name" th:text="${post.user.name}">ユーザー名</span>
+                <span class="user-name">
+                    <a th:href="@{/posts/user/{id}(id=${post.user.id})}" th:text="${post.user.name}"></a>
+                </span>
                 <span class="user-id" th:text="'(ID: ' + ${post.user.id} + ')'">(ID)</span>
 
                 <span class="post-time" th:text="${#temporals.format(post.createdAt, 'yyyy/MM/dd（E） HH:mm:ss')}">
