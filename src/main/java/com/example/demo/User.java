@@ -30,6 +30,8 @@ public class User {
     @Email(message = "正しいメールアドレスの形式で入力してください\"")
     private String email;
 
+    private String icon = "🚀"; // デフォルト値を設定（画像パスの指定もできる）
+
     // Getters and setters
     public Long getId() {
         return id;
@@ -53,5 +55,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }

@@ -80,6 +80,10 @@
             font-weight: bold;
         }
 
+        .user-name .user-icon {
+            font-size: 1.2rem;
+        }
+
         .user-badge {
             background-color: rgba(96, 165, 250, 0.15);
             color: #60a5fa;
@@ -160,7 +164,8 @@
             
             <div class="user-info">
                 <div class="user-meta">
-                    <span class="user-name" th:text="${user.name}">ユーザー名</span>
+                    <span class="user-icon" th:text="${user.icon}"></span>
+                    <span class="user-name" th:text="${user.name}"></span>
                     <span class="user-badge" th:text="'ID: ' + ${user.id}">ID: 1</span>
                 </div>
                 <span class="user-email" th:text="${user.email}">email@example.com</span>
