@@ -81,6 +81,10 @@
             color: #60a5fa;
             text-decoration: underline;
         }
+        
+        .user-name .user-icon {
+            font-size: 1.2rem;
+        }
 
         /* 💬 投稿本文 */
         .post-content {
@@ -144,6 +148,7 @@
         <div th:each="post : ${posts}" class="post-card">
             <div class="post-meta">
                 <span class="user-name">
+                    <span th:text="${post.user.icon}" class="user-icon"></span>
                     <a th:href="@{/posts/user/{id}(id=${post.user.id})}" th:text="${post.user.name}"></a>
                 </span>
                 <span th:text="${#temporals.format(post.createdAt, 'yyyy/MM/dd（E） HH:mm:ss')}"></span>
