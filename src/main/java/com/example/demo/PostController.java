@@ -123,7 +123,15 @@ public class PostController {
         // 2. 画面のタイトル等に表示するために、そのユーザーの名前も取得（任意）
         if (!posts.isEmpty()) {
             model.addAttribute("targetUser", posts.get(0).getUser());
+        } else {
+            // 投稿が空の場合でも動くように、ユーザー自身を直接取得してモデルに入れると安全
+            model.addAttribute("targetUser", userRepository.findById(userId).orElse(null));
         }
+
+        // 特定のユーザーの投稿一覧画面を開いたときに「自分のデータ（loginUser）」も一緒に画面に渡さないと
+        // 画面側で「すでにフォローしているかどうか」の判断ができない他為、
+        // ログインユーザー（自分=Higako: ID:2）のデータを画面に渡す
+        model.addAttribute("loginUser", userRepository.findById(2L).orElse(null));
 
         model.addAttribute("posts", posts);
         return "user_post_list";
