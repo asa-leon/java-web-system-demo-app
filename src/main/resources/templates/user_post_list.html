@@ -81,7 +81,7 @@
             color: #60a5fa;
             text-decoration: underline;
         }
-        
+
         .user-name .user-icon {
             font-size: 1.2rem;
         }
@@ -102,15 +102,18 @@
             padding: 40px 0;
             font-size: 0.95rem;
         }
-        
+
         /* likes */
         .post-actions {
-            display: flex; justify-content: flex-end; margin-top: 12px;
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 12px;
         }
+
         .post-actions form {
             margin: 0;
         }
-        
+
         .like-button {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -125,13 +128,44 @@
             gap: 6px;
             transition: all 0.2s ease;
         }
+
         .like-button:hover {
-            background: rgba(239, 68, 68, 0.2); /* ホバーするとほんのり赤くなる */
+            background: rgba(239, 68, 68, 0.2);
+            /* ホバーするとほんのり赤くなる */
             border-color: rgba(239, 68, 68, 0.4);
-            transform: scale(1.05); /* ほんの少し大きく */
+            transform: scale(1.05);
+            /* ほんの少し大きく */
         }
+
         .like-button:active {
-            transform: scale(0.95); /* クリックした瞬間にクシュッと縮む小気味良さ */
+            transform: scale(0.95);
+            /* クリックした瞬間にクシュッと縮む小気味良さ */
+        }
+
+        .follow-wrapper {
+            margin-bottom: 24px;
+        }
+
+        .follow-wrapper button.follow {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .follow-wrapper button.unfollow {
+            background: #2563eb;
+            border: none;
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
         }
     </style>
 </head>
@@ -141,6 +175,23 @@
 
         <h2 th:text="${targetUser != null} ? '👤 ' + ${targetUser.name} + ' の投稿一覧' : '👤 ユーザーの投稿一覧'"></h2>
 
+        <div th:if="${loginUser != null && loginUser.id != targetUser.id}" class="follow-wrapper">
+
+            <form th:if="${loginUser.following.contains(targetUser)}"
+                th:action="@{/users/{id}/unfollow(id=${targetUser.id})}" method="post">
+                <button type="submit" class="follow">
+                    🤝 フォロー中 (解除する)
+                </button>
+            </form>
+
+            <form th:unless="${loginUser.following.contains(targetUser)}"
+                th:action="@{/users/{id}/follow(id=${targetUser.id})}" method="post">
+                <button type="submit" class="unfollow">
+                    ➕ フォローする
+                </button>
+            </form>
+        </div>
+        
         <div class="nav-back">
             <a th:href="@{/posts}">➔ 🌍 全体のタイムラインに戻る</a>
         </div>

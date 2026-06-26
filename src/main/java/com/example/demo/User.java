@@ -12,6 +12,14 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+// フォロー用（多対多）ライブラリ群
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.JoinColumn;
+import java.util.Set;
+import java.util.HashSet;
+
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -31,6 +39,20 @@ public class User {
     private String email;
 
     private String icon = "🚀"; // デフォルト値を設定（画像パスの指定もできる）
+
+    // 自分がフォローしているユーザーのリスト
+    @ManyToMany
+    @JoinTable(
+        name = "user_follows", // 生成される中間テーブルの名前
+        joinColumns = @JoinColumn(name = "user_id"), // 自分自身のID
+        inverseJoinColumns = @JoinColumn(name = "follow_id") // フォロー相手のID
+    )
+    private Set<User> following = new HashSet<>();
+
+    // 自分をフォローしてくれているユーザー（フォロワー）のリスト
+    @ManyToMany(mappedBy = "following") // 上記の変数「following」と表裏一体であることを示す
+    private Set<User> followers = new HashSet<>();
+
 
     // Getters and setters
     public Long getId() {
@@ -63,5 +85,31 @@ public class User {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }   
+
+    public Set<User> getFollowing() {
+        return following;
     }
+
+    public void setFollowing(Set<User> following) {
+        this.following = following;
+    }
+
+    public Set<User> getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(Set<User> followers) {
+        this.followers = followers;
+    }
+
+    // フォローを追加する時のメソッド
+    public void follow(User user) {
+        this.following.add(user);
+    }
+
+    // フォローを外す時のメソッド
+    public void unfollow(User user) {
+        this.following.remove(user);
+    };
 }

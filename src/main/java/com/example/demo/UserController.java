@@ -7,8 +7,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable; // URLの可変部分（パス）を扱うために必要
+import org.springframework.web.bind.annotation.RequestHeader; // フォロー機能追加時に使用
 import jakarta.validation.Valid; // バリデーション用1
 import org.springframework.validation.BindingResult; // バリデーション用2
+import org.springframework.web.bind.annotation.RequestBody;
+
+
 
 
 @Controller
@@ -113,4 +117,48 @@ public class UserController {
         // 削除が終わったら、一覧画面にリダイレクトして最新の状態にする
         return "redirect:/users";
     }
+
+    // ユーザーをフォローする窓口
+    @PostMapping("/users/{id}/follow")
+    public String followUser(
+        @PathVariable("id") Long id,
+        @RequestHeader(value = "Referer", required = false) String referer) {
+        
+            // 1. ログインユーザー（仮にID:2にする）を取得
+            User me = userRepository.findById(2L)
+                .orElseThrow((() -> new IllegalArgumentException("自分のユーザーが見つかりません")));
+            
+            // 2. フォローしたい相手のユーザーを取得
+            User targetUser = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("フォロー対象のユーザーが見つかりません"));
+
+            // 3. 自分自身の「following」セットに相手を追加する
+            me.follow(targetUser);
+
+            // 4. 状態を保存（中間テーブル user_follows にレコードが自動挿入される
+            userRepository.save(me);
+
+            // 5. ボタンを押した元の画面にそのままリダイレクトで戻る
+            return referer != null ? "redirect:" + referer.replaceFirst("^https?://[^/]+", "") : "redirect:/posts";
+    }
+
+    // ユーザーのフォローを解除する窓口
+    @PostMapping("/users/{id}/unfollow")
+    public String unfollowUser(
+        @PathVariable("id") Long id,
+        @RequestHeader(value = "Referer", required = false) String referer) {
+        
+            User me = userRepository.findById(2L)
+                .orElseThrow(() -> new IllegalArgumentException("自分のユーザーが見つかりません"));
+
+            User targetUser = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("フォロー解除対象のユーザーが見つかりません"));
+        
+            me.unfollow(targetUser);
+
+            userRepository.save(me);
+
+            return referer != null ? "redirect:" + referer.replaceFirst("^https?://[^/]+", "") : "redirect:/posts";
+    }
+    
 }
