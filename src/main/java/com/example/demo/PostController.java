@@ -44,6 +44,7 @@ public class PostController {
         }
 
         model.addAttribute("posts", posts);
+        model.addAttribute("currentTab", "all");
         
         /* ドット繋ぎで書く場合のコード
         // 1.最新順（降順）ソートの条件を用意
@@ -165,4 +166,35 @@ public class PostController {
         // 万が一、遷移元URLが取れなかった時の安全網（デフォルトはタイムライン）
         return "redirect:/posts";
     }
+
+    // フォローしているユーザーの投稿だけを表示するタイムライン
+    @GetMapping("/posts/following")
+    public String followingPostList(Model model) {
+        
+        // 1. ログインユーザー（仮にID:2）を取得
+        User me = userRepository.findById(2L)
+            .orElseThrow(() -> new IllegalArgumentException("自分のユーザーが見つかりません"));
+        
+        // 2. 自分がフォローしているユーザーの「IDのリスト」を作る
+        List<Long> followingUserIds = me.getFollowing().stream()
+            .map(User::getId)
+            .toList();
+
+        List<Post> posts;
+        if (followingUserIds.isEmpty()) {
+            // まだ誰もフォローしていない場合は、からのリストを返す（エラー回避）
+            posts = new java.util.ArrayList<>();
+        } else {
+            // 3. フォローしている人のIDリストをリポジトリに渡して、投稿を取得する
+            posts = postRepository.findByUserIdInOrderByCreatedAtDesc(followingUserIds);
+        }
+
+        // 4. 画面にデータを渡す
+        model.addAttribute("posts", posts);
+        model.addAttribute("loginUser", me);
+        model.addAttribute("currentTab", "following"); // 今どっちのタブにいるかを判定するためのフラグ
+
+        return "post_list"; // 画面は新しく作らず、既存の post_list.html を使いまわす。
+    }
+    
 }

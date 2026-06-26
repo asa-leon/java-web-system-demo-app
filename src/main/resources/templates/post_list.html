@@ -200,6 +200,27 @@
             transform: scale(0.95); /* クリックした瞬間にクシュッと縮む小気味良さ */
         }
 
+        .tab {
+            display: flex; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 8px;
+        }
+
+        .tab a {
+            font-size: 0.95rem;
+        }
+
+        .tab-active {
+            color: #ffffff; font-weight: bold; text-decoration: none; padding: 6px 16px; background: rgba(255, 255, 255, 0.15); border-radius: 20px;
+        }
+
+        .tab-inactive {
+            color: rgba(255, 255, 255, 0.6); text-decoration: none; padding: 6px 16px; transition: all 0.2s;
+        }
+
+        .tab-inactive:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+        }
     </style>
 </head>
 
@@ -218,6 +239,22 @@
                     ❌
                 </a>
             </form>
+
+            <div class="tab">
+                <a th:href="@{/posts}"
+                    th:class="${currentTab == 'all' || currentTab == null}
+                        ? 'tab-active' 
+                        : 'tab-inactive'">
+                        🌐 すべての投稿
+                </a>
+
+                <a th:href="@{/posts/following}"
+                    th:class="${currentTab == 'following'}
+                        ? 'tab-active'
+                        : 'tab-inactive'">
+                    🤝 フォロー中
+                </a>
+            </div>
         </div>
 
         <div class="nav-links">
