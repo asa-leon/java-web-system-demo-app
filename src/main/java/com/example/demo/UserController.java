@@ -40,6 +40,9 @@ public class UserController {
         // Thymeleafの画面にデータを渡す
         model.addAttribute("users", userList);
 
+        // ログインユーザー（Higako: ID:2）のデータを画面に渡す
+        model.addAttribute("loginUser", userRepository.findById(2L).orElse(null));
+
         return "user_list"; // user_list.htmlを表示する
 
     }
