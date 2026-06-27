@@ -144,6 +144,37 @@
             text-align: center;
             padding: 40px 0;
         }
+
+        .follow-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .follow-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .unfollow-btn {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .unfollow-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -172,6 +203,20 @@
             </div>
             
             <div class="user-actions">
+                <div th:if="${loginUser != null && loginUser.id != user.id}">
+                    
+                    <form th:if="${loginUser.following.contains(user)}" th:action="@{/users/{id}/unfollow(id=${user.id})}" method="post" style="margin: 0;">
+                        <button type="submit" class="unfollow-btn">
+                            🤝 フォロー中
+                        </button>
+                    </form>
+
+                    <form th:unless="${loginUser.following.contains(user)}" th:action="@{/users/{id}/follow(id=${user.id})}" method="post" style="margin: 0;">
+                        <button type="submit" class="follow-btn">
+                            ➕ フォロー
+                        </button>
+                    </form>
+                </div>
                 <a th:href="@{/users/edit/{id}(id=${user.id})}" class="edit-link">編集</a>
 
                 <form th:action="@{/users/delete/{id}(id=${user.id})}" method="post" style="margin: 0;">
