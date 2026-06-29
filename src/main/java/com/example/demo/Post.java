@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
@@ -7,6 +9,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -40,7 +45,13 @@ public class Post {
     // いいね数を保存するフィールド（初期値は0）
     private int likes = 0;
 
-    /* getters and setters */
+    // 1つの投稿に対する複数のコメント（一対多）
+    // cascade = CascadeType.ALL にすることで、投稿が削除されたらそのコメントも自動で全削除される
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("createdAt ASC") // 画面に出すときに自動で古い順に並び替える
+    private List<Comment> comments;
+
+    // --- ゲッターとセッター ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -66,4 +77,7 @@ public class Post {
     public void incrementLikes() {
         this.likes++;
     }
+
+    public List<Comment> getComments() { return comments; }
+    public void setComments(List<Comment> comments) { this.comments = comments; }
 }

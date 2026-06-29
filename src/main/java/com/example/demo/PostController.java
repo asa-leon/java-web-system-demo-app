@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
@@ -14,19 +15,18 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 //import org.springframework.data.jpa.domain.Specification;
 //import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 
 @Controller
+@RequiredArgsConstructor // これを書くことでconstructor(this.xx = xx)を書かなくて済む
 public class PostController {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-
-    public PostController(PostRepository postRepository, UserRepository userRepository) {
-        this.postRepository = postRepository;
-        this.userRepository = userRepository;
-    }
+    private final CommentRepository commentRepository;
 
     // 投稿一覧を表示する窓口
     @GetMapping("/posts")
@@ -197,4 +197,46 @@ public class PostController {
         return "post_list"; // 画面は新しく作らず、既存の post_list.html を使いまわす。
     }
     
+    // 特定の投稿の詳細画面を表示する
+    @GetMapping("/posts/{id}")
+    public String postDetail(@PathVariable("id") Long id, Model model) {
+        
+        // 1. 対象の投稿を取得
+        Post post = postRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("指定された投稿が見つかりません:" + id));
+
+        // 2. 画面にデータを渡す
+        model.addAttribute("post", post);
+        // Post.java に @OneToMany を書いたので、JPAが自動で紐づくコメントを一緒に持ってきてくれる
+        model.addAttribute("comments", post.getComments());
+        model.addAttribute("loginUser", userRepository.findById(2L).orElse(null));
+
+        return "post_detail";
+    }
+    
+    // コメントを投稿する処理
+    @PostMapping("/posts/{id}/comments")
+    public String createComment(
+        @PathVariable("id") Long id,
+        @RequestParam("content") String content) {
+        
+        // 1. どの当行に対するコメントか、親を取得
+        Post post = postRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("投稿が見つかりません"));
+
+        // 2. 誰が書いたか（ログインユーザー）を取得
+        User me = userRepository.findById(2L).orElse(null);
+
+        // 3. コメントオブジェクトを生成してデータをセット
+        Comment comment = new Comment();
+        comment.setContent(content);
+        comment.setPost(post);
+        comment.setUser(me);
+
+        // 4. データベースに保存
+        commentRepository.save(comment);
+
+        // 5. 書き込みが終わったら、元の詳細画面にリダイレクトで戻る
+        return "redirect:/posts/" + id;
+    }
 }

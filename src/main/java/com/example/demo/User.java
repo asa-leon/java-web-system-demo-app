@@ -54,7 +54,7 @@ public class User {
     private Set<User> followers = new HashSet<>();
 
 
-    // Getters and setters
+    // --- ゲッターとセッター ---
     public Long getId() {
         return id;
     }

@@ -202,7 +202,7 @@
                     <span th:text="${post.user.icon}" class="user-icon"></span>
                     <a th:href="@{/posts/user/{id}(id=${post.user.id})}" th:text="${post.user.name}"></a>
                 </span>
-                <span th:text="${#temporals.format(post.createdAt, 'yyyy/MM/dd（E） HH:mm:ss')}"></span>
+                <span th:text="${#temporals.format(post.createdAt, 'yyyy/MM/dd（E）HH:mm:ss')}"></span>
             </div>
             <p th:text="${post.content}" class="post-content"></p>
 
@@ -216,7 +216,7 @@
         </div>
 
         <div th:if="${posts.isEmpty()}" class="empty-message">
-            まだ投稿がありません。
+            まだ投稿がありません
         </div>
 
     </div>
