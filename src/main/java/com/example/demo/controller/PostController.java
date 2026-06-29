@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +13,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.example.demo.model.Comment;
+import com.example.demo.model.Post;
+import com.example.demo.model.User;
+import com.example.demo.repository.CommentRepository;
+import com.example.demo.repository.PostRepository;
+import com.example.demo.repository.UserRepository;
+
 //import org.springframework.data.jpa.domain.Specification;
 //import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.RequestBody;

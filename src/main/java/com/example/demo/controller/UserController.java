@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.controller;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable; // URLの可変部分（パス）を扱うために必要
 import org.springframework.web.bind.annotation.RequestHeader; // フォロー機能追加時に使用
+
+import com.example.demo.model.User;
+import com.example.demo.repository.UserRepository;
+
 import jakarta.validation.Valid; // バリデーション用1
 import org.springframework.validation.BindingResult; // バリデーション用2
 import org.springframework.web.bind.annotation.RequestBody;

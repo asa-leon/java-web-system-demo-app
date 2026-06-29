@@ -1,6 +1,10 @@
 package com.example.demo;
 
 import org.springframework.stereotype.Service;
+
+import com.example.demo.model.User;
+import com.example.demo.repository.UserRepository;
+
 import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 

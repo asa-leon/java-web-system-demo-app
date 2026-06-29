@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.model;
 
 // 保存データ取り扱いライブラリ群
 import jakarta.persistence.Entity;
