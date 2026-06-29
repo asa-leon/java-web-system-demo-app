@@ -101,6 +101,10 @@
             word-wrap: break-word;
         }
 
+        .post-content a {
+            color: #e5e7eb; text-decoration: none; transition: color 0.2s;
+        }
+
         /* delete button */
         .delete-btn {
             color: #fca5a5;
@@ -275,11 +279,15 @@
                 </span>
                 <span class="user-id" th:text="'(ID: ' + ${post.user.id} + ')'"></span>
 
-                <span class="post-time" th:text="${#temporals.format(post.createdAt, 'yyyy/MM/dd（E） HH:mm:ss')}">
+                <span class="post-time" th:text="${#temporals.format(post.createdAt, 'yyyy/MM/dd（E）HH:mm:ss')}">
                 </span>
             </div>
 
-            <p class="post-content" th:text="${post.content}"></p>
+            <p class="post-content">
+                <a th:href="@{/posts/{id}(id=${post.id})}"
+                    th:text="${post.content}">
+                </a>
+            </p>
 
             <div class="post-actions">
                 <form th:action="@{/posts/{id}/like(id=${post.id})}" method="post">
