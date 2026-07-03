@@ -130,6 +130,18 @@
             color: #7dd3fc;
             text-decoration: underline;
         }
+
+        .tags {
+            margin-top: 12px;
+        }
+
+        .tag-guide {
+            display: block; color: #9ca3af; font-size: 0.85rem; margin-bottom: 8px;
+        }
+
+        .tag-helper-btn {
+            background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 16px; color: #38bdf8; padding: 5px 14px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s ease;
+        }
     </style>
 </head>
 <body>
@@ -151,6 +163,20 @@
                 <label for="content">いまどうしてる？（140文字以内）</label>
                 <textarea id="content" th:field="*{content}" rows="4" placeholder="ここに文章を入力してください..."></textarea>
                 
+                <div th:if="${!#lists.isEmpty(allTags)}" class="tags">
+                    <span class="tag-guide">
+                        🏷️ タグをタップして本文に追加：
+                    </span>
+                    <div class="tags-group">
+                        <button th:each="tag : ${allTags}"
+                            type="button"
+                            class="tag-helper-btn"
+                            th:data-tag-name="${tag.name}">
+                            <span th:text="'#' + ${tag.name}"></span>
+                        </button>
+                    </div>
+                </div>
+
                 <p th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="error-message"></p>
             </div>
 
@@ -161,5 +187,29 @@
             <a th:href="@{/posts}">🔙 タイムラインに戻る</a>
         </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const textarea = document.getElementById('content');
+            const tagButtons = document.querySelectorAll('.tag-helper-btn');
+
+            tagButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    // カスタム属性「data-tag-name」から、シャープなしのタグ名を取得
+                    const tagName = button.getAttribute('data-tag-name');
+
+                    // 挿入する用の文字列を作成（連続で押しやすいように末尾にスペースを空ける）
+                    const tagText = `#${tagName} `;
+
+                    // 現在の入力内容の末尾にガチャンと結合
+                    textarea.value = textarea.value + tagText;
+
+                    // 入力したら、すぐに文字の続きが打てるように入力欄にフォーカスを戻す
+                    textarea.focus();
+                });
+            });
+        });
+    </script>
 </body>
 </html>

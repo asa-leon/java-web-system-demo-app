@@ -81,11 +81,15 @@ public class PostController {
 
     // 投稿フォーム画面を表示する
     @GetMapping("/posts/new")
-    public String newPostForm(Model model) {
+    public String showNewPostForm(Model model) {
         model.addAttribute("post", new Post());
 
         // セレクトボックスで選べるように、全ユーザーの一覧を画面に渡す
         model.addAttribute("users", userRepository.findAll());
+
+        // データベースからすべてのタグを取得して、画面に渡す
+        List<Tag> allTags = tagRepository.findAll();
+        model.addAttribute("allTags", allTags);
 
         return "post_form";
     }
@@ -102,6 +106,9 @@ public class PostController {
         if (bindingResult.hasErrors()) {
             // 戻る前にもう一度ユーザー一覧をセットしてあげないと、セレクトボックスが空になる
             model.addAttribute("users", userRepository.findAll());
+
+            // エラーで戻った時も、タグ一覧を再セットしてあげる
+            model.addAttribute("allTags", tagRepository.findAll());
 
             return "post_form";
         }
