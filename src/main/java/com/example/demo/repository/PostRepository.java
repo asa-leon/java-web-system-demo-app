@@ -41,4 +41,7 @@ public interface PostRepository extends JpaRepository<Post, Long>/* , JpaSpecifi
     // 指定されたユーザーIDのリスト（コレクション）に含まれる投稿だけを、新着順に取得する
     List<Post> findByUserIdInOrderByCreatedAtDesc(Collection<Long> userIds);
     
+    // 紐づいているタグの名前（tags.name）を条件に、投稿一覧を検索する
+    List<Post> findByTagsName(String tagName);
+
 }

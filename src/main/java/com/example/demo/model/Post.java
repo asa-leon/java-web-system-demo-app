@@ -1,6 +1,7 @@
 package com.example.demo.model;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
@@ -8,6 +9,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
@@ -51,6 +54,15 @@ public class Post {
     @OrderBy("createdAt ASC") // 画面に出すときに自動で古い順に並び替える
     private List<Comment> comments;
 
+    // 投稿に紐づく複数のハッシュタグ（多対多）
+    @ManyToMany
+    @JoinTable(
+        name = "post_tags", // これが自動生成される「中間テーブル」の名前になる
+        joinColumns = @JoinColumn(name = "post_id"), // 自分（Post）側のID列
+        inverseJoinColumns = @JoinColumn(name = "tag_id") // 相手（Tag）側のID列
+    )
+    private List<Tag> tags = new ArrayList<>();
+
     // --- ゲッターとセッター ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -80,4 +92,7 @@ public class Post {
 
     public List<Comment> getComments() { return comments; }
     public void setComments(List<Comment> comments) { this.comments = comments; }
+
+    public List<Tag> getTags() { return tags; }
+    public void setTags(List<Tag> tags) { this.tags = tags; }
 }

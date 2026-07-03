@@ -3,7 +3,10 @@ package com.example.demo.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,8 +20,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.demo.model.Comment;
 import com.example.demo.model.Post;
 import com.example.demo.model.User;
+import com.example.demo.model.Tag;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.PostRepository;
+import com.example.demo.repository.TagRepository;
 import com.example.demo.repository.UserRepository;
 
 //import org.springframework.data.jpa.domain.Specification;
@@ -35,6 +40,7 @@ public class PostController {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+    private final TagRepository tagRepository;
 
     // 投稿一覧を表示する窓口
     @GetMapping("/posts")
@@ -105,6 +111,37 @@ public class PostController {
             .orElseThrow(() -> new IllegalArgumentException("ユーザーが見つかりません"));
 
         post.setUser(selectedUser);
+
+        //MARK: ハッシュタグ抽出ロジック
+        String content = post.getContent();
+        List<Tag> tagList = new ArrayList<>();
+
+        if (content != null && !content.isEmpty()) {
+            // 正規表現で「#」から始まる単語を抽出（全角・半角対応）
+            Pattern pattern = Pattern.compile("[#＃][A-Za-z0-9ぁ-んァ-ヶ一-龠ー_]+");
+            Matcher matcher = pattern.matcher(content);
+
+            while (matcher.find()) {
+                // 先頭の「#」を消して、アルファベットは小文字に統一
+                String tagName = matcher.group().substring(1).toLowerCase();
+
+                // データベースに既存のタグがあるか探し、なければ新しく保存して取得
+                Tag tag = tagRepository.findByName(tagName)
+                    .orElseGet(() -> {
+                        Tag newTag = new Tag();
+                        newTag.setName(tagName);
+                        return tagRepository.save(newTag);
+                    });
+
+                // リスト内での重複を防いで追加
+                if (!tagList.contains(tag)) {
+                    tagList.add(tag);
+                }
+            }
+        }
+
+        // 投稿オブジェクトに、抽出したタグのリストをセット（これで中間テーブルに自動保存される）
+        post.setTags(tagList);
 
         // データベースに保存
         postRepository.save(post);
@@ -246,5 +283,21 @@ public class PostController {
 
         // 5. 書き込みが終わったら、元の詳細画面にリダイレクトで戻る
         return "redirect:/posts/" + id;
+    }
+
+    // タグに基づく投稿を取得して画面に渡す処理
+    @GetMapping("/tags/{tagName}")
+    public String showPostsByTag(@PathVariable("tagName") String tagName, Model model) {
+        // 1. 指定されたタグ名がついている投稿だけをリポジトリから取得
+        List<Post> taggedPosts = postRepository.findByTagsName(tagName);
+
+        // 2. タイムライン（post_list.html）と同じ変数名「posts」で画面に渡す
+        model.addAttribute("posts", taggedPosts);
+
+        // 3. 今何のタグで絞り込んでいるかを画面に表示するために、タグ名も渡しておく
+        model.addAttribute("currentTag", tagName);
+
+        // 4. 新しい画面を作らず、既存の「post_list.html」をそのまま使いまわす
+        return "post_list";
     }
 }
