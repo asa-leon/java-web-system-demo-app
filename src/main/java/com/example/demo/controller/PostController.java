@@ -76,6 +76,9 @@ public class PostController {
         model.addAttribute("keyword", keyword);
          */
 
+        // トレンド上位5件を画面に渡す
+        model.addAttribute("trends", tagRepository.findTop5Trends());
+
         return "post_list";
     }
 
@@ -246,6 +249,9 @@ public class PostController {
         model.addAttribute("loginUser", me);
         model.addAttribute("currentTab", "following"); // 今どっちのタブにいるかを判定するためのフラグ
 
+        // トレンド上位5件を画面に渡す
+        model.addAttribute("trends", tagRepository.findTop5Trends());
+
         return "post_list"; // 画面は新しく作らず、既存の post_list.html を使いまわす。
     }
     
@@ -305,6 +311,10 @@ public class PostController {
         model.addAttribute("currentTag", tagName);
 
         // 4. 新しい画面を作らず、既存の「post_list.html」をそのまま使いまわす
+
+        //割り込み：トレンド上位5件を画面に渡す
+        model.addAttribute("trends", tagRepository.findTop5Trends());
+
         return "post_list";
     }
 }

@@ -18,7 +18,68 @@
 
         .container {
             width: 100%;
+            max-width: 900px;
+            /* 600px から 900px に拡張 */
+            display: flex;
+            gap: 30px;
+            /* メインとサイドバーの隙間 */
+        }
+
+        .main-content {
+            flex: 1;
             max-width: 600px;
+        }
+
+        .sidebar {
+            width: 260px;
+            flex-shrink: 0;
+        }
+
+        .trend-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 20px;
+            /* スクロールしても画面についてくるように */
+        }
+
+        .trend-title {
+            color: #ffffff;
+            font-size: 1.1rem;
+            margin-top: 0;
+            margin-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+
+        .trend-item {
+            margin-bottom: 14px;
+        }
+
+        .trend-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .trend-link {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.95rem;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .trend-link:hover {
+            color: #7dd3fc;
+            text-decoration: underline;
+        }
+
+        .no-trends {
+            color: #9ca3af; font-size: 0.85rem; margin: 0;
         }
 
         h2 {
@@ -69,15 +130,18 @@
             color: #60a5fa;
             font-weight: bold;
         }
+
         .user-name a {
             color: #e5e7eb;
             text-decoration: none;
             transition: color 0.2s;
         }
+
         .user-name a:hover {
             color: #60a5fa;
             text-decoration: underline;
         }
+
         .user-name .user-icon {
             font-size: 1.2rem;
         }
@@ -102,7 +166,9 @@
         }
 
         .post-content a {
-            color: #e5e7eb; text-decoration: none; transition: color 0.2s;
+            color: #e5e7eb;
+            text-decoration: none;
+            transition: color 0.2s;
         }
 
         /* delete button */
@@ -175,12 +241,15 @@
 
         /* likes */
         .post-actions {
-            display: flex; justify-content: flex-end; margin-top: 12px;
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 12px;
         }
+
         .post-actions form {
             margin: 0;
         }
-        
+
         .like-button {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -195,17 +264,26 @@
             gap: 6px;
             transition: all 0.2s ease;
         }
+
         .like-button:hover {
-            background: rgba(239, 68, 68, 0.2); /* ホバーするとほんのり赤くなる */
+            background: rgba(239, 68, 68, 0.2);
+            /* ホバーするとほんのり赤くなる */
             border-color: rgba(239, 68, 68, 0.4);
-            transform: scale(1.05); /* ほんの少し大きく */
+            transform: scale(1.05);
+            /* ほんの少し大きく */
         }
+
         .like-button:active {
-            transform: scale(0.95); /* クリックした瞬間にクシュッと縮む小気味良さ */
+            transform: scale(0.95);
+            /* クリックした瞬間にクシュッと縮む小気味良さ */
         }
 
         .tab {
-            display: flex; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 8px;
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
         }
 
         .tab a {
@@ -213,11 +291,19 @@
         }
 
         .tab-active {
-            color: #ffffff; font-weight: bold; text-decoration: none; padding: 6px 16px; background: rgba(255, 255, 255, 0.15); border-radius: 20px;
+            color: #ffffff;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 6px 16px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
         }
 
         .tab-inactive {
-            color: rgba(255, 255, 255, 0.6); text-decoration: none; padding: 6px 16px; transition: all 0.2s;
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            padding: 6px 16px;
+            transition: all 0.2s;
         }
 
         .tab-inactive:hover {
@@ -231,104 +317,129 @@
         }
 
         .post-content-container .whole-text-anchor {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
         }
 
         .post-content-text {
-            position: relative; z-index: 2; pointer-events: none; margin: 0 0 15px 0;
+            position: relative;
+            z-index: 2;
+            pointer-events: none;
+            margin: 0 0 15px 0;
         }
 
         .hashtag-text {
-            color: #38bdf8; text-decoration: none; font-weight: bold; pointer-events: auto;
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: bold;
+            pointer-events: auto;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h2>💬 SNS タイムライン</h2>
-
-        <div class="search-box">
-            <form th:action="@{/posts}" method="get">
-                <input type="text" name="keyword" th:value="${keyword}" placeholder="投稿を検索...">
-                <button type="submit">
-                    🔍 検索
-                </button>
-
-                <a th:if="${keyword != null && !keyword.isEmpty()}" th:href="@{/posts}">
-                    ❌
-                </a>
-            </form>
-
-            <div class="tab">
-                <a th:href="@{/posts}"
-                    th:class="${currentTab == 'all' || currentTab == null}
-                        ? 'tab-active' 
-                        : 'tab-inactive'">
+        <div class="main-content">
+            <h2>💬 SNS タイムライン</h2>
+    
+            <div class="search-box">
+                <form th:action="@{/posts}" method="get">
+                    <input type="text" name="keyword" th:value="${keyword}" placeholder="投稿を検索...">
+                    <button type="submit">
+                        🔍 検索
+                    </button>
+    
+                    <a th:if="${keyword != null && !keyword.isEmpty()}" th:href="@{/posts}">
+                        ❌
+                    </a>
+                </form>
+    
+                <div class="tab">
+                    <a th:href="@{/posts}" th:class="${currentTab == 'all' || currentTab == null}
+                            ? 'tab-active' 
+                            : 'tab-inactive'">
                         🌐 すべての投稿
-                </a>
-
-                <a th:href="@{/posts/following}"
-                    th:class="${currentTab == 'following'}
-                        ? 'tab-active'
-                        : 'tab-inactive'">
-                    🤝 フォロー中
-                </a>
+                    </a>
+    
+                    <a th:href="@{/posts/following}" th:class="${currentTab == 'following'}
+                            ? 'tab-active'
+                            : 'tab-inactive'">
+                        🤝 フォロー中
+                    </a>
+                </div>
             </div>
-        </div>
-
-        <div class="nav-links">
-            <a th:href="@{/posts/new}">➕ 新しい文章を投稿する</a>
-            <a th:href="@{/users}">👤 ユーザー一覧</a>
-        </div>
-
-        <div th:if="${#lists.isEmpty(posts)}" class="empty-message">
-            <p>まだ投稿はありません。</p>
-        </div>
-
-        <div th:each="post : ${posts}" class="post-card">
-
-            <div class="post-header">
-                <span class="user-name">
-                    <span th:text="${post.user.icon}" class="user-icon"></span>
-                    <a th:href="@{/posts/user/{id}(id=${post.user.id})}" th:text="${post.user.name}"></a>
-                </span>
-                <span class="user-id" th:text="'(ID: ' + ${post.user.id} + ')'"></span>
-
-                <span class="post-time" th:text="${#temporals.format(post.createdAt, 'yyyy/MM/dd（E）HH:mm:ss')}">
-                </span>
+    
+            <div class="nav-links">
+                <a th:href="@{/posts/new}">➕ 新しい文章を投稿する</a>
+                <a th:href="@{/users}">👤 ユーザー一覧</a>
             </div>
-
-            <div class="post-content-container">
-                <a th:href="@{/posts/{id}(id=${post.id})}" class="whole-text-anchor"></a>
-
-                <p class="post-content-text">
-                    <span th:text="${post.content}"></span>
-                </p>
+    
+            <div th:if="${#lists.isEmpty(posts)}" class="empty-message">
+                <p>まだ投稿はありません。</p>
             </div>
-
-            <div class="post-actions">
-                <form th:action="@{/posts/{id}/like(id=${post.id})}" method="post">
-                    <button type="submit" class="like-button">
-                        ❤️ <span th:text="${post.likes}">0</span>
+    
+            <div th:each="post : ${posts}" class="post-card">
+    
+                <div class="post-header">
+                    <span class="user-name">
+                        <span th:text="${post.user.icon}" class="user-icon"></span>
+                        <a th:href="@{/posts/user/{id}(id=${post.user.id})}" th:text="${post.user.name}"></a>
+                    </span>
+                    <span class="user-id" th:text="'(ID: ' + ${post.user.id} + ')'"></span>
+    
+                    <span class="post-time" th:text="${#temporals.format(post.createdAt, 'yyyy/MM/dd（E）HH:mm:ss')}">
+                    </span>
+                </div>
+    
+                <div class="post-content-container">
+                    <a th:href="@{/posts/{id}(id=${post.id})}" class="whole-text-anchor"></a>
+    
+                    <p class="post-content-text">
+                        <span th:text="${post.content}"></span>
+                    </p>
+                </div>
+    
+                <div class="post-actions">
+                    <form th:action="@{/posts/{id}/like(id=${post.id})}" method="post">
+                        <button type="submit" class="like-button">
+                            ❤️ <span th:text="${post.likes}">0</span>
+                        </button>
+                    </form>
+                </div>
+    
+                <form th:action="@{/posts/{id}/delete(id=${post.id})}" method="post" style="margin: 0;">
+                    <button type="submit" class="delete-btn" onclick="return confirm('本当にこの投稿を削除しますか？')">
+                        🗑️ 削除
                     </button>
                 </form>
             </div>
+        </div>
 
-            <form th:action="@{/posts/{id}/delete(id=${post.id})}" method="post" style="margin: 0;">
-                <button type="submit" class="delete-btn" onclick="return confirm('本当にこの投稿を削除しますか？')">
-                    🗑️ 削除
-                </button>
-            </form>
+        <div class="sidebar">
+            <div class="trend-card">
+                <h3 class="trend-title">⚡ いまのトレンド</h3>
+
+                <p th:if="${#lists.isEmpty(trends)}" class="no-trends">
+                    まだトレンドはありません。
+                </p>
+
+                <div th:each="t : ${trends}" class="trend-item">
+                    <a href="@{/tags/{tagName}(tagName=${t.name})}" class="trend-link" th:text="'#' + ${t.name}"></a>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             // 1. 本文テキストが入っている <a> タグをすべて取得
             const postElements = document.querySelectorAll('.post-content-text span');
 
-            postElements.forEach(function(element) {
+            postElements.forEach(function (element) {
                 const text = element.textContent;
                 const hashtagRegex = /[#＃][A-Za-z0-9ぁ-んァ-ヶ一-龠ー_]+/g;
 
@@ -337,7 +448,7 @@
 
                 // #タグ の部分だけ <a> タグに置き換える
                 // 「pointer-events: auto;」をつけることで、親の「none」を無視してクリック可能にする
-                element.innerHTML = text.replace(hashtagRegex, function(match) {
+                element.innerHTML = text.replace(hashtagRegex, function (match) {
                     const tagName = match.substring(1).toLowerCase();
                     return `<a href="/tags/${tagName}" class="hashtag-text">${match}</a>`;
                 });
