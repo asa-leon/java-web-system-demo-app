@@ -19,10 +19,8 @@
         .container {
             width: 100%;
             max-width: 900px;
-            /* 600px から 900px に拡張 */
             display: flex;
             gap: 30px;
-            /* メインとサイドバーの隙間 */
         }
 
         .main-content {
@@ -44,7 +42,6 @@
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
             position: sticky;
             top: 20px;
-            /* スクロールしても画面についてくるように */
         }
 
         .trend-title {
@@ -79,7 +76,9 @@
         }
 
         .no-trends {
-            color: #9ca3af; font-size: 0.85rem; margin: 0;
+            color: #9ca3af;
+            font-size: 0.85rem;
+            margin: 0;
         }
 
         h2 {
@@ -91,7 +90,6 @@
             gap: 10px;
         }
 
-        /* nav */
         .nav-links {
             margin-bottom: 20px;
         }
@@ -108,7 +106,6 @@
             text-decoration: underline;
         }
 
-        /* post card (alike glass-morphism) */
         .post-card {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(8px);
@@ -157,21 +154,6 @@
             margin-left: auto;
         }
 
-        .post-content {
-            color: #e5e7eb;
-            font-size: 1.05rem;
-            line-height: 1.5;
-            margin: 0 0 15px 0;
-            word-wrap: break-word;
-        }
-
-        .post-content a {
-            color: #e5e7eb;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        /* delete button */
         .delete-btn {
             color: #fca5a5;
             background: transparent;
@@ -179,7 +161,7 @@
             padding: 6px 12px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 0, 85rem;
+            font-size: 0.85rem;
             transition: all 0.2s;
         }
 
@@ -189,14 +171,12 @@
             color: #ffffff;
         }
 
-        /* empty-message */
         .empty-message {
             color: #9ca3af;
             text-align: center;
             padding: 40px 0;
         }
 
-        /* search */
         .search-box {
             margin-bottom: 20px;
         }
@@ -239,17 +219,18 @@
             line-height: 1.2;
         }
 
-        /* likes */
+        /* ==========================================
+           ✨ アクションエリア（❤️と★の横並び設定）
+           ========================================== */
         .post-actions {
             display: flex;
             justify-content: flex-end;
+            align-items: center;
+            gap: 12px;
             margin-top: 12px;
         }
 
-        .post-actions form {
-            margin: 0;
-        }
-
+        /* ❤️ 感情いいねボタンの共通デザイン */
         .like-button {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -265,17 +246,55 @@
             transition: all 0.2s ease;
         }
 
+        .like-button.liked {
+            color: #ff6584 !important;
+            background: rgba(239, 68, 68, 0.15) !important;
+            border-color: #ff6584 !important;
+        }
+
         .like-button:hover {
             background: rgba(239, 68, 68, 0.2);
-            /* ホバーするとほんのり赤くなる */
             border-color: rgba(239, 68, 68, 0.4);
             transform: scale(1.05);
-            /* ほんの少し大きく */
         }
 
         .like-button:active {
             transform: scale(0.95);
-            /* クリックした瞬間にクシュッと縮む小気味良さ */
+        }
+
+        /* ★ 国家投票ボタンの共通デザイン */
+        .vote-button {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            color: #88a0c0;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .vote-button:hover {
+            background: rgba(255, 215, 0, 0.15);
+            border-color: rgba(255, 215, 0, 0.4);
+            color: #ffffff;
+            transform: scale(1.05);
+        }
+
+        .vote-button:active {
+            transform: scale(0.95);
+        }
+
+        /* 💡 投票済（voted）の時のゴールド発光デザイン */
+        .vote-button.voted {
+            color: #ffd700 !important;
+            background: rgba(255, 215, 0, 0.2) !important;
+            border-color: #ffd700 !important;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
         }
 
         .tab {
@@ -345,72 +364,67 @@
     <div class="container">
         <div class="main-content">
             <h2>💬 SNS タイムライン</h2>
-    
+
             <div class="search-box">
                 <form th:action="@{/posts}" method="get">
                     <input type="text" name="keyword" th:value="${keyword}" placeholder="投稿を検索...">
-                    <button type="submit">
-                        🔍 検索
-                    </button>
-    
-                    <a th:if="${keyword != null && !keyword.isEmpty()}" th:href="@{/posts}">
-                        ❌
-                    </a>
+                    <button type="submit">🔍 検索</button>
+                    <a th:if="${keyword != null && !keyword.isEmpty()}" th:href="@{/posts}">❌</a>
                 </form>
-    
+
                 <div class="tab">
-                    <a th:href="@{/posts}" th:class="${currentTab == 'all' || currentTab == null}
-                            ? 'tab-active' 
-                            : 'tab-inactive'">
+                    <a th:href="@{/posts}"
+                        th:class="${currentTab == 'all' || currentTab == null} ? 'tab-active' : 'tab-inactive'">
                         🌐 すべての投稿
                     </a>
-    
-                    <a th:href="@{/posts/following}" th:class="${currentTab == 'following'}
-                            ? 'tab-active'
-                            : 'tab-inactive'">
+                    <a th:href="@{/posts/following}"
+                        th:class="${currentTab == 'following'} ? 'tab-active' : 'tab-inactive'">
                         🤝 フォロー中
                     </a>
                 </div>
             </div>
-    
+
             <div class="nav-links">
                 <a th:href="@{/posts/new}">➕ 新しい文章を投稿する</a>
                 <a th:href="@{/users}">👤 ユーザー一覧</a>
             </div>
-    
+
             <div th:if="${#lists.isEmpty(posts)}" class="empty-message">
                 <p>まだ投稿はありません。</p>
             </div>
-    
+
             <div th:each="post : ${posts}" class="post-card">
-    
                 <div class="post-header">
                     <span class="user-name">
                         <span th:text="${post.user.icon}" class="user-icon"></span>
                         <a th:href="@{/posts/user/{id}(id=${post.user.id})}" th:text="${post.user.name}"></a>
                     </span>
                     <span class="user-id" th:text="'(ID: ' + ${post.user.id} + ')'"></span>
-    
-                    <span class="post-time" th:text="${#temporals.format(post.createdAt, 'yyyy/MM/dd（E）HH:mm:ss')}">
-                    </span>
+                    <span class="post-time"
+                        th:text="${#temporals.format(post.createdAt, 'yyyy/MM/dd（E）HH:mm:ss')}"></span>
                 </div>
-    
+
                 <div class="post-content-container">
                     <a th:href="@{/posts/{id}(id=${post.id})}" class="whole-text-anchor"></a>
-    
                     <p class="post-content-text">
                         <span th:text="${post.content}"></span>
                     </p>
                 </div>
-    
+
                 <div class="post-actions">
-                    <form th:action="@{/posts/{id}/like(id=${post.id})}" method="post">
-                        <button type="submit" class="like-button">
-                            ❤️ <span th:text="${post.likes}">0</span>
-                        </button>
-                    </form>
+                    <button type="button" class="like-button async-like-btn" th:data-post-id="${post.id}"
+                        th:classappend="${post.likedByMe} ? 'liked' : ''">
+                        <span class=" like-icon" th:text="${post.likedByMe} ? '❤️' : '🖤'">🖤</span>
+                        <span class="like-count" th:text="${post.likeCount}">0</span>
+                    </button>
+
+                    <button type="button" class="vote-button" th:data-post-id="${post.id}"
+                        th:classappend="${post.votedByMe} ? 'voted' : ''">
+                        <span class="vote-icon" th:text="${post.votedByMe} ? '★' : '☆'">☆</span>
+                        <span class="vote-count" th:text="${post.voteCount}">0</span>
+                    </button>
                 </div>
-    
+
                 <form th:action="@{/posts/{id}/delete(id=${post.id})}" method="post" style="margin: 0;">
                     <button type="submit" class="delete-btn" onclick="return confirm('本当にこの投稿を削除しますか？')">
                         🗑️ 削除
@@ -422,13 +436,9 @@
         <div class="sidebar">
             <div class="trend-card">
                 <h3 class="trend-title">⚡ いまのトレンド</h3>
-
-                <p th:if="${#lists.isEmpty(trends)}" class="no-trends">
-                    まだトレンドはありません。
-                </p>
-
+                <p th:if="${#lists.isEmpty(trends)}" class="no-trends">まだトレンドはありません。</p>
                 <div th:each="t : ${trends}" class="trend-item">
-                    <a href="@{/tags/{tagName}(tagName=${t.name})}" class="trend-link" th:text="'#' + ${t.name}"></a>
+                    <a th:href="@{/tags/{tagName}(tagName=${t.name})}" class="trend-link" th:text="'#' + ${t.name}"></a>
                 </div>
             </div>
         </div>
@@ -436,21 +446,95 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // 1. 本文テキストが入っている <a> タグをすべて取得
+            // 1. ハッシュタグ自動リンク処理
             const postElements = document.querySelectorAll('.post-content-text span');
-
             postElements.forEach(function (element) {
                 const text = element.textContent;
                 const hashtagRegex = /[#＃][A-Za-z0-9ぁ-んァ-ヶ一-龠ー_]+/g;
-
-                // 文中にハッシュタグが含まれていない場合は何もしない
                 if (!hashtagRegex.test(text)) return;
 
-                // #タグ の部分だけ <a> タグに置き換える
-                // 「pointer-events: auto;」をつけることで、親の「none」を無視してクリック可能にする
                 element.innerHTML = text.replace(hashtagRegex, function (match) {
                     const tagName = match.substring(1).toLowerCase();
                     return `<a href="/tags/${tagName}" class="hashtag-text">${match}</a>`;
+                });
+            });
+
+            // ======================
+            // ❤️ いいねボタンの非同期処理
+            // ======================
+            document.querySelectorAll('.async-like-btn').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    const btn = e.currentTarget;
+                    const postId = btn.getAttribute('data-post-id');
+                    btn.disabled = true;
+
+                    try {
+                        // 新設した LikeApiController を叩く
+                        const response = await fetch(`/api/posts/${postId}/like`, {
+                            method: 'POST'
+                        });
+
+                        if (response.ok) {
+                            const result = await response.json(); // { likes: X, liked: true/false }
+
+                            const countSpan = btn.querySelector('.like-count');
+                            const iconSpan = btn.querySelector('.like-icon');
+
+                            // 数字を最近に書き換え
+                            countSpan.textContent = result.likes;
+
+                            // 状態に応じてハートとクラスをトグル
+                            if (result.liked) {
+                                iconSpan.textContent = '❤️';
+                                btn.classList.add('liked');
+                            } else {
+                                iconSpan.textContent = '🖤';
+                                btn.classList.remove('liked');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('いいねの非同期通信に失敗しました:', error);
+                    } finally {
+                        btn.disabled = false;
+                    }
+                });
+            });
+
+            // =====================
+            // ★ Voteボタンの非同期処理
+            // =====================
+            document.querySelectorAll('.vote-button').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    const btn = e.currentTarget;
+                    const postId = btn.getAttribute('data-post-id');
+                    btn.disabled = true;
+
+                    try {
+                        const response = await fetch(`/api/posts/${postId}/vote`, {
+                            method: 'POST'
+                        });
+
+                        // 💡 タイポ(response.oke)を「response.ok」に修正
+                        if (response.ok) {
+                            const result = await response.json();
+                            const icon = btn.querySelector('.vote-icon');
+                            const countSpan = btn.querySelector('.vote-count');
+
+                            countSpan.textContent = result.voteCount;
+
+                            if (result.voted) {
+                                icon.textContent = '★';
+                                btn.classList.add('voted');
+                            } else {
+                                icon.textContent = '☆';
+                                btn.classList.remove('voted');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Voteの非同期通信に失敗しました:', error);
+                    } finally {
+                        btn.disabled = false;
+                    }
                 });
             });
         });

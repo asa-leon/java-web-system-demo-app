@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.repository.LikeRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +26,7 @@ import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.TagRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.repository.VoteRepository;
 
 //import org.springframework.data.jpa.domain.Specification;
 //import org.springframework.data.domain.Sort;
@@ -37,17 +39,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequiredArgsConstructor // これを書くことでconstructor(this.xx = xx)を書かなくて済む
 public class PostController {
 
+    private final LikeRepository likeRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final TagRepository tagRepository;
+
+    //Vote-1: レポジトリをインジェクションしておく
+    private final VoteRepository voteRepository;
 
     // 投稿一覧を表示する窓口
     @GetMapping("/posts")
     public String postList(@RequestParam(name = "keyword", required = false) String keyword, Model model) {
 
         List<Post> posts;
-
 
         if (keyword != null && !keyword.trim().isEmpty()) {
             posts = postRepository.findByContentContainingIgnoreCaseOrderByCreatedAtDesc(keyword);
@@ -57,8 +62,34 @@ public class PostController {
             posts = postRepository.findAllByOrderByCreatedAtDesc();
         }
 
+        //Vote-2: 各投稿にVote数と自分がVoteしたかの情報を付与する
+        // ログインユーザー（仮にID:2）を取得
+        User currentUser = userRepository.findById(2L).orElse(null);
+
+        for (Post post : posts) {
+
+            // 1-1. 総いいね数をカウントしてセット
+            post.setLikeCount(likeRepository.countByPost(post));
+
+            // 1-2. ログイン中の場合、自分がいいねしたかを判定してセット
+            if (currentUser != null) {
+                post.setLikedByMe(likeRepository.existsByUserAndPost(currentUser, post));
+            } else {
+                post.setLikedByMe(false); // 念のためユーザーがいない場合は一律false
+            }
+
+            // 総Vote数をカウントしてセット
+            post.setVoteCount(voteRepository.countByPost(post));
+
+            // ログイン中の場合、自分がVoteしたかを判定してセット
+            if (currentUser != null) {
+                post.setVotedByMe(voteRepository.existsByUserAndPost(currentUser, post));
+            } else {
+                post.setVotedByMe(false); // 念のためユーザーがいない場合は一律false
+            }
+        }
+
         model.addAttribute("posts", posts);
-        model.addAttribute("currentTab", "all");
         
         /* ドット繋ぎで書く場合のコード
         // 1.最新順（降順）ソートの条件を用意
@@ -75,6 +106,9 @@ public class PostController {
         model.addAttribute("posts", posts);
         model.addAttribute("keyword", keyword);
          */
+
+        // 現在のタブの初期値をallにしておく
+        model.addAttribute("currentTab", "all");
 
         // トレンド上位5件を画面に渡す
         model.addAttribute("trends", tagRepository.findTop5Trends());
@@ -191,35 +225,6 @@ public class PostController {
 
         model.addAttribute("posts", posts);
         return "user_post_list";
-    }
-    
-    // いいね！ボタンを押したときの処理
-    @PostMapping("/posts/{id}/like")
-    public String likePost(
-        @PathVariable("id") Long id,
-        @RequestHeader(value = "Referer", required = false) String referer) {// どこからアクセスされたかのURLを受け取る
-
-        // 1. いいねされた投稿をIDで探す（見つからなければエラー）
-        Post post = postRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Invalid post Id:" + id));
-
-        // 2. いいね数を+1する（エンティティ内のメソッドを呼び出す）
-        post.incrementLikes();
-
-        // 3. 状態が変わったらオブジェクトを上書き保存する（JPAのUpdate機能）
-        postRepository.save(post);
-
-        // 4. 戻り先を動的に判定する
-        if (referer != null) {
-            // 例："http://localhost:8000/posts/user/2"が来たら、
-            // ドメイン部分を削って "redirect:/posts/user/2" に修正する
-            String redirectPath = referer.replaceFirst("^https?://[^/]+", "");
-
-            return "redirect:" + redirectPath;
-        }
-
-        // 万が一、遷移元URLが取れなかった時の安全網（デフォルトはタイムライン）
-        return "redirect:/posts";
     }
 
     // フォローしているユーザーの投稿だけを表示するタイムライン

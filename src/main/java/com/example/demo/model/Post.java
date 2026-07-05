@@ -16,11 +16,16 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "posts")
+@Getter
+@Setter
 public class Post {
     
     @Id
@@ -45,8 +50,12 @@ public class Post {
         this.createdAt = java.time.LocalDateTime.now();
     }
 
-    // いいね数を保存するフィールド（初期値は0）
-    private int likes = 0;
+    // データベースのカラムではなく、画面表示時に対象ユーザーに応じて動的に詰めるフィールドを利用
+    @Transient
+    private long likeCount; // 総いいね数
+
+    @Transient
+    private boolean likedByMe; // 自分がいいねしているか
 
     // 1つの投稿に対する複数のコメント（一対多）
     // cascade = CascadeType.ALL にすることで、投稿が削除されたらそのコメントも自動で全削除される
@@ -63,36 +72,10 @@ public class Post {
     )
     private List<Tag> tags = new ArrayList<>();
 
-    // --- ゲッターとセッター ---
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // Vote（いいね）を一時的に取り扱う為の記述
+    @Transient // DBのカラムには作らない、画面表示用の一時的なフィールド
+    private long voteCount;
 
-    public String getContent() { return content; }
-    public void setContent(String content) { this.content = content; }
-
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
-
-    public java.time.LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-    public void setCreatedAt(java.time.LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public int getLikes() {
-        return likes;
-    }
-    public void setLikes(int likes) {
-        this.likes = likes;
-    }
-    public void incrementLikes() {
-        this.likes++;
-    }
-
-    public List<Comment> getComments() { return comments; }
-    public void setComments(List<Comment> comments) { this.comments = comments; }
-
-    public List<Tag> getTags() { return tags; }
-    public void setTags(List<Tag> tags) { this.tags = tags; }
+    @Transient // 現在ログインしているユーザーが、この投稿を「いいね」しているかどうかのフラグ
+    private boolean votedByMe;
 }
