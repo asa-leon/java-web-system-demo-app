@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>通知一覧</title>
+    <style>
+        body {
+            background-color: #001a41;
+            color: #f3f4f6;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h2 {
+            color: #ffffff;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links {
+            margin-bottom: 20px;
+        }
+
+        .nav-links a {
+            color: #38bdf8;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #7dd3fc;
+            text-decoration: underline;
+        }
+
+        .notification-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.2s;
+        }
+
+        .notification-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .notification-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .notification-body {
+            flex: 1;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .sender-name {
+            color: #60a5fa;
+            font-weight: bold;
+        }
+
+        .post-preview {
+            display: block;
+            margin-top: 4px;
+            color: #9ca3af;
+            font-size: 0.85rem;
+            text-decoration: none;
+            font-style: italic;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .post-preview:hover {
+            color: #38bdf8;
+            text-decoration: underline;
+        }
+
+        .notification-time {
+            color: #9ca3af;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .empty-message {
+            color: #9ca3af;
+            text-align: center;
+            padding: 40px 0;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <h2>🔔 通知一覧</h2>
+
+        <div class="nav-links">
+            <a th:href="@{/posts}">🏠 タイムラインに戻る</a>
+        </div>
+
+        <!-- 通知が空の場合 -->
+         <div th:if="${#lists.isEmpty(notifications)}" class="empty-message">
+            <p>まだ通知はありません。</p>
+         </div>
+
+        <!-- 通知ループ処理 -->
+        <div th:each="n : ${notifications}" class="notification-card">
+            <!-- タイプ別のアイコン表示 -->
+             <div class="notification-icon">
+                <span th:if="${n.type.name() == 'LIKE'}">❤️</span>
+                <span th:if="${n.type.name() == 'VOTE'}">🏛️</span>
+            </div>
+
+            <div class="notification-body">
+                <!-- 送信者（アクションした人）の名前 -->
+                 <span class="sender-name" th:text="${n.sender.icon} + ' ' + ${n.sender.name}"></span> さんが、
+
+                <!-- タイプ別のテキスト切り替え -->
+				<span th:if="${n.type.name() == 'LIKE'}">あなたの投稿に「いいね」しました。</span>
+				<span th:if="${n.type.name() == 'VOTE'}">あなたの提出法案に「投票」しました。</span>
+
+				<!-- 対象の投稿へのリンク（内容の一部をプレビュー） -->
+				<a th:href="@{/posts/{id}(id=${n.post.id})}" class="post-preview" th:text="'「' + ${n.post.content} + '」'"></a>
+            </div>
+
+			<div class="notification-time" th:text="${#temporals.format(n.createdAt, 'MM/dd（E）HH:mm')}"></div>
+        </div>
+    </div>
+</body>
+</html>

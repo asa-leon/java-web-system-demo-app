@@ -12,4 +12,7 @@ public interface NotificationsRepository extends JpaRepository<Notification, Lon
 
     // 特定のユーザーの「未読（isRead = false」の通知数をカウントする（ヘッダーバッヂ用）
     long countByReceiverAndIsReadFalse(User receiver);
+
+    // 自分（Receiver）宛の通知をIDの降順（新しい順）で全件取得する
+    List<Notification> findByReceiverOrderByIdDesc(User receiver);
 }
