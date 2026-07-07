@@ -297,6 +297,26 @@
             text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
         }
 
+        .own-post-btn {
+            cursor: default !important;
+        }
+
+        .vote-button:disabled {
+            opacity: 0.5;
+            /* ボタンを半透明にする */
+            cursor: not-allowed;
+            /* マウスカーソルを禁止マークにする */
+            transform: none !important;
+            /* ホバー時の拡大アニメーションを無効化 */
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .vote-button:disabled:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            /* ホバーしても枠線の色を変えない */
+            color: inherit;
+        }
+
         .tab {
             display: flex;
             gap: 12px;
@@ -357,6 +377,50 @@
             font-weight: bold;
             pointer-events: auto;
         }
+
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+        }
+
+        .toast-body {
+            background: rgba(239, 68, 68, 0.95);
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            margin-bottom: 10px;
+            animation: fadeIn 0.3s ease, fadeOut 0.3s ease 2.2s forwards;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 
@@ -412,14 +476,14 @@
                 </div>
 
                 <div class="post-actions">
-                    <button type="button" class="like-button async-like-btn" th:data-post-id="${post.id}"
+                    <button type="button" class="like-button" th:data-post-id="${post.id}"
                         th:classappend="${post.likedByMe} ? 'liked' : ''">
-                        <span class=" like-icon" th:text="${post.likedByMe} ? '❤️' : '🖤'">🖤</span>
+                        <span class="like-icon" th:text="${post.likedByMe} ? '❤️' : '🖤'">🖤</span>
                         <span class="like-count" th:text="${post.likeCount}">0</span>
                     </button>
 
                     <button type="button" class="vote-button" th:data-post-id="${post.id}"
-                        th:classappend="${post.votedByMe} ? 'voted' : ''">
+                        th:data-is-own="${post.user.id == 2}" th:classappend="${post.votedByMe} ? 'voted' : ''">
                         <span class="vote-icon" th:text="${post.votedByMe} ? '★' : '☆'">☆</span>
                         <span class="vote-count" th:text="${post.voteCount}">0</span>
                     </button>
@@ -444,8 +508,25 @@
         </div>
     </div>
 
+    <div id="toast-container"></div>
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+
+            // =====================
+            // ★ Voteボタンの制御
+            // =====================
+            function showWarningToast(message) {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.classList.add('toast-body');
+                toast.textContent = message;
+                container.appendChild(toast);
+                setTimeout(() => toast.remove(), 2500);
+            }
+
+            document.querySelectorAll('[data-is-own="true"]').forEach(btn => btn.classList.add('own-post-btn'));
+
             // 1. ハッシュタグ自動リンク処理
             const postElements = document.querySelectorAll('.post-content-text span');
             postElements.forEach(function (element) {
@@ -462,7 +543,7 @@
             // ======================
             // ❤️ いいねボタンの非同期処理
             // ======================
-            document.querySelectorAll('.async-like-btn').forEach(button => {
+            document.querySelectorAll('.like-button').forEach(button => {
                 button.addEventListener('click', async (e) => {
                     const btn = e.currentTarget;
                     const postId = btn.getAttribute('data-post-id');
@@ -506,6 +587,13 @@
             document.querySelectorAll('.vote-button').forEach(button => {
                 button.addEventListener('click', async (e) => {
                     const btn = e.currentTarget;
+
+                    // 自分の投稿なら通信させずにトーストを出して終了
+                    if (btn.getAttribute('data-is-own') === 'true') {
+                        showWarningToast('🏛️ 自身の提出法案に「投票」することはできません');
+                        return;
+                    }
+
                     const postId = btn.getAttribute('data-post-id');
                     btn.disabled = true;
 
@@ -514,7 +602,6 @@
                             method: 'POST'
                         });
 
-                        // 💡 タイポ(response.oke)を「response.ok」に修正
                         if (response.ok) {
                             const result = await response.json();
                             const icon = btn.querySelector('.vote-icon');
@@ -537,6 +624,7 @@
                     }
                 });
             });
+
         });
     </script>
 </body>
