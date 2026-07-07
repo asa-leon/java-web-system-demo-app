@@ -90,22 +90,6 @@
             gap: 10px;
         }
 
-        .nav-links {
-            margin-bottom: 20px;
-        }
-
-        .nav-links a {
-            color: #38bdf8;
-            text-decoration: none;
-            font-size: 0.95rem;
-            transition: color 0.2s;
-        }
-
-        .nav-links a:hover {
-            color: #7dd3fc;
-            text-decoration: underline;
-        }
-
         .post-card {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(8px);
@@ -429,6 +413,8 @@
         <div class="main-content">
             <h2>💬 SNS タイムライン</h2>
 
+            <div th:replace="~{header :: common-header(~{})}"></div>
+
             <div class="search-box">
                 <form th:action="@{/posts}" method="get">
                     <input type="text" name="keyword" th:value="${keyword}" placeholder="投稿を検索...">
@@ -446,11 +432,6 @@
                         🤝 フォロー中
                     </a>
                 </div>
-            </div>
-
-            <div class="nav-links">
-                <a th:href="@{/posts/new}">➕ 新しい文章を投稿する</a>
-                <a th:href="@{/users}">👤 ユーザー一覧</a>
             </div>
 
             <div th:if="${#lists.isEmpty(posts)}" class="empty-message">

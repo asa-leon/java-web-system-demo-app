@@ -28,22 +28,6 @@
             gap: 10px;
         }
 
-        .nav-links {
-            margin-bottom: 20px;
-        }
-
-        .nav-links a {
-            color: #38bdf8;
-            text-decoration: none;
-            font-size: 0.95rem;
-            transition: color 0.2s;
-        }
-
-        .nav-links a:hover {
-            color: #7dd3fc;
-            text-decoration: underline;
-        }
-
         .notification-card {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(8px);
@@ -113,9 +97,7 @@
     <div class="container">
         <h2>🔔 通知一覧</h2>
 
-        <div class="nav-links">
-            <a th:href="@{/posts}">🏠 タイムラインに戻る</a>
-        </div>
+        <div th:replace="~{header :: common-header(~{})}"></div>
 
         <!-- 通知が空の場合 -->
          <div th:if="${#lists.isEmpty(notifications)}" class="empty-message">

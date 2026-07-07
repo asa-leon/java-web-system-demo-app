@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns="http://www.thymeleaf.org">
+
+
+
+<!-- th:fragment でこの部分に「common-header」という名前の部品マークをつける -->
+<div th:fragment="common-header(extraLinks)" class="common-header">
+	
+	<style>
+		.common-header {
+			width: 100%;
+			margin-bottom: 24px;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+			padding-bottom: 12px;
+		}
+
+		.header-wrapper {
+			display: flex;
+			gap: 20px;
+			align-items: center;
+		}
+
+		.nav-links {
+			color: #38bdf8;
+			text-decoration: none;
+		}
+
+		.nav-links:first-child {
+			font-weight: bold;
+		}
+
+		.nav-links.notification {
+			display: flex; align-items: center; gap: 4px;
+		}
+
+		.nav-links.notification span {
+			background: #ef4444;
+			color: white;
+			font-size: 0.75rem;
+			font-weight: bold;
+			padding: 2px 6px;
+			border-radius: 10px;
+			line-height: 1;
+		}
+	</style>
+
+	<div class="header-wrapper">
+		<a th:href="@{/posts}" class="nav-links">🏠 タイムライン</a>
+		<a th:href="@{/posts/new}" class="nav-links">➕ 新規投稿</a>
+		<a th:href="@{/users}" class="nav-links">👤 ユーザー一覧</a>
+
+		<!-- 通知リンク（未読数がある時だけ🔴バッヂを表示） -->
+		<a th:href="@{/notifications}" class="nav-links notification">
+			🔔 通知
+			<span th:if="${unreadCount > 0}" th:text="${unreadCount}">
+				0
+			</span>
+		</a>
+
+		<!-- 特定のファイルでリンクを追加したい場合に備え、ここに呼び出し側から渡された追加のリンクが自動で入る -->
+		<th:block th:replace="${extraLinks}"></th:block>
+	</div>
+</div>
+
+</html>

@@ -27,23 +27,6 @@
             margin-bottom: 8px;
         }
 
-        /* 🔗 戻るナビゲーション */
-        .nav-back {
-            margin-bottom: 24px;
-        }
-
-        .nav-back a {
-            color: #3b82f6;
-            text-decoration: none;
-            font-size: 0.95rem;
-            transition: color 0.2s;
-        }
-
-        .nav-back a:hover {
-            color: #60a5fa;
-            text-decoration: underline;
-        }
-
         /* ✨ ガラスモルフィズムの投稿カード */
         .post-card {
             background: rgba(255, 255, 255, 0.06);
@@ -192,9 +175,7 @@
             </form>
         </div>
         
-        <div class="nav-back">
-            <a th:href="@{/posts}">➔ 🌍 全体のタイムラインに戻る</a>
-        </div>
+        <div th:replace="~{header :: common-header(~{})}"></div>
 
         <div th:each="post : ${posts}" class="post-card">
             <div class="post-meta">
@@ -209,7 +190,7 @@
             <div class="post-actions">
                 <form th:action="@{/posts/{id}/like(id=${post.id})}" method="post">
                     <button type="submit" class="like-button">
-                        ❤️ <span th:text="${post.likes}">0</span>
+                        ❤️ <span th:text="${post.likeCount}">0</span>
                     </button>
                 </form>
             </div>

@@ -27,9 +27,19 @@ public class NotificationController {
         User currentUser = userRepository.findById(2L)
             .orElseThrow(() -> new IllegalStateException("User not found"));
 
-        // 自分（Receiver）宛の通知をIDの降順（新しい順）で全件取得
+        // 1. 自分（Receiver）宛の通知をIDの降順（新しい順）で全件取得
         List<Notification> notifications = notificationsRepository.findByReceiverOrderByIdDesc(currentUser);
 
+        // 2. 取得した通知の中に「未読（isReadがfalse）」の物があれば、すべて既読（true）にする
+        for (Notification n : notifications) {
+            if (!n.isRead()) { // もし未読なら
+                n.setRead(true); // 既読状態にセット
+            }
+        }
+
+        // 3. 状態を変更した通知たちをデータベースに一括で上書き保存する
+        notificationsRepository.saveAll(notifications);
+        
         model.addAttribute("notifications", notifications);
         return "notification_list";
     }
