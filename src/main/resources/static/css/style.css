@@ -1,0 +1,876 @@
+/* ==========================================
+   🌌 全体のベース（ディープインディゴ世界観）
+   ========================================== */
+body {
+    background-color: #001a41;
+    color: #f3f4f6;
+    font-family: 'Helvetica Neue', Arial, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+/* レイアウト配置用 */
+body.centered-layout {
+    align-items: center;
+}
+
+/* 📦 レイアウトコンテナ */
+.container {
+    width: 100%;
+    max-width: 600px;
+    box-sizing: border-box;
+}
+
+.container.wide-layout {
+    max-width: 900px;
+    display: flex;
+    gap: 30px;
+}
+
+.main-content {
+    flex: 1;
+    max-width: 600px;
+}
+
+/* 👤 タイトル */
+h2 {
+    color: #ffffff;
+    font-size: 1.5rem;
+    margin-top: 0;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+h3 {
+    color: #ffffff;
+    font-size: 1.2rem;
+    margin-bottom: 16px;
+}
+
+/* ✨ ガラスモルフィズム風コンテナ・カード */
+.card-container {
+    width: 100%;
+    max-width: 500px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    box-sizing: border-box;
+}
+
+.post-card {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.parent-post {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* 📋 投稿・メタヘッダー情報 */
+.post-header, .post-meta {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    margin-bottom: 14px;
+    font-size: 0.85rem;
+}
+
+.post-meta {
+    justify-content: space-between;
+    color: #9ca3af;
+}
+
+.user-name {
+    color: #60a5fa;
+    font-weight: bold;
+}
+
+.user-name a {
+    color: #e5e7eb;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.user-name a:hover {
+    color: #60a5fa;
+    text-decoration: underline;
+}
+
+.user-name .user-icon {
+    font-size: 1.2rem;
+}
+
+.user-id {
+    color: #9ca3af;
+    font-size: 0.8rem;
+}
+
+.post-time {
+    color: #9ca3af;
+    font-size: 0.8rem;
+    margin-left: auto;
+}
+
+/* 💬 投稿・コメント本文 */
+.post-content, .post-content-text {
+    color: #ffffff;
+    font-size: 1.15rem;
+    line-height: 1.6;
+    margin: 0 0 15px 0;
+    white-space: pre-wrap;
+}
+
+.post-content-container {
+    position: relative;
+}
+
+.post-content-container .whole-text-anchor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.post-content-text {
+    position: relative;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.hashtag-text {
+    color: #38bdf8;
+    text-decoration: none;
+    font-weight: bold;
+    pointer-events: auto;
+}
+
+/* 📁 フォーム全般のスタイル */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    color: #9ca3af;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+/* ⌨️ 入力フィールド */
+input[type="text"],
+input[type="email"],
+select,
+textarea {
+    width: 100%;
+    padding: 12px;
+    background-color: rgba(0, 26, 65, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 0.95rem;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+textarea {
+    resize: none;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+select:focus,
+textarea:focus {
+    border-color: #60a5fa;
+}
+
+select {
+    cursor: pointer;
+}
+
+/* 🚨 エラーメッセージ */
+.error-message {
+    color: #f87171;
+    font-size: 0.85rem;
+    margin-top: 6px;
+    margin-bottom: 0;
+    font-weight: bold;
+    display: block;
+}
+
+/* 🔵 ボタン全般 */
+.submit-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #2563eb;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    margin-top: 10px;
+}
+
+.submit-btn:hover {
+    background-color: #1d4ed8;
+}
+
+.submit-btn:active {
+    transform: scale(0.98);
+}
+
+/* 🔙 フッター・ナビリンク */
+.footer-links, .nav-back {
+    text-align: center;
+    margin-top: 24px;
+}
+
+.footer-links a, .nav-back a {
+    color: #38bdf8;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.footer-links a:hover, .nav-back a:hover {
+    color: #7dd3fc;
+    text-decoration: underline;
+}
+
+/* ==========================================
+   ✨ アクションエリア（❤️と★のインタラクション）
+   ========================================== */
+.post-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.post-actions form {
+    margin: 0;
+}
+
+/* ❤️ いいねボタン / ★ 投票ボタン 共通 */
+.like-button, .vote-button {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    color: #ffffff;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+/* ❤️ 個別スタイル */
+.like-button.liked {
+    color: #ff6584 !important;
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-color: #ff6584 !important;
+}
+
+.like-button:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.4);
+    transform: scale(1.05);
+}
+
+/* ★ 個別スタイル */
+.vote-button {
+    color: #88a0c0;
+}
+
+.vote-button:hover {
+    background: rgba(255, 215, 0, 0.15);
+    border-color: rgba(255, 215, 0, 0.4);
+    color: #ffffff;
+    transform: scale(1.05);
+}
+
+.vote-button.voted {
+    color: #ffd700 !important;
+    background: rgba(255, 215, 0, 0.2) !important;
+    border-color: #ffd700 !important;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+}
+
+.vote-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.vote-button:disabled:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    color: inherit;
+}
+
+.like-button:active, .vote-button:active {
+    transform: scale(0.95);
+}
+
+.own-post-btn {
+    cursor: default !important;
+}
+
+/* 🗑️ 削除ボタン */
+.delete-btn {
+    color: #fca5a5;
+    background: transparent;
+    border: 1px solid rgba(248, 113, 113, 0.4);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.delete-btn:hover {
+    background: rgba(248, 113, 113, 0.2);
+    border-color: #f87171;
+    color: #ffffff;
+}
+
+/* ==========================================
+   💬 各画面固有の独立パーツ
+   ========================================== */
+
+/* 1. 投稿詳細（コメントエリア） */
+.comment-section {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 20px;
+}
+
+.comment-card {
+    background: rgba(255, 255, 255, 0.03);
+    border-left: 3px solid #38bdf8;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    border-radius: 0 8px 8px 0;
+}
+
+.comment-meta {
+    display: flex;
+    gap: 8px;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+}
+
+.comment-user {
+    color: #e5e7eb;
+    font-weight: bold;
+}
+
+.comment-content {
+    color: #d1d5db;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.comment-form {
+    margin-bottom: 24px;
+}
+
+.comment-form textarea {
+    height: 80px;
+    margin-bottom: 8px;
+}
+
+.comment-form button {
+    padding: 8px 16px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.comment-form button:hover {
+    background: #1d4ed8;
+}
+
+.no-comment, .empty-message {
+    color: #9ca3af;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.empty-message {
+    padding: 40px 0;
+}
+
+/* 2. 新規投稿（タグヘルパー） */
+.tags {
+    margin-top: 12px;
+}
+
+.tag-guide {
+    display: block;
+    color: #9ca3af;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+}
+
+.tag-helper-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    color: #38bdf8;
+    padding: 5px 14px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* 3. タイムライン（サイドバー・検索・タブ） */
+.sidebar {
+    width: 260px;
+    flex-shrink: 0;
+}
+
+.trend-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    position: sticky;
+    top: 20px;
+}
+
+.trend-title {
+    color: #ffffff;
+    font-size: 1.1rem;
+    margin-top: 0;
+    margin-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 8px;
+}
+
+.trend-item {
+    margin-bottom: 14px;
+}
+
+.trend-item:last-child {
+    margin-bottom: 0;
+}
+
+.trend-link {
+    color: #38bdf8;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.95rem;
+    display: block;
+    transition: color 0.2s;
+}
+
+.trend-link:hover {
+    color: #7dd3fc;
+    text-decoration: underline;
+}
+
+.no-trends {
+    color: #9ca3af;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.search-box {
+    margin-bottom: 20px;
+}
+
+.search-box form {
+    display: flex;
+    gap: 8px;
+}
+
+.search-box form button[type="submit"] {
+    width: 20%;
+    padding: 10px 16px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.search-box form a {
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #e5e7eb;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.95rem;
+    line-height: 1.2;
+}
+
+.tab {
+    display: flex;
+    gap: 12px;
+    margin-block: 12px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 8px;
+}
+
+.tab a {
+    font-size: 0.95rem;
+}
+
+.tab-active {
+    color: #ffffff;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 6px 16px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+}
+
+.tab-inactive {
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    padding: 6px 16px;
+    transition: all 0.2s;
+}
+
+.tab-inactive:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+}
+
+/* トースト通知 */
+#toast-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+}
+
+.toast-body {
+    background: rgba(239, 68, 68, 0.95);
+    color: #ffffff;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    margin-bottom: 10px;
+    animation: fadeIn 0.3s ease, fadeOut 0.3s ease 2.2s forwards;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* 4. ユーザー編集・登録（アイコンラジオボタン） */
+.icons-wrapper {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+    background: rgba(0, 26, 65, 0.4);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.icons-wrapper label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #ffffff;
+    cursor: pointer;
+    margin: 0;
+}
+
+.icons-wrapper label span {
+    font-size: 1.5rem;
+}
+
+/* 5. ユーザー一覧 (ユーザーカード・フォロー等) */
+.user-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.user-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-badge {
+    background-color: rgba(96, 165, 250, 0.15);
+    color: #60a5fa;
+    border: 1px solid rgba(96, 165, 250, 0.3);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.user-email {
+    color: #9ca3af;
+    font-size: 0.9rem;
+}
+
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.edit-link {
+    color: #38bdf8;
+    text-decoration: none;
+    font-size: 0.9rem;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    padding: 6px 14px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.edit-link:hover {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: #38bdf8;
+    color: #ffffff;
+}
+
+.follow-btn, .unfollow-btn {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.follow-btn {
+    background: #2563eb;
+    color: white;
+    border: none;
+}
+
+.follow-btn:hover {
+    background: #1d4ed8;
+}
+
+.unfollow-btn {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.unfollow-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.4);
+}
+
+/* ユーザー個別ページ用フォローボタン */
+.follow-wrapper {
+    margin-bottom: 24px;
+}
+
+.follow-wrapper button.follow,
+.follow-wrapper button.unfollow {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.follow-wrapper button.follow {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #ffffff;
+}
+
+.follow-wrapper button.unfollow {
+    background: #2563eb;
+    border: none;
+    color: #ffffff;
+}
+
+/* ==========================================
+   👥 6. 共通ヘッダー部品
+   ========================================== */
+.common-header {
+    width: 100%;
+    margin-bottom: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 12px;
+}
+
+.header-wrapper {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.nav-links {
+    color: #38bdf8;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.nav-links:hover {
+    color: #7dd3fc;
+}
+
+.nav-links:first-child {
+    font-weight: bold;
+}
+
+.nav-links.notification {
+    display: flex; 
+    align-items: center; 
+    gap: 4px;
+}
+
+.nav-links.notification span {
+    background: #ef4444;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 10px;
+    line-height: 1;
+}
+
+/* ==========================================
+   🔔 7. 通知一覧画面
+   ========================================== */
+.notification-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: background 0.2s;
+}
+
+.notification-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.notification-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.notification-body {
+    flex: 1;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.sender-name {
+    color: #60a5fa;
+    font-weight: bold;
+}
+
+.post-preview {
+    display: block;
+    margin-top: 4px;
+    color: #9ca3af;
+    font-size: 0.85rem;
+    text-decoration: none;
+    font-style: italic;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.post-preview:hover {
+    color: #38bdf8;
+    text-decoration: underline;
+}
+
+.notification-time {
+    color: #9ca3af;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+/* ==========================================
+   📱 レスポンシブ
+   ========================================== */
+
+@media screen and (max-width: 678px) {
+    .sidebar {
+        display: none;
+    }
+}
