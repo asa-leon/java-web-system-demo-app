@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,21 +14,12 @@ import com.example.demo.repository.UserRepository;
 
 import jakarta.validation.Valid; // バリデーション用1
 import org.springframework.validation.BindingResult; // バリデーション用2
-import org.springframework.web.bind.annotation.RequestBody;
-
-
-
 
 @Controller
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserRepository userRepository;
-
-    // @Autowiredを使って、SpringにUserRepositoryの準備を任せる（依存性の注入：ID）
-    @Autowired
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @GetMapping("/users")
     public String showUserList(Model model) {
