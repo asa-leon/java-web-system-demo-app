@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Column;
 
 // バリデーション用ライブラリ群
 import jakarta.validation.constraints.Email;
@@ -31,6 +32,12 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // ログインID（一意制約、空文字禁止、15文字以内
+    @NotBlank(message = "ユーザーIDは必須入力です")
+    @Size(min = 3, max = 15, message = "ユーザーIDは3文字以上15文字以内で入力してください")
+    @Column(name = "user_id", unique = true, nullable = false)
+    private String userId;
+
     // 空文字・スペースのみを禁止し、文字数を2~20文字に制限
     @NotBlank(message = "名前は必須入力です")
     @Size(min = 2, max = 20, message = "名前は2文字以上20文字以内で入力してください")
@@ -40,6 +47,10 @@ public class User {
     @NotBlank(message = "メールアドレスは必須入力です")
     @Email(message = "正しいメールアドレスの形式で入力してください\"")
     private String email;
+
+    // ハッシュ化パスワードを格納するフィールド
+    @NotBlank(message = "パスワードは必須入力です")
+    private String password;
 
     private String icon = "🚀"; // デフォルト値を設定（画像パスの指定もできる）
 

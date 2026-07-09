@@ -67,6 +67,14 @@ h3 {
     box-sizing: border-box;
 }
 
+.card-container.login {
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
 .post-card {
     background: rgba(255, 255, 255, 0.06);
     backdrop-filter: blur(12px);
@@ -89,7 +97,8 @@ h3 {
 }
 
 /* 📋 投稿・メタヘッダー情報 */
-.post-header, .post-meta {
+.post-header,
+.post-meta {
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -135,7 +144,8 @@ h3 {
 }
 
 /* 💬 投稿・コメント本文 */
-.post-content, .post-content-text {
+.post-content,
+.post-content-text {
     color: #ffffff;
     font-size: 1.15rem;
     line-height: 1.6;
@@ -248,19 +258,22 @@ select {
 }
 
 /* 🔙 フッター・ナビリンク */
-.footer-links, .nav-back {
+.footer-links,
+.nav-back {
     text-align: center;
     margin-top: 24px;
 }
 
-.footer-links a, .nav-back a {
+.footer-links a,
+.nav-back a {
     color: #38bdf8;
     text-decoration: none;
     font-size: 0.9rem;
     transition: color 0.2s;
 }
 
-.footer-links a:hover, .nav-back a:hover {
+.footer-links a:hover,
+.nav-back a:hover {
     color: #7dd3fc;
     text-decoration: underline;
 }
@@ -281,7 +294,8 @@ select {
 }
 
 /* ❤️ いいねボタン / ★ 投票ボタン 共通 */
-.like-button, .vote-button {
+.like-button,
+.vote-button {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 20px;
@@ -340,7 +354,8 @@ select {
     color: inherit;
 }
 
-.like-button:active, .vote-button:active {
+.like-button:active,
+.vote-button:active {
     transform: scale(0.95);
 }
 
@@ -427,7 +442,8 @@ select {
     background: #1d4ed8;
 }
 
-.no-comment, .empty-message {
+.no-comment,
+.empty-message {
     color: #9ca3af;
     font-size: 0.9rem;
     text-align: center;
@@ -605,13 +621,25 @@ select {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
 }
 
 /* 4. ユーザー編集・登録（アイコンラジオボタン） */
@@ -702,7 +730,8 @@ select {
     color: #ffffff;
 }
 
-.follow-btn, .unfollow-btn {
+.follow-btn,
+.unfollow-btn {
     padding: 6px 14px;
     border-radius: 6px;
     font-weight: bold;
@@ -789,8 +818,8 @@ select {
 }
 
 .nav-links.notification {
-    display: flex; 
-    align-items: center; 
+    display: flex;
+    align-items: center;
     gap: 4px;
 }
 

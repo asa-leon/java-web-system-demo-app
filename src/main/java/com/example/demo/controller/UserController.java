@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,21 +23,16 @@ public class UserController {
     private final UserRepository userRepository;
 
     @GetMapping("/users")
-    public String showUserList(Model model) {
+    public String showUserList(HttpSession session, Model model) {
         
         // DBから全権取得（SQLは自動発行される）
         List<User> userList = userRepository.findAll();
-
-        // ターミナルにデバッグ用に中身を出力してみる
-        for (User user : userList) {
-            System.out.println("ユーザ名： " + user.getName() + ", メール： " + user.getEmail());
-        }
 
         // Thymeleafの画面にデータを渡す
         model.addAttribute("users", userList);
 
         // ログインユーザー（Higako: ID:2）のデータを画面に渡す
-        model.addAttribute("loginUser", userRepository.findById(2L).orElse(null));
+        model.addAttribute("loginUser", session.getAttribute("loginUser"));
 
         return "user_list"; // user_list.htmlを表示する
 
@@ -120,10 +116,17 @@ public class UserController {
     @PostMapping("/users/{id}/follow")
     public String followUser(
         @PathVariable("id") Long id,
-        @RequestHeader(value = "Referer", required = false) String referer) {
+        @RequestHeader(value = "Referer", required = false) String referer,
+        HttpSession session) {
         
+            // セッションからログインユーザーを取得してDBから最新状態を引き直す
+            User loginUser = (User) session.getAttribute("loginUser");
+            if (loginUser == null) {
+                return "redirect:/login";
+            }
+
             // 1. ログインユーザー（仮にID:2にする）を取得
-            User me = userRepository.findById(2L)
+            User me = userRepository.findById(loginUser.getId())
                 .orElseThrow((() -> new IllegalArgumentException("自分のユーザーが見つかりません")));
             
             // 2. フォローしたい相手のユーザーを取得
@@ -136,6 +139,9 @@ public class UserController {
             // 4. 状態を保存（中間テーブル user_follows にレコードが自動挿入される
             userRepository.save(me);
 
+            //MARK: save()の後、セッション内のユーザー情報も最新（フォロー追加後）に更新しておく
+            session.setAttribute("loginUser", me);
+
             // 5. ボタンを押した元の画面にそのままリダイレクトで戻る
             return referer != null ? "redirect:" + referer.replaceFirst("^https?://[^/]+", "") : "redirect:/posts";
     }
@@ -144,9 +150,16 @@ public class UserController {
     @PostMapping("/users/{id}/unfollow")
     public String unfollowUser(
         @PathVariable("id") Long id,
-        @RequestHeader(value = "Referer", required = false) String referer) {
+        @RequestHeader(value = "Referer", required = false) String referer,
+        HttpSession session) {
+
+            // セッションからログインユーザーを取得してDBから最新状態を引き直す
+            User loginUser = (User) session.getAttribute("loginUser");
+            if (loginUser == null) {
+                return "redirect:/login";
+            }
         
-            User me = userRepository.findById(2L)
+            User me = userRepository.findById(loginUser.getId())
                 .orElseThrow(() -> new IllegalArgumentException("自分のユーザーが見つかりません"));
 
             User targetUser = userRepository.findById(id)
@@ -155,6 +168,9 @@ public class UserController {
             me.unfollow(targetUser);
 
             userRepository.save(me);
+
+            //MARK: save()の後、セッション内のユーザー情報も最新（フォロー解除後）に更新しておく
+            session.setAttribute("loginUser", me);
 
             return referer != null ? "redirect:" + referer.replaceFirst("^https?://[^/]+", "") : "redirect:/posts";
     }

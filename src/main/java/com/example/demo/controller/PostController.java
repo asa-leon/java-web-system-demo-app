@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.repository.LikeRepository;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -15,7 +16,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.model.Comment;
@@ -30,10 +30,6 @@ import com.example.demo.repository.VoteRepository;
 
 //import org.springframework.data.jpa.domain.Specification;
 //import org.springframework.data.domain.Sort;
-import org.springframework.web.bind.annotation.RequestBody;
-
-
-
 
 @Controller
 @RequiredArgsConstructor // これを書くことでconstructor(this.xx = xx)を書かなくて済む
@@ -50,7 +46,10 @@ public class PostController {
 
     // 投稿一覧を表示する窓口
     @GetMapping("/posts")
-    public String postList(@RequestParam(name = "keyword", required = false) String keyword, Model model) {
+    public String postList(
+        @RequestParam(name = "keyword", required = false) String keyword, 
+        HttpSession session,
+        Model model) {
 
         List<Post> posts;
 
@@ -64,7 +63,11 @@ public class PostController {
 
         //Vote-2: 各投稿にVote数と自分がVoteしたかの情報を付与する
         // ログインユーザー（仮にID:2）を取得
-        User currentUser = userRepository.findById(2L).orElse(null);
+        User currentUser = (User) session.getAttribute("loginUser");
+
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
 
         for (Post post : posts) {
 
@@ -205,7 +208,10 @@ public class PostController {
 
     // 特定のユーザーの投稿一覧を表示するルート
     @GetMapping("/posts/user/{userId}")
-    public String userPostList(@PathVariable("userId") Long userId, Model model) {
+    public String userPostList(
+        @PathVariable("userId") Long userId, 
+        HttpSession session,
+        Model model) {
 
         // 1. 指定されたユーザーIDの投稿だけを最新順で取得
         List<Post> posts = postRepository.findByUserIdOrderByCreatedAtDesc(userId);
@@ -218,10 +224,11 @@ public class PostController {
             model.addAttribute("targetUser", userRepository.findById(userId).orElse(null));
         }
 
-        // 特定のユーザーの投稿一覧画面を開いたときに「自分のデータ（loginUser）」も一緒に画面に渡さないと
-        // 画面側で「すでにフォローしているかどうか」の判断ができない他為、
-        // ログインユーザー（自分=Higako: ID:2）のデータを画面に渡す
-        model.addAttribute("loginUser", userRepository.findById(2L).orElse(null));
+        User loginUser = (User) session.getAttribute("loginUser");
+
+        // 特定のユーザーの投稿一覧画面を開いたときに「自分のデータ（loginUser）」も一緒に画面に渡さないと、
+        // 画面側で「すでにフォローしているかどうか」の判断ができない。
+        model.addAttribute("loginUser", loginUser);
 
         model.addAttribute("posts", posts);
         return "user_post_list";
@@ -229,11 +236,16 @@ public class PostController {
 
     // フォローしているユーザーの投稿だけを表示するタイムライン
     @GetMapping("/posts/following")
-    public String followingPostList(Model model) {
+    public String followingPostList(HttpSession session, Model model) {
         
-        // 1. ログインユーザー（仮にID:2）を取得
-        User me = userRepository.findById(2L)
-            .orElseThrow(() -> new IllegalArgumentException("自分のユーザーが見つかりません"));
+        // 1. セッションからログインユーザーを取得
+        User me = (User) session.getAttribute("loginUser");
+        if (me == null) {
+            return "redirect:/login";
+        }
+
+        // 常に最新の状態のフォローリストを参照する為、念の為DBから引き直す
+        me = userRepository.findById(me.getId()).orElse(me);
         
         // 2. 自分がフォローしているユーザーの「IDのリスト」を作る
         List<Long> followingUserIds = me.getFollowing().stream()
@@ -262,7 +274,10 @@ public class PostController {
     
     // 特定の投稿の詳細画面を表示する
     @GetMapping("/posts/{id}")
-    public String postDetail(@PathVariable("id") Long id, Model model) {
+    public String postDetail(
+        @PathVariable("id") Long id, 
+        HttpSession session,
+        Model model) {
         
         // 1. 対象の投稿を取得
         Post post = postRepository.findById(id)
@@ -272,7 +287,7 @@ public class PostController {
         model.addAttribute("post", post);
         // Post.java に @OneToMany を書いたので、JPAが自動で紐づくコメントを一緒に持ってきてくれる
         model.addAttribute("comments", post.getComments());
-        model.addAttribute("loginUser", userRepository.findById(2L).orElse(null));
+        model.addAttribute("loginUser", session.getAttribute("loginUser"));
 
         return "post_detail";
     }
@@ -281,14 +296,18 @@ public class PostController {
     @PostMapping("/posts/{id}/comments")
     public String createComment(
         @PathVariable("id") Long id,
-        @RequestParam("content") String content) {
+        @RequestParam("content") String content,
+        HttpSession session) {
         
         // 1. どの当行に対するコメントか、親を取得
         Post post = postRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("投稿が見つかりません"));
 
         // 2. 誰が書いたか（ログインユーザー）を取得
-        User me = userRepository.findById(2L).orElse(null);
+        User me = (User) session.getAttribute("loginUser");
+        if (me == null) {
+            return "redirect:/login";
+        }
 
         // 3. コメントオブジェクトを生成してデータをセット
         Comment comment = new Comment();
