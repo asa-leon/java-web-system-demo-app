@@ -16,6 +16,22 @@
 			</span>
 		</a>
 
+		<!-- ログイン状態のだし分け -->
+		<!-- ログインしている場合 -->
+		<div th:if="${session.loginUser != null}" class="login-state-wrapper">
+			<span class="user-badge">
+				<span th:text="${session.loginUser.icon}">😺</span>
+				<span th:text="${session.loginUser.name}">ユーザー名</span>
+			</span>
+			<a th:href="@{/logout}" class="nav-links logout-btn">🚪 ログアウト</a>
+		 </div>
+
+		<!-- ログインていない場合 -->
+		<div th:if="${session.loginUser == null}" class="login-btn">
+			<a th:href="@{/login}" class="nav-links">🔑 ログイン</a>
+		</div>
+		<!-- /ログイン状態のだし分け -->
+
 		<!-- 特定のファイルでリンクを追加したい場合に備え、ここに呼び出し側から渡された追加のリンクが自動で入る -->
 		<th:block th:replace="${extraLinks}"></th:block>
 	</div>

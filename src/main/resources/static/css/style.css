@@ -172,6 +172,12 @@ h3 {
     pointer-events: none;
 }
 
+.post-content-text span {
+    display: block;
+    line-height: 1.4;
+    margin-block: -5%;
+}
+
 .hashtag-text {
     color: #38bdf8;
     text-decoration: none;
@@ -180,6 +186,10 @@ h3 {
 }
 
 /* 📁 フォーム全般のスタイル */
+.form-container {
+    width: 80%;
+    max-width: 600px;
+}
 .form-group {
     margin-bottom: 20px;
 }
@@ -379,6 +389,12 @@ select {
     background: rgba(248, 113, 113, 0.2);
     border-color: #f87171;
     color: #ffffff;
+}
+
+.edit-delete-btns-wrapper {
+    display: flex;
+    gap: 15px;
+    align-items: center;
 }
 
 /* ==========================================
@@ -833,6 +849,20 @@ select {
     line-height: 1;
 }
 
+.login-state-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+}
+
+.user-badge {
+    color: #ffffff;
+}
+
+.login-btn {
+    margin-left: auto;
+}
 /* ==========================================
    🔔 7. 通知一覧画面
    ========================================== */

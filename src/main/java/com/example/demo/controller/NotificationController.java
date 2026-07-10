@@ -3,7 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.model.Notification;
 import com.example.demo.model.User;
 import com.example.demo.repository.NotificationsRepository;
-import com.example.demo.repository.UserRepository;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,14 +18,15 @@ import java.util.List;
 public class NotificationController {
 
     private final NotificationsRepository notificationsRepository;
-    private final UserRepository userRepository;
 
     @GetMapping
-    public String showNotifications(Model model) {
+    public String showNotifications(HttpSession session, Model model) {
 
-        // 現在のログインユーザー（仮でID:2のhigako）を取得
-        User currentUser = userRepository.findById(2L)
-            .orElseThrow(() -> new IllegalStateException("User not found"));
+        // セッションからログインユーザーを取得
+		User currentUser = (User) session.getAttribute("loginUser");
+		if (currentUser == null) {
+			return "redirect:/login";
+		}
 
         // 1. 自分（Receiver）宛の通知をIDの降順（新しい順）で全件取得
         List<Notification> notifications = notificationsRepository.findByReceiverOrderByIdDesc(currentUser);

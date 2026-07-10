@@ -35,310 +35,330 @@ import com.example.demo.repository.VoteRepository;
 @RequiredArgsConstructor // これを書くことでconstructor(this.xx = xx)を書かなくて済む
 public class PostController {
 
-    private final LikeRepository likeRepository;
-    private final PostRepository postRepository;
-    private final UserRepository userRepository;
-    private final CommentRepository commentRepository;
-    private final TagRepository tagRepository;
+	private final LikeRepository likeRepository;
+	private final PostRepository postRepository;
+	private final UserRepository userRepository;
+	private final CommentRepository commentRepository;
+	private final TagRepository tagRepository;
 
-    //Vote-1: レポジトリをインジェクションしておく
-    private final VoteRepository voteRepository;
+	// Vote-1: レポジトリをインジェクションしておく
+	private final VoteRepository voteRepository;
 
-    // 投稿一覧を表示する窓口
-    @GetMapping("/posts")
-    public String postList(
-        @RequestParam(name = "keyword", required = false) String keyword, 
-        HttpSession session,
-        Model model) {
+	// 投稿一覧を表示する窓口
+	@GetMapping("/posts")
+	public String postList(
+			@RequestParam(name = "keyword", required = false) String keyword,
+			HttpSession session,
+			Model model) {
 
-        List<Post> posts;
+		// セッションからユーザー情報を取得
+		User sessionUser = (User) session.getAttribute("loginUser");
 
-        if (keyword != null && !keyword.trim().isEmpty()) {
-            posts = postRepository.findByContentContainingIgnoreCaseOrderByCreatedAtDesc(keyword);
-            model.addAttribute("keyword", keyword); // 画面にキーワードを保持させる
-        } else {
-            // キーワードがなければ、今まで通り全件を最新順で取得
-            posts = postRepository.findAllByOrderByCreatedAtDesc();
-        }
+		// ログインしている場合のみ、最新のユーザー情報をDBから取得してモデルに渡す
+		if (sessionUser != null) {
+			userRepository.findById(sessionUser.getId())
+					.ifPresent(currentUser -> {
+						model.addAttribute("loginUser", currentUser);
 
-        //Vote-2: 各投稿にVote数と自分がVoteしたかの情報を付与する
-        // ログインユーザー（仮にID:2）を取得
-        User currentUser = (User) session.getAttribute("loginUser");
+						// 全体に表示する投稿一覧を取得（これはログイン有無に関係なく実行）
+						List<Post> posts;
 
-        if (currentUser == null) {
-            return "redirect:/login";
-        }
+						if (keyword != null && !keyword.trim().isEmpty()) {
+							posts = postRepository.findByContentContainingIgnoreCaseOrderByCreatedAtDesc(keyword);
+							model.addAttribute("keyword", keyword); // 画面にキーワードを保持させる
+						} else {
+							// キーワードがなければ、今まで通り全件を最新順で取得
+							posts = postRepository.findAllByOrderByCreatedAtDesc();
+						}
 
-        for (Post post : posts) {
+						// Vote-2: 各投稿にいいね数と、Vote数及び自分がVoteしたかの情報を付与する
+						for (Post post : posts) {
 
-            // 1-1. 総いいね数をカウントしてセット
-            post.setLikeCount(likeRepository.countByPost(post));
+							// 1-1. 総いいね数をカウントしてセット
+							post.setLikeCount(likeRepository.countByPost(post));
 
-            // 1-2. ログイン中の場合、自分がいいねしたかを判定してセット
-            if (currentUser != null) {
-                post.setLikedByMe(likeRepository.existsByUserAndPost(currentUser, post));
-            } else {
-                post.setLikedByMe(false); // 念のためユーザーがいない場合は一律false
-            }
+							// 1-2. ログイン中の場合、自分がいいねしたかを判定してセット
+							if (currentUser != null) {
+								post.setLikedByMe(likeRepository.existsByUserAndPost(currentUser, post));
+							} else {
+								post.setLikedByMe(false); // 念のためユーザーがいない場合は一律false
+							}
 
-            // 総Vote数をカウントしてセット
-            post.setVoteCount(voteRepository.countByPost(post));
+							// 総Vote数をカウントしてセット
+							post.setVoteCount(voteRepository.countByPost(post));
 
-            // ログイン中の場合、自分がVoteしたかを判定してセット
-            if (currentUser != null) {
-                post.setVotedByMe(voteRepository.existsByUserAndPost(currentUser, post));
-            } else {
-                post.setVotedByMe(false); // 念のためユーザーがいない場合は一律false
-            }
-        }
+							// ログイン中の場合、自分がVoteしたかを判定してセット
+							if (currentUser != null) {
+								post.setVotedByMe(voteRepository.existsByUserAndPost(currentUser, post));
+							} else {
+								post.setVotedByMe(false); // 念のためユーザーがいない場合は一律false
+							}
+						}
 
-        model.addAttribute("posts", posts);
-        
-        /* ドット繋ぎで書く場合のコード
-        // 1.最新順（降順）ソートの条件を用意
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+					});
+		} else {
+			// 未ログインの場合は、画面側で制御できるように null を明示するか、ログイン状態をfalseにする
+			model.addAttribute("loginUser", null);
+		}
 
-        // 2.Repositoryで作ったパーツをドットで繋いで「仕様書（spec）を完成させる
-        Specification<Post> spec = Specification
-            .where(PostRepository.containsContent(keyword)));
-            // もし他にも条件があれば、ここに .and(PostRepository.isUser(1L)) の様にドットで繋いで行ける
+		// 全体に表示する投稿一覧を取得（これはログイン有無に関係なく実行）
+		List<Post> posts;
 
-        // 3.条件付きの findAll を発動
-        List<Post> posts =postRepository.findAll(spec, sort);
+		if (keyword != null && !keyword.trim().isEmpty()) {
+			posts = postRepository.findByContentContainingIgnoreCaseOrderByCreatedAtDesc(keyword);
+			model.addAttribute("keyword", keyword); // 画面にキーワードを保持させる
+		} else {
+			// キーワードがなければ、今まで通り全件を最新順で取得
+			posts = postRepository.findAllByOrderByCreatedAtDesc();
+		}
 
-        model.addAttribute("posts", posts);
-        model.addAttribute("keyword", keyword);
-         */
+		model.addAttribute("posts", posts);
 
-        // 現在のタブの初期値をallにしておく
-        model.addAttribute("currentTab", "all");
+		/*
+		 * ドット繋ぎで書く場合のコード
+		 * // 1.最新順（降順）ソートの条件を用意
+		 * Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+		 * 
+		 * // 2.Repositoryで作ったパーツをドットで繋いで「仕様書（spec）を完成させる
+		 * Specification<Post> spec = Specification
+		 * .where(PostRepository.containsContent(keyword)));
+		 * // もし他にも条件があれば、ここに .and(PostRepository.isUser(1L)) の様にドットで繋いで行ける
+		 * 
+		 * // 3.条件付きの findAll を発動
+		 * List<Post> posts =postRepository.findAll(spec, sort);
+		 * 
+		 * model.addAttribute("posts", posts);
+		 * model.addAttribute("keyword", keyword);
+		 */
 
-        // トレンド上位5件を画面に渡す
-        model.addAttribute("trends", tagRepository.findTop5Trends());
+		// 現在のタブの初期値をallにしておく
+		model.addAttribute("currentTab", "all");
 
-        return "post_list";
-    }
+		// トレンド上位5件を画面に渡す
+		model.addAttribute("trends", tagRepository.findTop5Trends());
 
-    // 投稿フォーム画面を表示する
-    @GetMapping("/posts/new")
-    public String showNewPostForm(Model model) {
-        model.addAttribute("post", new Post());
+		return "post_list";
+	}
 
-        // セレクトボックスで選べるように、全ユーザーの一覧を画面に渡す
-        model.addAttribute("users", userRepository.findAll());
+	// 投稿フォーム画面を表示する
+	@GetMapping("/posts/new")
+	public String showNewPostForm(Model model) {
+		model.addAttribute("post", new Post());
 
-        // データベースからすべてのタグを取得して、画面に渡す
-        List<Tag> allTags = tagRepository.findAll();
-        model.addAttribute("allTags", allTags);
+		// セレクトボックスで選べるように、全ユーザーの一覧を画面に渡す
+		model.addAttribute("users", userRepository.findAll());
 
-        return "post_form";
-    }
+		// データベースからすべてのタグを取得して、画面に渡す
+		List<Tag> allTags = tagRepository.findAll();
+		model.addAttribute("allTags", allTags);
 
-    // 投稿をデータベースに保存する
-    @PostMapping("/posts/create")
-    public String createPost(
-        @Valid Post post, 
-        BindingResult bindingResult,
-        @RequestParam("userId") Long userId, // 画面のセレクトボックスからuser_idを受け取る)
-        Model model) {
-        
-        // バリデーションエラー（140文字超過など）があれば元の画面に戻す
-        if (bindingResult.hasErrors()) {
-            // 戻る前にもう一度ユーザー一覧をセットしてあげないと、セレクトボックスが空になる
-            model.addAttribute("users", userRepository.findAll());
+		return "post_form";
+	}
 
-            // エラーで戻った時も、タグ一覧を再セットしてあげる
-            model.addAttribute("allTags", tagRepository.findAll());
+	// 投稿をデータベースに保存する
+	@PostMapping("/posts/create")
+	public String createPost(
+			@Valid Post post,
+			BindingResult bindingResult,
+			HttpSession session,
+			Model model) {
 
-            return "post_form";
-        }
+		// セッションからログインユーザーを取得
+		User currentUser = (User) session.getAttribute("loginUser");
+		if (currentUser == null) {
+			return "redirect:/login";
+		}
 
-        //MARK: 画面から選ばれたIDを使ってUserオブジェクトを取得
-        User selectedUser = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("ユーザーが見つかりません"));
+		// バリデーションエラー（140文字超過など）があれば元の画面に戻す
+		if (bindingResult.hasErrors()) {
+			// エラーで戻った時も、タグ一覧を再セットしてあげる
+			model.addAttribute("allTags", tagRepository.findAll());
 
-        post.setUser(selectedUser);
+			return "post_form";
+		}
 
-        //MARK: ハッシュタグ抽出ロジック
-        String content = post.getContent();
-        List<Tag> tagList = new ArrayList<>();
+		post.setUser(currentUser);
 
-        if (content != null && !content.isEmpty()) {
-            // 正規表現で「#」から始まる単語を抽出（全角・半角対応）
-            Pattern pattern = Pattern.compile("[#＃][A-Za-z0-9ぁ-んァ-ヶ一-龠ー_]+");
-            Matcher matcher = pattern.matcher(content);
+		// MARK: ハッシュタグ抽出ロジック
+		String content = post.getContent();
+		List<Tag> tagList = new ArrayList<>();
 
-            while (matcher.find()) {
-                // 先頭の「#」を消して、アルファベットは小文字に統一
-                String tagName = matcher.group().substring(1).toLowerCase();
+		if (content != null && !content.isEmpty()) {
+			// 正規表現で「#」から始まる単語を抽出（全角・半角対応）
+			Pattern pattern = Pattern.compile("[#＃][A-Za-z0-9ぁ-んァ-ヶ一-龠ー_]+");
+			Matcher matcher = pattern.matcher(content);
 
-                // データベースに既存のタグがあるか探し、なければ新しく保存して取得
-                Tag tag = tagRepository.findByName(tagName)
-                    .orElseGet(() -> {
-                        Tag newTag = new Tag();
-                        newTag.setName(tagName);
-                        return tagRepository.save(newTag);
-                    });
+			while (matcher.find()) {
+				// 先頭の「#」を消して、アルファベットは小文字に統一
+				String tagName = matcher.group().substring(1).toLowerCase();
 
-                // リスト内での重複を防いで追加
-                if (!tagList.contains(tag)) {
-                    tagList.add(tag);
-                }
-            }
-        }
+				// データベースに既存のタグがあるか探し、なければ新しく保存して取得
+				Tag tag = tagRepository.findByName(tagName)
+						.orElseGet(() -> {
+							Tag newTag = new Tag();
+							newTag.setName(tagName);
+							return tagRepository.save(newTag);
+						});
 
-        // 投稿オブジェクトに、抽出したタグのリストをセット（これで中間テーブルに自動保存される）
-        post.setTags(tagList);
+				// リスト内での重複を防いで追加
+				if (!tagList.contains(tag)) {
+					tagList.add(tag);
+				}
+			}
+		}
 
-        // データベースに保存
-        postRepository.save(post);
-        
-        return "redirect:/posts";
-    }
+		// 投稿オブジェクトに、抽出したタグのリストをセット（これで中間テーブルに自動保存される）
+		post.setTags(tagList);
 
-    // 投稿を削除する
-    @PostMapping("/posts/{id}/delete")
-    public String deletePost(@PathVariable("id") Long id) {
-        
-        // URLから受け取ったIDを使って、データベースから削除する
-        postRepository.deleteById(id);
-        
-        return "redirect:/posts";
-    }
+		// データベースに保存
+		postRepository.save(post);
 
-    // 特定のユーザーの投稿一覧を表示するルート
-    @GetMapping("/posts/user/{userId}")
-    public String userPostList(
-        @PathVariable("userId") Long userId, 
-        HttpSession session,
-        Model model) {
+		return "redirect:/posts";
+	}
 
-        // 1. 指定されたユーザーIDの投稿だけを最新順で取得
-        List<Post> posts = postRepository.findByUserIdOrderByCreatedAtDesc(userId);
+	// 投稿を削除する
+	@PostMapping("/posts/{id}/delete")
+	public String deletePost(@PathVariable("id") Long id) {
 
-        // 2. 画面のタイトル等に表示するために、そのユーザーの名前も取得（任意）
-        if (!posts.isEmpty()) {
-            model.addAttribute("targetUser", posts.get(0).getUser());
-        } else {
-            // 投稿が空の場合でも動くように、ユーザー自身を直接取得してモデルに入れると安全
-            model.addAttribute("targetUser", userRepository.findById(userId).orElse(null));
-        }
+		// URLから受け取ったIDを使って、データベースから削除する
+		postRepository.deleteById(id);
 
-        User loginUser = (User) session.getAttribute("loginUser");
+		return "redirect:/posts";
+	}
 
-        // 特定のユーザーの投稿一覧画面を開いたときに「自分のデータ（loginUser）」も一緒に画面に渡さないと、
-        // 画面側で「すでにフォローしているかどうか」の判断ができない。
-        model.addAttribute("loginUser", loginUser);
+	// 特定のユーザーの投稿一覧を表示するルート
+	@GetMapping("/posts/user/{userId}")
+	public String userPostList(
+			@PathVariable("userId") Long userId,
+			HttpSession session,
+			Model model) {
 
-        model.addAttribute("posts", posts);
-        return "user_post_list";
-    }
+		// 1. 指定されたユーザーIDの投稿だけを最新順で取得
+		List<Post> posts = postRepository.findByUserIdOrderByCreatedAtDesc(userId);
 
-    // フォローしているユーザーの投稿だけを表示するタイムライン
-    @GetMapping("/posts/following")
-    public String followingPostList(HttpSession session, Model model) {
-        
-        // 1. セッションからログインユーザーを取得
-        User me = (User) session.getAttribute("loginUser");
-        if (me == null) {
-            return "redirect:/login";
-        }
+		// 2. 画面のタイトル等に表示するために、そのユーザーの名前も取得（任意）
+		if (!posts.isEmpty()) {
+			model.addAttribute("targetUser", posts.get(0).getUser());
+		} else {
+			// 投稿が空の場合でも動くように、ユーザー自身を直接取得してモデルに入れると安全
+			model.addAttribute("targetUser", userRepository.findById(userId).orElse(null));
+		}
 
-        // 常に最新の状態のフォローリストを参照する為、念の為DBから引き直す
-        me = userRepository.findById(me.getId()).orElse(me);
-        
-        // 2. 自分がフォローしているユーザーの「IDのリスト」を作る
-        List<Long> followingUserIds = me.getFollowing().stream()
-            .map(User::getId)
-            .toList();
+		User loginUser = (User) session.getAttribute("loginUser");
 
-        List<Post> posts;
-        if (followingUserIds.isEmpty()) {
-            // まだ誰もフォローしていない場合は、からのリストを返す（エラー回避）
-            posts = new java.util.ArrayList<>();
-        } else {
-            // 3. フォローしている人のIDリストをリポジトリに渡して、投稿を取得する
-            posts = postRepository.findByUserIdInOrderByCreatedAtDesc(followingUserIds);
-        }
+		// 特定のユーザーの投稿一覧画面を開いたときに「自分のデータ（loginUser）」も一緒に画面に渡さないと、
+		// 画面側で「すでにフォローしているかどうか」の判断ができない。
+		model.addAttribute("loginUser", loginUser);
 
-        // 4. 画面にデータを渡す
-        model.addAttribute("posts", posts);
-        model.addAttribute("loginUser", me);
-        model.addAttribute("currentTab", "following"); // 今どっちのタブにいるかを判定するためのフラグ
+		model.addAttribute("posts", posts);
+		return "user_post_list";
+	}
 
-        // トレンド上位5件を画面に渡す
-        model.addAttribute("trends", tagRepository.findTop5Trends());
+	// フォローしているユーザーの投稿だけを表示するタイムライン
+	@GetMapping("/posts/following")
+	public String followingPostList(HttpSession session, Model model) {
 
-        return "post_list"; // 画面は新しく作らず、既存の post_list.html を使いまわす。
-    }
-    
-    // 特定の投稿の詳細画面を表示する
-    @GetMapping("/posts/{id}")
-    public String postDetail(
-        @PathVariable("id") Long id, 
-        HttpSession session,
-        Model model) {
-        
-        // 1. 対象の投稿を取得
-        Post post = postRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("指定された投稿が見つかりません:" + id));
+		// 1. セッションからログインユーザーを取得
+		User me = (User) session.getAttribute("loginUser");
+		if (me == null) {
+			return "redirect:/login";
+		}
 
-        // 2. 画面にデータを渡す
-        model.addAttribute("post", post);
-        // Post.java に @OneToMany を書いたので、JPAが自動で紐づくコメントを一緒に持ってきてくれる
-        model.addAttribute("comments", post.getComments());
-        model.addAttribute("loginUser", session.getAttribute("loginUser"));
+		// 常に最新の状態のフォローリストを参照する為、念の為DBから引き直す
+		me = userRepository.findById(me.getId()).orElse(me);
 
-        return "post_detail";
-    }
-    
-    // コメントを投稿する処理
-    @PostMapping("/posts/{id}/comments")
-    public String createComment(
-        @PathVariable("id") Long id,
-        @RequestParam("content") String content,
-        HttpSession session) {
-        
-        // 1. どの当行に対するコメントか、親を取得
-        Post post = postRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("投稿が見つかりません"));
+		// 2. 自分がフォローしているユーザーの「IDのリスト」を作る
+		List<Long> followingUserIds = me.getFollowing().stream()
+				.map(User::getId)
+				.toList();
 
-        // 2. 誰が書いたか（ログインユーザー）を取得
-        User me = (User) session.getAttribute("loginUser");
-        if (me == null) {
-            return "redirect:/login";
-        }
+		List<Post> posts;
+		if (followingUserIds.isEmpty()) {
+			// まだ誰もフォローしていない場合は、からのリストを返す（エラー回避）
+			posts = new java.util.ArrayList<>();
+		} else {
+			// 3. フォローしている人のIDリストをリポジトリに渡して、投稿を取得する
+			posts = postRepository.findByUserIdInOrderByCreatedAtDesc(followingUserIds);
+		}
 
-        // 3. コメントオブジェクトを生成してデータをセット
-        Comment comment = new Comment();
-        comment.setContent(content);
-        comment.setPost(post);
-        comment.setUser(me);
+		// 4. 画面にデータを渡す
+		model.addAttribute("posts", posts);
+		model.addAttribute("loginUser", me);
+		model.addAttribute("currentTab", "following"); // 今どっちのタブにいるかを判定するためのフラグ
 
-        // 4. データベースに保存
-        commentRepository.save(comment);
+		// トレンド上位5件を画面に渡す
+		model.addAttribute("trends", tagRepository.findTop5Trends());
 
-        // 5. 書き込みが終わったら、元の詳細画面にリダイレクトで戻る
-        return "redirect:/posts/" + id;
-    }
+		return "post_list"; // 画面は新しく作らず、既存の post_list.html を使いまわす。
+	}
 
-    // タグに基づく投稿を取得して画面に渡す処理
-    @GetMapping("/tags/{tagName}")
-    public String showPostsByTag(@PathVariable("tagName") String tagName, Model model) {
-        // 1. 指定されたタグ名がついている投稿だけをリポジトリから取得
-        List<Post> taggedPosts = postRepository.findByTagsName(tagName);
+	// 特定の投稿の詳細画面を表示する
+	@GetMapping("/posts/{id}")
+	public String postDetail(
+			@PathVariable("id") Long id,
+			HttpSession session,
+			Model model) {
 
-        // 2. タイムライン（post_list.html）と同じ変数名「posts」で画面に渡す
-        model.addAttribute("posts", taggedPosts);
+		// 1. 対象の投稿を取得
+		Post post = postRepository.findById(id)
+				.orElseThrow(() -> new IllegalArgumentException("指定された投稿が見つかりません:" + id));
 
-        // 3. 今何のタグで絞り込んでいるかを画面に表示するために、タグ名も渡しておく
-        model.addAttribute("currentTag", tagName);
+		// 2. 画面にデータを渡す
+		model.addAttribute("post", post);
+		// Post.java に @OneToMany を書いたので、JPAが自動で紐づくコメントを一緒に持ってきてくれる
+		model.addAttribute("comments", post.getComments());
+		model.addAttribute("loginUser", session.getAttribute("loginUser"));
 
-        // 4. 新しい画面を作らず、既存の「post_list.html」をそのまま使いまわす
+		return "post_detail";
+	}
 
-        //割り込み：トレンド上位5件を画面に渡す
-        model.addAttribute("trends", tagRepository.findTop5Trends());
+	// コメントを投稿する処理
+	@PostMapping("/posts/{id}/comments")
+	public String createComment(
+			@PathVariable("id") Long id,
+			@RequestParam("content") String content,
+			HttpSession session) {
 
-        return "post_list";
-    }
+		// 1. どの当行に対するコメントか、親を取得
+		Post post = postRepository.findById(id)
+				.orElseThrow(() -> new IllegalArgumentException("投稿が見つかりません"));
+
+		// 2. 誰が書いたか（ログインユーザー）を取得
+		User me = (User) session.getAttribute("loginUser");
+		if (me == null) {
+			return "redirect:/login";
+		}
+
+		// 3. コメントオブジェクトを生成してデータをセット
+		Comment comment = new Comment();
+		comment.setContent(content);
+		comment.setPost(post);
+		comment.setUser(me);
+
+		// 4. データベースに保存
+		commentRepository.save(comment);
+
+		// 5. 書き込みが終わったら、元の詳細画面にリダイレクトで戻る
+		return "redirect:/posts/" + id;
+	}
+
+	// タグに基づく投稿を取得して画面に渡す処理
+	@GetMapping("/tags/{tagName}")
+	public String showPostsByTag(@PathVariable("tagName") String tagName, Model model) {
+		// 1. 指定されたタグ名がついている投稿だけをリポジトリから取得
+		List<Post> taggedPosts = postRepository.findByTagsName(tagName);
+
+		// 2. タイムライン（post_list.html）と同じ変数名「posts」で画面に渡す
+		model.addAttribute("posts", taggedPosts);
+
+		// 3. 今何のタグで絞り込んでいるかを画面に表示するために、タグ名も渡しておく
+		model.addAttribute("currentTag", tagName);
+
+		// 4. 新しい画面を作らず、既存の「post_list.html」をそのまま使いまわす
+
+		// 割り込み：トレンド上位5件を画面に渡す
+		model.addAttribute("trends", tagRepository.findTop5Trends());
+
+		return "post_list";
+	}
 }

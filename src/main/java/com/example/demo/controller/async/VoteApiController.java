@@ -5,14 +5,14 @@ import com.example.demo.model.User;
 import com.example.demo.model.Vote;
 import com.example.demo.model.Notification;
 import com.example.demo.repository.PostRepository;
-import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.VoteRepository;
 import com.example.demo.repository.NotificationsRepository;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
-
 
 @RestController
 @RequestMapping("/api/posts/{postId}/vote")
@@ -20,20 +20,24 @@ import java.util.Map;
 public class VoteApiController {
     
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
     private final VoteRepository voteRepository;
     private final NotificationsRepository notificationsRepository;
 
     @PostMapping
-    public ResponseEntity<?> toggleVote(@PathVariable("postId") Long postId) {
+    public ResponseEntity<?> toggleVote(
+        @PathVariable("postId") Long postId,
+        HttpSession session) {
         
+        // 0. セッションからログインユーザーを取得
+        User currentUser = (User) session.getAttribute("loginUser");
+        if (currentUser == null) {
+
+            // APIでデータを返す処理の場合は、セッション切れの際は401エラーを返す
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("ログインが必要です");
+        }
         // 1. 対象の投稿を探す
         Post post = postRepository.findById(postId)
             .orElseThrow(() -> new IllegalArgumentException("Invalid post ID"));
-
-        // 2-1. 現在のログインユーザー（仮にID 2：自分を設定）を取得
-		User currentUser = userRepository.findById(2L) 
-			.orElseThrow(() -> new IllegalStateException("User not found"));
 
         // 2-2. html側で自分自身への投票禁止を回避された場合の処理
         if (post.getUser().getId().equals(currentUser.getId())) {

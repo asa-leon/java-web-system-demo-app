@@ -9,7 +9,9 @@ import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.NotificationsRepository;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,20 +27,24 @@ import java.util.Optional;
 public class LikeApiController {
     
 	private final PostRepository postRepository;
-	private final UserRepository userRepository;
 	private final LikeRepository likeRepository;
 	private final NotificationsRepository notificationRepository;
 
 	@PostMapping
-	public ResponseEntity<?> toggleLikeAsync(@PathVariable("id") Long id) {
+	public ResponseEntity<?> toggleLikeAsync(
+		@PathVariable("id") Long id,
+		HttpSession session) {
+
+		// セッションからログインユーザーを取得
+		User currentUser = (User) session.getAttribute("loginUser");
+		if (currentUser == null) {
+			// セッション切れの場合は401エラーを返す
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("ログインが必要です");
+		}
 		
 		// 1. 対象の投稿を探す
 		Post post = postRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("Invalid post ID: " + id));
-		
-		// 2. 現在のログインユーザー（仮にID 2：自分を設定）を取得
-		User currentUser = userRepository.findById(2L) 
-			.orElseThrow(() -> new IllegalStateException("User not found"));
 
 		// 3. 既に自分がこの投稿にいいねしているかチェック
 		Optional<Like> existingLike = likeRepository.findByUserAndPost(currentUser, post);

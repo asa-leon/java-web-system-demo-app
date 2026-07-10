@@ -10,15 +10,6 @@
         <h2>🚀 SNS 新規投稿</h2>
 
         <form th:action="@{/posts/create}" th:object="${post}" method="post">
-            
-            <div class="form-group">
-                <label for="userId">投稿ユーザーを選択</label>
-                <select id="userId" name="userId">
-                    <option th:each="u : ${users}" th:value="${u.id}" th:text="${u.name}">
-                        ユーザー名
-                    </option>
-                </select>
-            </div>
 
             <div class="form-group">
                 <label for="content">いまどうしてる？（140文字以内）</label>

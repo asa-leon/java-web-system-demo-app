@@ -10,30 +10,52 @@
 <body class="centered-layout">
 
     <div class="card-container">
-        <h2 th:text="${user.id == null} ? '👤 ユーザー新規登録' : '📝 ユーザー情報編集'"></h2>
+        <h2 th:text="${user.id == null} ? '👤 ユーザー新規登録' : '📝 ユーザー情報編集'"></h2 >
 
         <form th:action="${user.id == null} ? @{/users/create} : @{/users/update}" th:object="${user}" method="post">
 
-            <input type="hidden" th:field="*{id}"> <!-- ID用の隠し属性 -->
+            <!-- 主キー（自動採番などのid）用の隠し属性 -->
+            <input type="hidden" th:field="*{id}">
 
+            <!-- 1. ユーザーID (user_id) ※新規登録時のみ入力可能にする -->
+            <div class="form-group">
+                <label for="userId">ユーザーID：</label>
+                <input type="text" id="userId" th:field="*{userId}" 
+                       th:required="${user.id == null}" 
+                       th:readonly="${user.id != null}"
+                       placeholder="英数字で入力してください...（例: gemini）" />
+                <div th:if="${#fields.hasErrors('userId')}" th:errors="*{userId}" class="error-message"></div>
+            </div>
+
+            <!-- 2. 名前 (name) -->
             <div class="form-group">
                 <label for="name">名前：</label>
-                <input type="text" id="name" th:field="*{name}" required placeholder="名前を入力してください..." />
+                <input type="text" id="name" th:field="*{name}" required placeholder="表示名を入力してください...（例: Gemini）" />
                 <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-message"></div>
             </div>
 
+            <!-- 3. メールアドレス (email) -->
             <div class="form-group">
                 <label for="email">メールアドレス：</label>
                 <input type="email" id="email" th:field="*{email}" required placeholder="example@domain.com" />
                 <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></div>
             </div>
 
+            <!-- 4. パスワード (password) ※新規登録時のみ必須。編集時は空なら変更なしとする -->
+            <div class="form-group">
+                <label for="password">パスワード：</label>
+                <input type="password" id="password" th:field="*{password}" 
+                       th:required="${user.id == null}" 
+                       placeholder="パスワードを入力してください..." />
+                <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-message"></div>
+            </div>
+
+            <!-- 5. プロフィールアイコン (icon) -->
             <div class="form-group">
                 <label>プロフィールアイコン</label>
-
                 <div class="icons-wrapper">
                     <label>
-                        <input type="radio" th:field="*{icon}" value="🚀"> <span>🚀</span>
+                        <input type="radio" th:field="*{icon}" value="🚀" required> <span>🚀</span>
                     </label>
                     <label>
                         <input type="radio" th:field="*{icon}" value="🐱"> <span>🐱</span>
@@ -45,6 +67,7 @@
                         <input type="radio" th:field="*{icon}" value="🦊"> <span>🦊</span>
                     </label>
                 </div>
+                <div th:if="${#fields.hasErrors('icon')}" th:errors="*{icon}" class="error-message"></div>
             </div>
 
             <button type="submit" class="submit-btn" th:text="${user.id == null} ? '登録する' : '更新する'"></button>
