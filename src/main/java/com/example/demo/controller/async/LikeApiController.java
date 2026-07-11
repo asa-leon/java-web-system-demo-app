@@ -6,7 +6,6 @@ import com.example.demo.model.Like;
 import com.example.demo.model.Notification;
 import com.example.demo.repository.LikeRepository;
 import com.example.demo.repository.PostRepository;
-import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.NotificationsRepository;
 
 import jakarta.servlet.http.HttpSession;

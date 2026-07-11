@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpSession;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +27,7 @@ import org.springframework.validation.BindingResult; // バリデーション用
 public class UserController {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @GetMapping("/users")
     public String showUserList(HttpSession session, Model model) {
@@ -77,6 +80,7 @@ public class UserController {
             @Valid User user,
             BindingResult bindingResult,
             Model model) {
+
         // 入力チェックでおかしな点（エラー）が見つかったら、データをモデルに詰めて、フォーム画面に戻す
         if (bindingResult.hasErrors()) {
             model.addAttribute("user", user); // これを書いておくと、エラー内容と入力値を画面に引き継げる
@@ -88,10 +92,17 @@ public class UserController {
             throw new IllegalStateException("エラー：新規登録ですが、既に存在するID（" + user.getId() + "）が指定されたため処理を中断しました");
         }
 
+        // 画面から入力された生のパスワードを取得
+        String rawPassword = user.getPassword();
+        // パスワードをハッシュ化する
+        String hashedPassword = passwordEncoder.encode(rawPassword);
+        // ハッシュ化したパスワードをUserオブジェクトに再セットする
+        user.setPassword(hashedPassword);
+
         userRepository.save(user);
 
-        // 保存が終わったら、ユーザー一覧画面（/users）にリダイレクトさせる
-        return "redirect:/users";
+        // 保存が終わったら、ログイン画面にリダイレクトさせる
+        return "redirect:/login";
     }
 
     // 3. 編集・更新用の保存窓口

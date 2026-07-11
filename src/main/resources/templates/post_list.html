@@ -63,7 +63,8 @@
                     </button>
 
                     <button type="button" class="vote-button" th:data-post-id="${post.id}"
-                        th:data-is-own="${post.user.id == 2}" th:classappend="${post.votedByMe} ? 'voted' : ''">
+                        th:data-is-own="${loginUser != null && post.user.id == loginUser.id}" 
+                        th:classappend="${post.votedByMe} ? 'voted' : ''">
                         <span class="vote-icon" th:text="${post.votedByMe} ? '★' : '☆'">☆</span>
                         <span class="vote-count" th:text="${post.voteCount}">0</span>
                     </button>

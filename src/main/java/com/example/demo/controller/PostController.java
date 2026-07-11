@@ -236,6 +236,37 @@ public class PostController {
 		// 1. 指定されたユーザーIDの投稿だけを最新順で取得
 		List<Post> posts = postRepository.findByUserIdOrderByCreatedAtDesc(userId);
 
+		// 2. セッションからユーザー情報を取得
+		User sessionUser = (User) session.getAttribute("loginUser");
+
+		// タイムラインと同じ構造：ログインしている場合のみ最新のユーザー情報をDBから取得してモデルに渡す
+		if (sessionUser != null) {
+
+			userRepository.findById(sessionUser.getId())
+				.ifPresent(currentUser -> {
+					model.addAttribute("loginUser", currentUser);
+
+					// 各投稿にいいね・Vote情報を付与
+					for (Post post : posts) {
+						post.setLikeCount(likeRepository.countByPost(post));
+						post.setLikedByMe(likeRepository.existsByUserAndPost(currentUser, post));
+
+						post.setVoteCount(voteRepository.countByPost(post));
+						post.setVotedByMe(voteRepository.existsByUserAndPost(currentUser, post));
+					}
+				});
+		} else {
+
+			// 未ログインの場合はnullを明示し、投稿の自分のアクションフラグを一律falseにする
+			model.addAttribute("loginUser", null);
+			for (Post post : posts) {
+				post.setLikeCount(likeRepository.countByPost(post));
+				post.setLikedByMe(false);
+				post.setVoteCount(voteRepository.countByPost(post));
+				post.setVotedByMe(false);
+			}
+		}
+
 		// 2. 画面のタイトル等に表示するために、そのユーザーの名前も取得（任意）
 		if (!posts.isEmpty()) {
 			model.addAttribute("targetUser", posts.get(0).getUser());
@@ -243,12 +274,6 @@ public class PostController {
 			// 投稿が空の場合でも動くように、ユーザー自身を直接取得してモデルに入れると安全
 			model.addAttribute("targetUser", userRepository.findById(userId).orElse(null));
 		}
-
-		User loginUser = (User) session.getAttribute("loginUser");
-
-		// 特定のユーザーの投稿一覧画面を開いたときに「自分のデータ（loginUser）」も一緒に画面に渡さないと、
-		// 画面側で「すでにフォローしているかどうか」の判断ができない。
-		model.addAttribute("loginUser", loginUser);
 
 		model.addAttribute("posts", posts);
 		return "user_post_list";
@@ -319,21 +344,26 @@ public class PostController {
 			@RequestParam("content") String content,
 			HttpSession session) {
 
-		// 1. どの当行に対するコメントか、親を取得
-		Post post = postRepository.findById(id)
-				.orElseThrow(() -> new IllegalArgumentException("投稿が見つかりません"));
-
-		// 2. 誰が書いたか（ログインユーザー）を取得
-		User me = (User) session.getAttribute("loginUser");
-		if (me == null) {
+		// 1. セッションからは「箱」としてユーザーを取得
+		User sessionUser = (User) session.getAttribute("loginUser");
+		// セッション自体が空、またはDBから最新のユーザーが取得できない場合はログインへ
+		if (sessionUser == null) {
 			return "redirect:/login";
 		}
+
+		// 最新のユーザー情報をDBから引き直す（Lazy/セッション不整合対策）
+		User me = userRepository.findById(sessionUser.getId())
+			.orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+		// 2. どの投稿に対するコメントか、親を取得
+		Post post = postRepository.findById(id)
+				.orElseThrow(() -> new IllegalArgumentException("投稿が見つかりません"));
 
 		// 3. コメントオブジェクトを生成してデータをセット
 		Comment comment = new Comment();
 		comment.setContent(content);
 		comment.setPost(post);
-		comment.setUser(me);
+		comment.setUser(me); // 最新のユーザーオブジェクトを紐づける
 
 		// 4. データベースに保存
 		commentRepository.save(comment);
