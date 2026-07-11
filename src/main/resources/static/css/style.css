@@ -190,6 +190,7 @@ h3 {
     width: 80%;
     max-width: 600px;
 }
+
 .form-group {
     margin-bottom: 20px;
 }
@@ -863,6 +864,7 @@ select {
 .login-btn {
     margin-left: auto;
 }
+
 /* ==========================================
    🔔 7. 通知一覧画面
    ========================================== */
@@ -925,10 +927,130 @@ select {
 }
 
 /* ==========================================
+   💬 チャット
+   ========================================== */
+.chat-container {
+    max-width: 600px;
+    margin: 20px auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    height: 500px;
+    background-color: #f9f9f9;
+}
+
+.chat-header {
+    background-color: #001a41;
+    color: white;
+    padding: 15px;
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
+    font-weight: bold;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* メッセージ1件分の塊（縦並びにする） */
+.message-wrapper { 
+    display: flex; 
+    flex-direction: column; 
+    margin-bottom: 12px; /* メッセージごとの間隔を少し広めに */
+    max-width: 70%;
+}
+
+/* 自分のメッセージは全体を右に寄せる */
+.message-wrapper.sent { 
+    align-self: flex-end; 
+    align-items: flex-end; 
+}
+
+/* 相手のメッセージは全体を左に寄せる */
+.message-wrapper.received { 
+    align-self: flex-start; 
+    align-items: flex-start; 
+}
+
+/* 💬 バブル自体のスタイル（本文のみ） */
+.message-box { 
+    padding: 10px 14px; 
+    border-radius: 15px; 
+    font-size: 14px; 
+    line-height: 1.4; 
+    word-break: break-all; 
+}
+
+/* 自分のバブル（右側・青系） */
+.message-wrapper.sent .message-box { 
+    background-color: #001a41; 
+    color: white; 
+    border-bottom-right-radius: 2px; 
+}
+
+/* 相手のバブル（左側・グレー系） */
+.message-wrapper.received .message-box { 
+    background-color: #e9ecef; 
+    color: #333; 
+    border-bottom-left-radius: 2px; 
+}
+
+/* バブルの「下」に出る日時のスタイル */
+.message-time { 
+    font-size: 11px; 
+    color: #888; 
+    margin-top: 4px; /* バブルとの間に少し隙間を作る */
+    padding: 0 4px;  /* ほんの少しだけ内側に寄せて見栄えを良くする */
+}
+
+.chat-form {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    background-color: white;
+    border-bottom-left-radius: 7px;
+    border-bottom-right-radius: 7px;
+}
+
+.chat-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    font-size: 14px;
+}
+
+.chat-submit {
+    background-color: #001a41;
+    color: white;
+    border: none;
+    padding: 0 20px;
+    margin-left: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.chat-submit:hover {
+    opacity: 0.9;
+}
+
+.no-message-txt {
+    color: #888; text-align: center; margin-top: 20px; font-size: 14px;
+}
+
+
+/* ==========================================
    📱 レスポンシブ
    ========================================== */
-
-@media screen and (max-width: 678px) {
+@media screen and (max-width: 768px) {
     .sidebar {
         display: none;
     }

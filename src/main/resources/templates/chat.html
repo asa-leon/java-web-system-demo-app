@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title th:text="${talkToUser.name} + 'さんとのチャット'">Chat</title>
+		<link rel="stylesheet" th:href="@{/css/style.css}">
+	</head>
+
+	<body>
+		
+		<div class="chat-container">
+			<!-- ヘッダー：相手の名前を表示 -->
+			<div class="chat-header">
+				<span th:text="${talkToUser.name} + ' (@' + ${talkToUser.userId} + ')'">相手の名前</span>
+			</div>
+
+			<!-- メッセージ履歴エリア -->
+			<div class="chat-messages">
+				<!-- 履歴をループで回す -->
+				<div th:each="msg : ${chatHistory}"
+					th:class="${msg.sender.id == loginUser.id} ? 'message-wrapper sent' : 'message-wrapper received'">
+
+					<!-- メッセージ本文 -->
+					<div class="message-box" th:text="${msg.content}"></div>
+
+					<!-- 送信日時 -->
+					<div class="message-time" th:text="${#temporals.format(msg.createdAt, 'yyyy/MM/dd HH:mm')}"></div>
+					
+					
+				</div>
+
+				<!-- メッセージが1件もない場合の表示 -->
+				<div th:if="${#lists.isEmpty(chatHistory)}" class="no-message-txt">
+					メッセージはまだありません。会話を始めてみましょう！
+				</div>
+			</div>
+
+			<!-- 送信フォーム -->
+			<form th:action="@{/messages/send}" method="post" class="chat-form">
+				<!-- 送信先のユーザーIDを隠し持っておく -->
+				<input type="hidden" name="recipientId" th:value="${talkToUser.id}" />
+
+				<input type="text" name="content" class="chat-input" placeholder="メッセージを入力..." required autocomplete="off" />
+				<button type="submit" class="chat-submit">送信</button>
+			</form>
+		</div>
+
+	</body>
+</html>
