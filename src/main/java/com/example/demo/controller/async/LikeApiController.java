@@ -3,7 +3,7 @@ package com.example.demo.controller.async;
 import com.example.demo.model.Post;
 import com.example.demo.model.User;
 import com.example.demo.model.Like;
-import com.example.demo.model.Notification;
+import com.example.demo.model.PostNotification;
 import com.example.demo.repository.LikeRepository;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.NotificationsRepository;
@@ -64,8 +64,8 @@ public class LikeApiController {
 			// 通知機能： いいね通知を裏で作成して保存する
 			// 自作自演（自分の投稿に自分でいいね）でなければ通知を送る
 			if (!post.getUser().getId().equals(currentUser.getId())) {
-				Notification notification = new Notification();
-				notification.setType(Notification.NotificationType.LIKE); // タイプ：LIKE
+				PostNotification notification = new PostNotification();
+				notification.setType(PostNotification.PostNotificationType.LIKE); // タイプ：LIKE
 				notification.setSender(currentUser); // アクションを起こした人（自分）
 				notification.setReceiver(post.getUser()); // 通知を受ける人（投稿の作者）
 				notification.setPost(post); // 対象の投稿

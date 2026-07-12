@@ -3,7 +3,7 @@ package com.example.demo.controller.async;
 import com.example.demo.model.Post;
 import com.example.demo.model.User;
 import com.example.demo.model.Vote;
-import com.example.demo.model.Notification;
+import com.example.demo.model.PostNotification;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.VoteRepository;
 import com.example.demo.repository.NotificationsRepository;
@@ -63,8 +63,8 @@ public class VoteApiController {
 
             // 通知機能： 投票（Vote）通知を裏で作成して保存する
             if (!post.getUser().getId().equals(currentUser.getId())) {
-                Notification notification = new Notification();
-                notification.setType(Notification.NotificationType.VOTE); // タイプ：VOTE
+                PostNotification notification = new PostNotification();
+                notification.setType(PostNotification.PostNotificationType.VOTE); // タイプ：VOTE
                 notification.setSender(currentUser);
                 notification.setReceiver(post.getUser());
                 notification.setPost(post);

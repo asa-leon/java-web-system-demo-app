@@ -1,44 +1,74 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8">
-    <title>通知一覧</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+	<meta charset="UTF-8">
+	<title>通知一覧</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
+
 <body>
-    
-    <div class="container">
-        <h2>🔔 通知一覧</h2>
 
-        <div th:replace="~{header :: common-header(~{})}"></div>
+	<div class="container">
+		<h2>🔔 通知一覧</h2>
 
-        <!-- 通知が空の場合 -->
-         <div th:if="${#lists.isEmpty(notifications)}" class="empty-message">
-            <p>まだ通知はありません。</p>
-         </div>
+		<div th:replace="~{header :: common-header(~{})}"></div>
 
-        <!-- 通知ループ処理 -->
-        <div th:each="n : ${notifications}" class="notification-card">
-            <!-- タイプ別のアイコン表示 -->
-             <div class="notification-icon">
-                <span th:if="${n.type.name() == 'LIKE'}">❤️</span>
-                <span th:if="${n.type.name() == 'VOTE'}">🏛️</span>
-            </div>
+		<!-- 通知が空の場合 -->
+		<div th:if="${#lists.isEmpty(notifications)}" class="empty-message">
+			<p>まだ通知はありません。</p>
+		</div>
 
-            <div class="notification-body">
-                <!-- 送信者（アクションした人）の名前 -->
-                 <span class="sender-name" th:text="${n.sender.icon} + ' ' + ${n.sender.name}"></span> さんが、
+		<!-- 通知ループ処理 -->
+		<div th:each="n : ${notifications}" 
+			th:class="${n.read} ? 'notification-card' : 'notification-card unread'">
 
-                <!-- タイプ別のテキスト切り替え -->
-				<span th:if="${n.type.name() == 'LIKE'}">あなたの投稿に「いいね」しました。</span>
-				<span th:if="${n.type.name() == 'VOTE'}">あなたの提出法案に「投票」しました。</span>
+			<!-- 1. 投稿関連の通知（PostNotification型）の場合-->
+			<th:block th:if="${n.postNotification}">
+				<!-- タイプ別のアイコン表示 -->
+				<div class="notification-icon">
+					<span th:if="${n.type.name() == 'LIKE'}">❤️</span>
+					<span th:if="${n.type.name() == 'VOTE'}">🏛️</span>
+					<span th:if="${n.type.name() == 'COMMENT'}">💬</span>
+				</div>
 
-				<!-- 対象の投稿へのリンク（内容の一部をプレビュー） -->
-				<a th:href="@{/posts/{id}(id=${n.post.id})}" class="post-preview" th:text="'「' + ${n.post.content} + '」'"></a>
-            </div>
+				<div class="notification-body">
+					<!-- 送信者（アクションした人）の名前 -->
+					<span class="sender-name" th:text="${n.sender.icon} + ' ' + ${n.sender.name}"></span> さんが、
+
+					<!-- タイプ別のテキスト切り替え -->
+					<span th:if="${n.type.name() == 'LIKE'}">あなたの投稿に「いいね」しました。</span>
+					<span th:if="${n.type.name() == 'VOTE'}">あなたの提出法案に「投票」しました。</span>
+					<span th:if="${n.type.name() == 'COMMENT'}">あなたの投稿に「コメント」しました。</span>
+
+					<!-- 直接URLではなく、既読化コントローラー（PostController.readAndRedirect()）を通す -->
+					<a th:href="@{/notifications/{id}/read(id=${n.id})}" class="post-preview"
+						th:text="'「' + ${n.post.content} + '」'"></a>
+				</div>
+			</th:block>
+
+			<!-- 2. メッセージ関連の通知（MessageNotification型）の場合 -->
+			<th:block th:if="${n.messageNotification}">
+				<!-- メッセージ用のアイコン -->
+				<div class="notification-icon">
+					<span>✉️</span>
+				</div>
+
+				<div class="notification-body">
+					<!-- 送信者の名前 -->
+					<span class="sender-name" th:text="${n.sender.name}"></span> さんから、
+					<span>新着メッセージが届いています。</span>
+
+					<!-- こちらも直接URLではなく、既読かコントローラーを通す -->
+					<a th:href="@{/notifications/{id}/read(id=${n.id})}" class="post-preview">
+						【チャットを開く】
+					</a>
+				</div>
+			</th:block>
 
 			<div class="notification-time" th:text="${#temporals.format(n.createdAt, 'MM/dd（E）HH:mm')}"></div>
-        </div>
-    </div>
+		</div>
+	</div>
 </body>
+
 </html>

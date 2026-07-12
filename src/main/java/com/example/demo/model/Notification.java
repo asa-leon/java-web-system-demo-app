@@ -7,6 +7,10 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "notifications")
+// クラスの継承戦略を「単一テーブル（SINGLE_TABLE）」に設定
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+// どの子クラスかを識別するためのカラム（デフォルト名：dtype）を定義
+@DiscriminatorColumn(name = "dtype", discriminatorType = DiscriminatorType.STRING)
 @Getter
 @Setter
 public class Notification {
@@ -15,36 +19,23 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 通知の種類
-    // 1. Enumで定義
-    public enum NotificationType {
-        LIKE, VOTE, COMMENT
-    }
-    // 2. @Enumerated以下でテーブルに追加する状態を作る
-    @Enumerated(EnumType.STRING)
-    @Column(name = "notification_type", nullable = false)
-    private NotificationType type;
+    // ⭕ NotificationType から MESSAGE を削除し、ここでは既存の LIKE, VOTE, COMMENT のみを残すか、
+    // あるいは今後の拡張のために Enum 自体を各子クラスの役割に応じて整理する。
+    // 今回は親クラスから type カラムごと排除し、クラスの型そのもので識別する形にスマート化する。
 
-    // 通知を受ける人（投稿の作者など）
+    // 通知を受ける人
     @ManyToOne
     @JoinColumn(name = "receiver_id", nullable = false,
         foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE")
     )
     private User receiver;
 
-    // アクションを起こした人（ボタンを押した人など）
+    // アクションを起こした人
     @ManyToOne
     @JoinColumn(name = "sender_id", nullable = false,
         foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE")
     )
     private User sender;
-
-    // どの投稿に対するアクションか
-    @ManyToOne
-    @JoinColumn(name = "post_id", nullable = false,
-        foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE")
-    )
-    private Post post;
 
     // 既読フラグ（未読：false, 既読：true）
     @Column(name = "is_read", nullable = false)
@@ -57,5 +48,14 @@ public class Notification {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
+    }
+
+    // 画面の出し分け用メソッド
+    public boolean isPostNotification() {
+        return this instanceof PostNotification;
+    }
+
+    public boolean isMessageNotification() {
+        return this instanceof MessageNotification;
     }
 }

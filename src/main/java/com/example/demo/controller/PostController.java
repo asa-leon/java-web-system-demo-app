@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.model.Comment;
 import com.example.demo.model.Post;
+import com.example.demo.model.PostNotification;
 import com.example.demo.model.User;
 import com.example.demo.model.Tag;
 import com.example.demo.repository.CommentRepository;
@@ -27,6 +28,7 @@ import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.TagRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.VoteRepository;
+import com.example.demo.repository.NotificationsRepository;
 
 //import org.springframework.data.jpa.domain.Specification;
 //import org.springframework.data.domain.Sort;
@@ -43,6 +45,7 @@ public class PostController {
 
 	// Vote-1: レポジトリをインジェクションしておく
 	private final VoteRepository voteRepository;
+	private final NotificationsRepository notificationsRepository;
 
 	// 投稿一覧を表示する窓口
 	@GetMapping("/posts")
@@ -328,11 +331,31 @@ public class PostController {
 		Post post = postRepository.findById(id)
 				.orElseThrow(() -> new IllegalArgumentException("指定された投稿が見つかりません:" + id));
 
+		// セッションからログインユーザーを取得（最新情報をDBから引き直す）
+		User sessionUser = (User) session.getAttribute("loginUser");
+		User currentUser = null;
+		if (sessionUser != null) {
+			currentUser = userRepository.findById(sessionUser.getId()).orElse(null);
+		}
+
+		// 取得した1件の投稿にいいね数と投票数の情報を詰め込む
+		post.setLikeCount(likeRepository.countByPost(post));
+		post.setVoteCount(voteRepository.countByPost(post));
+
+		if (currentUser != null) {
+			post.setLikedByMe(likeRepository.existsByUserAndPost(currentUser, post));
+			post.setVotedByMe(voteRepository.existsByUserAndPost(currentUser, post));
+			model.addAttribute("loginUser", currentUser); // 常に最新のユーザーを渡す
+		} else {
+			post.setLikedByMe(false);
+			post.setVotedByMe(false);
+			model.addAttribute("loginUser", null);
+		}
+
 		// 2. 画面にデータを渡す
 		model.addAttribute("post", post);
 		// Post.java に @OneToMany を書いたので、JPAが自動で紐づくコメントを一緒に持ってきてくれる
 		model.addAttribute("comments", post.getComments());
-		model.addAttribute("loginUser", session.getAttribute("loginUser"));
 
 		return "post_detail";
 	}
@@ -368,7 +391,18 @@ public class PostController {
 		// 4. データベースに保存
 		commentRepository.save(comment);
 
-		// 5. 書き込みが終わったら、元の詳細画面にリダイレクトで戻る
+		// 5. 通知機能：自作自演（自分の投稿に自分でコメント）でなければ、投稿の作者宛にコメント通知を作成して保存
+		if (!post.getUser().getId().equals(me.getId())) {
+			PostNotification notification = new PostNotification();
+			notification.setType(PostNotification.PostNotificationType.COMMENT);
+			notification.setSender(me);
+			notification.setReceiver(post.getUser());
+			notification.setPost(post);
+
+			notificationsRepository.save(notification);
+		}
+
+		// 6. 書き込みが終わったら、元の詳細画面にリダイレクトで戻る
 		return "redirect:/posts/" + id;
 	}
 

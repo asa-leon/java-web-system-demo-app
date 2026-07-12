@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Notification;
+import com.example.demo.model.PostNotification;
 import com.example.demo.model.User;
 import com.example.demo.repository.NotificationsRepository;
 import jakarta.servlet.http.HttpSession;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -23,25 +25,45 @@ public class NotificationController {
     public String showNotifications(HttpSession session, Model model) {
 
         // セッションからログインユーザーを取得
-		User currentUser = (User) session.getAttribute("loginUser");
-		if (currentUser == null) {
-			return "redirect:/login";
-		}
+        User currentUser = (User) session.getAttribute("loginUser");
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
 
         // 1. 自分（Receiver）宛の通知をIDの降順（新しい順）で全件取得
         List<Notification> notifications = notificationsRepository.findByReceiverOrderByIdDesc(currentUser);
 
-        // 2. 取得した通知の中に「未読（isReadがfalse）」の物があれば、すべて既読（true）にする
-        for (Notification n : notifications) {
-            if (!n.isRead()) { // もし未読なら
-                n.setRead(true); // 既読状態にセット
-            }
-        }
-
-        // 3. 状態を変更した通知たちをデータベースに一括で上書き保存する
-        notificationsRepository.saveAll(notifications);
-        
         model.addAttribute("notifications", notifications);
         return "notification_list";
+    }
+
+    @GetMapping("/{id}/read")
+    public String readAndRedirect(@PathVariable Long id, HttpSession session) {
+        User loginUser = (User) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            return "redirect:/login";
+        }
+
+        // 対象の通知を取得
+        Notification notification = notificationsRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("無効な通知IDです: " + id));
+
+        // 安全のため、ログインユーザー宛の通知である場合のみ既読にする
+        if (notification.getReceiver().getId().equals(loginUser.getId())) {
+            notification.setRead(true);
+            notificationsRepository.save(notification);
+        }
+
+        // 通知の型に応じて、本来の目的地へリダイレクトさせる
+        if (notification.isPostNotification()) {
+            // PostNotification型にキャストしてpostのIDを取得
+            PostNotification postNav = (PostNotification) notification;
+            return "redirect:/posts/" + postNav.getPost().getId();
+        } else if (notification.isMessageNotification()) {
+            // MessegaNotification型の場合は、送ってきた相手とのチャット画面へ
+            return "redirect:/messages/chat/" + notification.getSender().getId();
+        }
+
+        return "redirect:/posts"; // 念の為のフォールバック
     }
 }
