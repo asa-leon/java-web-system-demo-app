@@ -8,10 +8,18 @@
 		<a th:href="@{/posts/new}" class="nav-links">➕ <span class="smaller">新規投稿</span></a>
 		<a th:href="@{/users}" class="nav-links">👤 <span class="smaller">ユーザー一覧</span></a>
 
-		<!-- 通知リンク（未読数がある時だけ🔴バッヂを表示） -->
+		<!-- ポスト通知リンク（PostNotificationの未読数がある時だけ🔴バッヂを表示） -->
 		<a th:href="@{/notifications}" class="nav-links notification">
 			🔔 <span class="smaller">通知</span>
-			<span th:if="${unreadCount > 0}" th:text="${unreadCount}">
+			<span th:if="${unreadPostCount > 0}" th:text="${unreadPostCount}">
+				0
+			</span>
+		</a>
+
+		<!-- メッセージ通知（MessageNotificationの未読数がある時だけ🔴バッヂを表示） -->
+		<a th:href="@{/messages/list}" class="nav-links notification">
+			📩 <span class="smaller">DM</span>
+			<span th:if="${unreadMessageCount > 0}" th:text="${unreadMessageCount}">
 				0
 			</span>
 		</a>

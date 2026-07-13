@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.ui.Model;
 
 @ControllerAdvice // 全てのコントローラーに裏で割り込むアノテーション
 @RequiredArgsConstructor
@@ -13,17 +14,27 @@ public class GlobalControllerAdvice {
     
     private final NotificationsRepository notificationsRepository;
 
-    @ModelAttribute("unreadCount") // 全ての画面（Model）に自動的に "unreadCount" という変数を注入する
-    public long getUnreadNotificationCount(HttpSession session) {
+    @ModelAttribute // 全ての画面のModelに自動的に値を注入する
+    public void getUnreadNotificationCount(HttpSession session, Model model) {
         
         // セッションから現在のログインユーザーのオブジェクトを取得する
         User currentUser = (User) session.getAttribute("loginUser");
 
         if (currentUser != null) {
-            // 未読数をカウントして返す
-            return notificationsRepository.countByReceiverAndIsReadFalse(currentUser);
-        }
 
-        return 0;
+            // 分離した未読数をそれぞれ取得して格納
+            long unreadMessageCount = notificationsRepository.countUnreadMessageNotifications(currentUser);
+            long unreadPostCount = notificationsRepository.countUnreadPostNotifications(currentUser);
+
+            model.addAttribute("unreadMessageCount", unreadMessageCount);
+            model.addAttribute("unreadPostCount", unreadPostCount);
+
+            // 既存のHTMLが崩れない様、全体の未読数（合算）も残しておく
+            model.addAttribute("unreadCount", unreadMessageCount + unreadPostCount);
+        } else {
+            model.addAttribute("unreadMessageCount", 0L);
+            model.addAttribute("unreadPostCount", 0L);
+            model.addAttribute("unreadCount", 0L);
+        }
     }
 }
