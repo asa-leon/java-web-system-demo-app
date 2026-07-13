@@ -14,7 +14,7 @@
         <div th:replace="~{header :: common-header(~{:: .user-links})}">
             <!-- この中身が引数としてヘッダー側に送り込まれる -->
             <th:block class="user-links">
-                <a th:href="@{/users/new}" class="nav-links">➕ 新しいユーザーを登録する</a>
+                <a th:href="@{/users/new}" class="nav-links add-user">➕ <span class="smaller">新規ユーザー登録</span></a>
             </th:block>
         </div>
 

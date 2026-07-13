@@ -54,6 +54,17 @@ public class PostController {
 			HttpSession session,
 			Model model) {
 
+		// ==========================================
+		// 🛠【開発用ショートカット】自動ログイン処理
+		// ==========================================
+		if (session.getAttribute("loginUser") == null) {
+			// 例：import.sql でIDが「2」のサンプルユーザー（higakoなど）を強制的に取得
+			userRepository.findById(2L).ifPresent(devUser -> {
+				session.setAttribute("loginUser", devUser);
+			});
+		}
+		// ==========================================		
+
 		// セッションからユーザー情報を取得
 		User sessionUser = (User) session.getAttribute("loginUser");
 
