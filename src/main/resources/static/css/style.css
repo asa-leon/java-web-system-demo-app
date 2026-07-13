@@ -309,7 +309,6 @@ select {
 .vote-button {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 20px;
     color: #ffffff;
     padding: 6px 14px;
     font-size: 0.85rem;
@@ -322,6 +321,10 @@ select {
 }
 
 /* ❤️ 個別スタイル */
+.like-button {
+    border-radius: 20px;
+}
+
 .like-button.liked {
     color: #ff6584 !important;
     background: rgba(239, 68, 68, 0.15) !important;
@@ -337,6 +340,7 @@ select {
 /* ★ 個別スタイル */
 .vote-button {
     color: #88a0c0;
+    border-radius: 5px;
 }
 
 .vote-button:hover {
@@ -841,6 +845,10 @@ select {
     display: flex;
     align-items: center;
     gap: 4px;
+    border-right: 1px solid;
+    padding-right: 15px;
+    border-image: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1)) 1;
+    position: relative;
 }
 
 .nav-links.add-user {
@@ -855,6 +863,9 @@ select {
     padding: 2px 6px;
     border-radius: 10px;
     line-height: 1;
+    position: absolute;
+    top: 0;
+    right: 25%;
 }
 
 .nav-links span.smaller {
@@ -867,6 +878,9 @@ select {
     align-items: center;
     gap: 10px;
     margin-left: auto;
+    border-right: 1px solid;
+    padding-right: 15px;
+    border-image: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1)) 1;
 }
 
 .user-badge {
