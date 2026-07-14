@@ -15,7 +15,7 @@ public interface TagRepository extends JpaRepository<Tag, Long>{
     @Query(value = "SELECT t.* FROM tags t " +
                "LEFT JOIN post_tags pt ON t.id = pt.tag_id " +
                "LEFT JOIN posts p ON pt.post_id = p.id " +
-               "WHERE p.created_at >= DATEADD('DAY', -3, CURRENT_TIMESTAMP) " + // 💡 '3 DAYS' とシングルクォーテーションで囲む
+               "WHERE p.created_at >= DATE_SUB(NOW(), INTERVAL 3 DAY) " + // 💡 '3 DAYS' とシングルクォーテーションで囲む
                "GROUP BY t.id " +
                "ORDER BY COUNT(pt.post_id) DESC " +
                "LIMIT 5", nativeQuery = true)
