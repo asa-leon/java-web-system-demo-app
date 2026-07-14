@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -261,4 +262,36 @@ public class UserController {
         return referer != null ? "redirect:" + referer.replaceFirst("^https?://[^/]+", "") : "redirect:/posts";
     }
 
+    @GetMapping("/users/{id}")
+    public String viewProfile(
+            @PathVariable("id") Long id,
+            HttpSession session,
+            Model model,
+            HttpServletResponse response) {
+
+        // 1. 「戻るボタン」対策：プロフィール画面もキャッシュさせない
+        response.setHeader("Cache-Control", "no-cache, no-store, muns-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
+
+        // 2. sessyonkararoguモデルに渡す（既存のshowUserListと統一）
+        User sessionUser = (User) session.getAttribute("loginUser");
+        if (sessionUser != null) {
+            userRepository.findById(sessionUser.getId()).ifPresent(currentUser -> {
+                model.addAttribute("loginUser", currentUser);
+            });
+        } else {
+            // 未ログイン時はログイン画面に飛ばす
+            return "refirect:/login";
+        }
+
+        // 3. URLで指定されたIDのユーザー情報をDBから取得
+        User targetUser = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("指定されたユーザーが見つかりません ID:" + id));
+
+        // 表示対象のユーザー情報をモデルに詰める
+        model.addAttribute("targetUser", targetUser);
+
+        return "profile";
+    }
 }

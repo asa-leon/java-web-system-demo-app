@@ -14,7 +14,7 @@
             <div class="parent-post">
                 <div class="post-header">
                     <span th:text="${post.user.icon}"></span>
-                    <span class="user-name" th:text="${post.user.name}"></span>
+                    <span class="user-name"><a th:href="@{/users/{id}(id=${post.user.id})}" th:text="${post.user.name}"></a></span>
                     <span class="post-time" th:text="${#temporals.format(post.createdAt, 'yyyy/MM/dd（E）HH:mm')}"></span>
                 </div>
                 <p class="post-content" th:text="${post.content}"></p>

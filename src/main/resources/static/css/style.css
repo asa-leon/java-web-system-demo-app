@@ -1081,6 +1081,84 @@ select {
     color: #888; text-align: center; margin-top: 20px; font-size: 14px;
 }
 
+/* ==========================================
+   👤 8. プロフィール画面固有スタイル（拡張用）
+   ========================================== */
+.profile-page-card {
+    margin-top: 20px;
+    padding: 40px 30px;
+}
+
+.profile-header-area {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 24px;
+}
+
+.profile-avatar {
+    font-size: 3rem;
+    background: rgba(255, 255, 255, 0.1);
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.profile-title-meta {
+    flex: 1;
+}
+
+.profile-display-name {
+    margin: 0 0 6px 0 !important;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.profile-user-email {
+    color: #9ca3af;
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+.profile-actions-zone {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.profile-action-wrapper {
+    width: 100%;
+    max-width: 240px;
+}
+
+/* submit-btnをaタグリンクとして使うための微調整 */
+.text-center-link {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    margin-top: 0;
+}
+
+/* 既存のedit-linkをプロフィール幅に最適化 */
+.profile-edit-btn {
+    display: block;
+    text-align: center;
+    padding: 11px 14px;
+    font-weight: bold;
+}
+
+.profile-extended-content {
+    margin-top: 20px;
+}
 
 /* ==========================================
    📱 レスポンシブ

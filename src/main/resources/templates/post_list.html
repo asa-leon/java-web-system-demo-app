@@ -41,7 +41,7 @@
                 <div class="post-header">
                     <span class="user-name">
                         <span th:text="${post.user.icon}" class="user-icon"></span>
-                        <a th:href="@{/posts/user/{id}(id=${post.user.id})}" th:text="${post.user.name}"></a>
+                        <a th:href="@{/users/{id}(id=${post.user.id})}" th:text="${post.user.name}"></a>
                     </span>
                     <span class="user-id" th:text="'(ID: ' + ${post.user.id} + ')'"></span>
                     <span class="post-time"
