@@ -40,7 +40,7 @@
 
 				<!-- 自分のプロフィールの場合は「編集」ボタン（将来の拡張枠） -->
 				<div th:if="${loginUser.id == targetUser.id}" class="profile-action-wrapper">
-					<a href="@{/users/edit/{id}(id=${loginUser.id})}" class="edit-link profile-edit-btn">
+					<a th:href="@{/users/edit/{id}(id=${loginUser.id})}" class="edit-link profile-edit-btn">
 						⚙️ プロフィールを編集
 					</a>
 				</div>

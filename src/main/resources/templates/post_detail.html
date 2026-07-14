@@ -33,7 +33,11 @@
                         <span class="vote-count" th:text="${post.voteCount}">0</span>
                     </button>
                 </div>
+                
             </div>
+		<div class="nav-back">
+			<a th:href="@{/posts}">🔙 タイムラインに戻る</a>
+		</div>
 
             <div class="comment-section">
                 <h3>💬 返信・コメント</h3>

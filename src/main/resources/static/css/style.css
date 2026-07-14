@@ -272,7 +272,7 @@ select {
 .footer-links,
 .nav-back {
     text-align: center;
-    margin-top: 24px;
+    margin-block: 24px;
 }
 
 .footer-links a,

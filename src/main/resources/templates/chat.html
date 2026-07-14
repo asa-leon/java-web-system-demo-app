@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-	<head>
-		<meta charset="UTF-8">
-		<title th:text="${talkToUser.name} + 'さんとのチャット'">Chat</title>
-		<link rel="stylesheet" th:href="@{/css/style.css}">
-	</head>
 
-	<body>
-		
+<head>
+	<meta charset="UTF-8">
+	<title th:text="${talkToUser.name} + 'さんとのチャット'">Chat</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+	<div class="container">
+		<!-- 既存の共通ヘッダーを読み込み -->
+		<div th:replace="~{header :: common-header(~{})}"></div>
+
 		<div class="chat-container">
 			<!-- ヘッダー：相手の名前を表示 -->
 			<div class="chat-header">
@@ -25,8 +29,8 @@
 
 					<!-- 送信日時 -->
 					<div class="message-time" th:text="${#temporals.format(msg.createdAt, 'yyyy/MM/dd HH:mm')}"></div>
-					
-					
+
+
 				</div>
 
 				<!-- メッセージが1件もない場合の表示 -->
@@ -40,10 +44,18 @@
 				<!-- 送信先のユーザーIDを隠し持っておく -->
 				<input type="hidden" name="recipientId" th:value="${talkToUser.id}" />
 
-				<input type="text" name="content" class="chat-input" placeholder="メッセージを入力..." required autocomplete="off" />
+				<input type="text" name="content" class="chat-input" placeholder="メッセージを入力..." required
+					autocomplete="off" />
 				<button type="submit" class="chat-submit">送信</button>
 			</form>
 		</div>
 
-	</body>
+		
+		<div class="nav-back">
+			<a th:href="@{/messages/list}">🔙 メッセージ一覧に戻る</a>
+		</div>
+	</div>
+
+</body>
+
 </html>
