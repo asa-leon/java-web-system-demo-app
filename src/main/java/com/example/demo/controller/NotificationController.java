@@ -5,6 +5,7 @@ import com.example.demo.model.PostNotification;
 import com.example.demo.model.User;
 import com.example.demo.repository.NotificationsRepository;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,7 +23,11 @@ public class NotificationController {
     private final NotificationsRepository notificationsRepository;
 
     @GetMapping
-    public String showNotifications(HttpSession session, Model model) {
+    public String showNotifications(HttpSession session, HttpServletResponse response, Model model) {
+        
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+		response.setHeader("Pragma", "no-cache");
+		response.setDateHeader("Expires", 0);
 
         // セッションからログインユーザーを取得
         User currentUser = (User) session.getAttribute("loginUser");

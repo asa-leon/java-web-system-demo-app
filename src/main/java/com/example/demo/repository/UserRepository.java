@@ -23,7 +23,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 中間テーブルから指定したユーザーIDのフォロー・被フォロー関係をすべて削除する
     @Modifying
     @Transactional
-    @Query(value = "DELETE FROM user_follows WHERE user_id = :id OR follow_id = :id", nativeQuery=true)
+    @Query(value = "DELETE FROM user_follows WHERE follower_id = :id OR following_id = :id", nativeQuery=true)
     void deleteFollowRelationsByUserId(@Param("id") Long id);
 
     // 削除処理の直前にSQLで自分自身の投稿に紐づく post_tags のデータを一掃する

@@ -28,7 +28,7 @@ public class Message {
 
 	// 受信者
 	@ManyToOne
-	@JoinColumn(name = "recipent_id", nullable = false)
+	@JoinColumn(name = "recipient_id", nullable = false)
 	private User recipient;
 
 	// メッセージ本文
