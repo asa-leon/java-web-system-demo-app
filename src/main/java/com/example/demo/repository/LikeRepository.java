@@ -8,12 +8,12 @@ import java.util.Optional;
 
 public interface LikeRepository extends JpaRepository<Like, Long> {
     
-    // 特定のユーザーが、特定の投稿にいいねしているかを探す
-    Optional<Like> findByUserAndPost(User user, Bill post);
+    // 特定のユーザーが、特定のて案にいいねしているかを探す
+    Optional<Like> findByUserAndBill(User user, Bill bill);
 
     // 該当する投稿の総いいね数を数える
-    long countByPost(Bill post);
+    long countByBill(Bill bill);
 
     // 特定のユーザーがすでにVoteしているかどうかの判定用
-    boolean existsByUserAndPost(User user, Bill post);
+    boolean existsByUserAndBill(User user, Bill bill);
 }

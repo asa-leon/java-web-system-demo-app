@@ -91,21 +91,21 @@ public class BillController {
 						for (Bill bill : bills) {
 
 							// 1-1. 総いいね数をカウントしてセット
-							bill.setLikeCount(likeRepository.countByPost(bill));
+							bill.setLikeCount(likeRepository.countByBill(bill));
 
 							// 1-2. ログイン中の場合、自分がいいねしたかを判定してセット
 							if (currentUser != null) {
-								bill.setLikedByMe(likeRepository.existsByUserAndPost(currentUser, bill));
+								bill.setLikedByMe(likeRepository.existsByUserAndBill(currentUser, bill));
 							} else {
 								bill.setLikedByMe(false); // 念のためユーザーがいない場合は一律false
 							}
 
 							// 総Vote数をカウントしてセット
-							bill.setVoteCount(voteRepository.countByPost(bill));
+							bill.setVoteCount(voteRepository.countByBill(bill));
 
 							// ログイン中の場合、自分がVoteしたかを判定してセット
 							if (currentUser != null) {
-								bill.setVotedByMe(voteRepository.existsByUserAndPost(currentUser, bill));
+								bill.setVotedByMe(voteRepository.existsByUserAndBill(currentUser, bill));
 							} else {
 								bill.setVotedByMe(false); // 念のためユーザーがいない場合は一律false
 							}
@@ -254,11 +254,11 @@ public class BillController {
 
 					// 各投稿にいいね・Vote情報を付与
 					for (Bill bill : bills) {
-						bill.setLikeCount(likeRepository.countByPost(bill));
-						bill.setLikedByMe(likeRepository.existsByUserAndPost(currentUser, bill));
+						bill.setLikeCount(likeRepository.countByBill(bill));
+						bill.setLikedByMe(likeRepository.existsByUserAndBill(currentUser, bill));
 
-						bill.setVoteCount(voteRepository.countByPost(bill));
-						bill.setVotedByMe(voteRepository.existsByUserAndPost(currentUser, bill));
+						bill.setVoteCount(voteRepository.countByBill(bill));
+						bill.setVotedByMe(voteRepository.existsByUserAndBill(currentUser, bill));
 					}
 				});
 		} else {
@@ -266,9 +266,9 @@ public class BillController {
 			// 未ログインの場合はnullを明示し、投稿の自分のアクションフラグを一律falseにする
 			model.addAttribute("loginUser", null);
 			for (Bill bill : bills) {
-				bill.setLikeCount(likeRepository.countByPost(bill));
+				bill.setLikeCount(likeRepository.countByBill(bill));
 				bill.setLikedByMe(false);
-				bill.setVoteCount(voteRepository.countByPost(bill));
+				bill.setVoteCount(voteRepository.countByBill(bill));
 				bill.setVotedByMe(false);
 			}
 		}
@@ -342,12 +342,12 @@ public class BillController {
 		}
 
 		// 取得した1件の投稿にいいね数と投票数の情報を詰め込む
-		bill.setLikeCount(likeRepository.countByPost(bill));
-		bill.setVoteCount(voteRepository.countByPost(bill));
+		bill.setLikeCount(likeRepository.countByBill(bill));
+		bill.setVoteCount(voteRepository.countByBill(bill));
 
 		if (currentUser != null) {
-			bill.setLikedByMe(likeRepository.existsByUserAndPost(currentUser, bill));
-			bill.setVotedByMe(voteRepository.existsByUserAndPost(currentUser, bill));
+			bill.setLikedByMe(likeRepository.existsByUserAndBill(currentUser, bill));
+			bill.setVotedByMe(voteRepository.existsByUserAndBill(currentUser, bill));
 			model.addAttribute("loginUser", currentUser); // 常に最新のユーザーを渡す
 		} else {
 			bill.setLikedByMe(false);

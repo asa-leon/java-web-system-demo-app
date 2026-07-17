@@ -8,12 +8,12 @@ import java.util.Optional;
 
 public interface VoteRepository extends JpaRepository<Vote, Long> {
     
-    // 特定のユーザーが、特定の投稿にすでにVoteしているかを探す
-    Optional<Vote> findByUserAndPost(User user, Bill post);
+    // 特定のユーザーが、特定の提案にすでにVoteしているかを探す
+    Optional<Vote> findByUserAndBill(User user, Bill bill);
 
-    // 投稿ごとに、いくつのVote（いいね）がついているかを集計する
-    long countByPost(Bill post);
+    // 提案毎に、いくつのVote（投票）がついているかを集計する
+    long countByBill(Bill bill);
 
     // 特定のユーザーがすでにVoteしているかどうかの判定用
-    boolean existsByUserAndPost(User user, Bill post);
+    boolean existsByUserAndBill(User user, Bill bill);
 }
