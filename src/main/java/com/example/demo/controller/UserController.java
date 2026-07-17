@@ -16,9 +16,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable; // URLの可変部分（パス）を扱うために必要
 import org.springframework.web.bind.annotation.RequestHeader; // フォロー機能追加時に使用
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.AvatarStorageService;
 
 import jakarta.validation.Valid; // バリデーション用1
 import org.springframework.validation.BindingResult; // バリデーション用2
@@ -29,6 +32,7 @@ public class UserController {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AvatarStorageService avatarStorageService;
 
     @GetMapping("/users")
     public String showUserList(HttpSession session, Model model) {
@@ -111,6 +115,7 @@ public class UserController {
     public String updateUser(
             @Valid User user,
             BindingResult bindingResult,
+            @RequestParam(value = "avatarFile", required = false) MultipartFile avatarFile,
             HttpSession session) {
 
         // 更新の時も同様にエラーがあればフォーム画面に戻す
@@ -129,7 +134,30 @@ public class UserController {
             throw new IllegalArgumentException("エラー：存在しないユーザーの更新はできません。");
         }
 
+        // --- アバター画像アップロード処理
+        if (avatarFile != null && !avatarFile.isEmpty()) {
+            try {
+                // 画像を保存してURLを取得
+                String avatarUrl = avatarStorageService.saveAvatar(avatarFile, user.getId());
+                // Userオブジェクトに画像URLをセットする（※UserモデルにavatarUrlフィールドがある前提）
+                user.setAvatarUrl(avatarUrl);
+            
+            } catch (Exception e) {
+                // エラーハンドリグ
+                throw new RuntimeException("アバター画像の保存に失敗しました", e);
+            }
+        } else {
+            User existingUser = userRepository.findById(user.getId()).orElse(null);
+            if (existingUser != null) {
+                user.setAvatarUrl(existingUser.getAvatarUrl());
+            }
+        }
+
         userRepository.save(user);
+
+        // セッション内のログインユーザー情報も最新に更新しておく
+        session.setAttribute("loginUser", user);
+
         return "redirect:/users";
     }
 

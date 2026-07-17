@@ -728,6 +728,30 @@ select {
     font-weight: bold;
 }
 
+.user-avatar-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.user-avatar img {
+    width: 32px;
+    height: auto;
+    border-radius: 50%;
+
+}
+
+.user-image {
+    width: 60px;
+    height: auto;
+    border-radius: 50%;
+}
+
+.user-image.no-avatar {
+    font-size: 2.8rem;
+}
+
 .user-email {
     color: #9ca3af;
     font-size: 0.9rem;

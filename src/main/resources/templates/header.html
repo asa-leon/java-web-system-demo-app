@@ -28,11 +28,18 @@
 		<!-- ログインしている場合 -->
 		<div th:if="${session.loginUser != null}" class="login-state-wrapper">
 			<span class="user-badge">
-				<span th:text="${session.loginUser.icon}">😺</span>
-				<span th:text="${session.loginUser.name}">ユーザー名</span>
+				<div class="user-avatar-area">
+					<div class="user-avatar">
+						<img th:if="${session.loginUser != null && session.loginUser.avatarUrl != null}"
+							th:src="${session.loginUser.avatarUrl}" alt="icon">
+						<span th:if="${session.loginUser == null || session.loginUser.avatarUrl == null}">👤</span>
+					</div>
+					<span th:text="${session.loginUser.name}">ユーザー名</span>
+				</div>
+
 			</span>
 			<a th:href="@{/logout}" class="nav-links logout-btn">🚪 <span class="smaller">ログアウト</span></a>
-		 </div>
+		</div>
 
 		<!-- ログインていない場合 -->
 		<div th:if="${session.loginUser == null}" class="login-btn">
@@ -44,4 +51,5 @@
 		<th:block th:replace="${extraLinks}"></th:block>
 	</div>
 </div>
+
 </html>

@@ -26,7 +26,8 @@
 
             <div class="user-info">
                 <div class="user-meta">
-                    <span class="user-icon" th:text="${user.icon}"></span>
+                    <img th:if="${user.avatarUrl != null}" class="user-image" th:src="${user.avatarUrl}" alt="ユーザーアバター"/>
+                    <span th:if="${user.avatarUrl == null}" class="user-image no-avatar">👤</span>
                     <span class="user-name"><a th:href="@{/users/{id}(id=${user.id})}" th:text="${user.name}"></a></span>
                     <span class="user-badge" th:text="'ID: ' + ${user.id}">ID: 1</span>
                 </div>

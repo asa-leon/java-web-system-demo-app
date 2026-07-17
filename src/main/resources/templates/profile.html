@@ -18,7 +18,12 @@
 
 			<!-- プロフィールヘッダーエリア -->
 			<div class="profile-header-area">
-				<div class="profile-avatar">👤</div>
+				<!-- アバター画像を表示。なければデフォルトの👤を表示-->
+				 <div class="profile-avatar-container">
+					<img th:if="${targetUser.avatarUrl != null}" th:src="${targetUser.avatarUrl}" alt="アバター画像" class="profile-avatar">
+					<div th:if="${targetUser.avatarUrl == null}" class="profile-avatar">👤</div>
+				 </div>
+				 
 				<div class="profile-title-meta">
 					<h2 class="profile-display-name">
 						<span th:text="${targetUser.name}">ユーザー名</span>

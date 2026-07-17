@@ -16,7 +16,7 @@
             <h2 th:text="${user.id == null} ? '👤 ユーザー新規登録' : '📝 ユーザー情報編集'"></h2>
 
             <form th:action="${user.id == null} ? @{/users/create} : @{/users/update}" th:object="${user}"
-                method="post">
+                method="post" enctype="multipart/form-data">
 
                 <!-- 主キー（自動採番などのid）用の隠し属性 -->
                 <input type="hidden" th:field="*{id}">
@@ -51,24 +51,19 @@
                     <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-message"></div>
                 </div>
 
-                <!-- 5. プロフィールアイコン (icon) -->
-                <div class="form-group">
-                    <label>プロフィールアイコン</label>
-                    <div class="icons-wrapper">
-                        <label>
-                            <input type="radio" th:field="*{icon}" value="🚀" required> <span>🚀</span>
-                        </label>
-                        <label>
-                            <input type="radio" th:field="*{icon}" value="🐱"> <span>🐱</span>
-                        </label>
-                        <label>
-                            <input type="radio" th:field="*{icon}" value="🤖"> <span>🤖</span>
-                        </label>
-                        <label>
-                            <input type="radio" th:field="*{icon}" value="🦊"> <span>🦊</span>
-                        </label>
+                <!-- 5. プロフィールアイコン（アバター） -->
+                <div class="form-group" th:if="${user.id != null}">
+                    <label for="avatarFile">プロフィール画像を変更する：</label>
+                    
+                    <!-- 現在登録されているアバターのプレビュー（あれば表示、なければ人型マーク -->
+                    <div>
+                        <img class="profile-avatar" th:if="${user.avatarUrl != null}" th:src="${user.avatarUrl}" alt="アバタープレビュー" />
+                        <span class="profile-avatar" th:if="${user.avatarUrl == null}">👤</span>
                     </div>
-                    <div th:if="${#fields.hasErrors('icon')}" th:errors="*{icon}" class="error-message"></div>
+
+                    <!-- ファイル選択欄（nameはControllerの引数名と完全ニッチさせる） -->
+                     <input type="file" name="avatarFile" id="avatarFile" accept="image/png, image/jpeg, image/gif" class="form-control-file">
+                    <p class="help-block">※PNG, JPEG, GIFのみ（最大10MB）</p>
                 </div>
 
                 <button type="submit" class="submit-btn" th:text="${user.id == null} ? '登録する' : '更新する'"></button>

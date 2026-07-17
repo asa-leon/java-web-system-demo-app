@@ -19,6 +19,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.JoinColumn;
 import java.util.Set;
+
 import java.util.HashSet;
 
 
@@ -69,6 +70,9 @@ public class User {
     // 自分をフォローしてくれているユーザー（フォロワー）のリスト
     @ManyToMany(mappedBy = "following") // 上記の変数「following」と表裏一体であることを示す
     private Set<User> followers = new HashSet<>();
+
+    @Column(nullable = true, length = 512) // ファイル名が長くなってもおさまる様に上限を少し上げておく
+    private String avatarUrl;
 
     // フォローを追加する時のメソッド
     public void follow(User user) {

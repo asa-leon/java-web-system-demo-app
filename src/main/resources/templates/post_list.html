@@ -40,8 +40,15 @@
             <div th:each="post : ${posts}" class="post-card">
                 <div class="post-header">
                     <span class="user-name">
-                        <span th:text="${post.user.icon}" class="user-icon"></span>
-                        <a th:href="@{/users/{id}(id=${post.user.id})}" th:text="${post.user.name}"></a>
+                        <div class="user-avatar-area">
+                            <div class="user-avatar">
+                                <img th:if="${post.user != null && post.user.avatarUrl != null}"
+                                    th:src="${post.user.avatarUrl}" alt="icon">
+                                <span th:if="${post.user == null || post.user.avatarUrl == null}">👤</span>
+                            </div>
+                            <a th:href="@{/users/{id}(id=${post.user.id})}" th:text="${post.user.name}"></a>
+                        </div>
+
                     </span>
                     <span class="user-id" th:text="'(ID: ' + ${post.user.id} + ')'"></span>
                     <span class="post-time"
@@ -63,7 +70,7 @@
                     </button>
 
                     <button type="button" class="vote-button" th:data-post-id="${post.id}"
-                        th:data-is-own="${loginUser != null && post.user.id == loginUser.id}" 
+                        th:data-is-own="${loginUser != null && post.user.id == loginUser.id}"
                         th:classappend="${post.votedByMe} ? 'voted' : ''">
                         <span class="vote-icon" th:text="${post.votedByMe} ? '★' : '☆'">☆</span>
                         <span class="vote-count" th:text="${post.voteCount}">0</span>
