@@ -22,5 +22,5 @@ public class Tag {
 
     // このタグが付いている投稿の一覧（多対多）
     @ManyToMany(mappedBy = "tags")
-    private List<Post> posts = new ArrayList<>();
+    private List<Bill> posts = new ArrayList<>();
 }

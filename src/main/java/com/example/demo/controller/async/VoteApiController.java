@@ -1,10 +1,10 @@
 package com.example.demo.controller.async;
 
-import com.example.demo.model.Post;
+import com.example.demo.model.Bill;
 import com.example.demo.model.User;
 import com.example.demo.model.Vote;
 import com.example.demo.model.PostNotification;
-import com.example.demo.repository.PostRepository;
+import com.example.demo.repository.BillRepository;
 import com.example.demo.repository.VoteRepository;
 import com.example.demo.repository.NotificationsRepository;
 import jakarta.servlet.http.HttpSession;
@@ -19,7 +19,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class VoteApiController {
     
-    private final PostRepository postRepository;
+    private final BillRepository postRepository;
     private final VoteRepository voteRepository;
     private final NotificationsRepository notificationsRepository;
 
@@ -36,7 +36,7 @@ public class VoteApiController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("ログインが必要です");
         }
         // 1. 対象の投稿を探す
-        Post post = postRepository.findById(postId)
+        Bill post = postRepository.findById(postId)
             .orElseThrow(() -> new IllegalArgumentException("Invalid post ID"));
 
         // 2-2. html側で自分自身への投票禁止を回避された場合の処理

@@ -74,6 +74,15 @@ public class User {
     @Column(nullable = true, length = 512) // ファイル名が長くなってもおさまる様に上限を少し上げておく
     private String avatarUrl;
 
+    // ユーザーの各委員会への参加状況を記録する中間テーブル
+    @ManyToMany
+    @JoinTable(
+        name = "user_committees", // 中間テーブル名
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "committee_id")
+    )
+    private Set<Committee> joinedCommittees = new HashSet<>();
+
     // フォローを追加する時のメソッド
     public void follow(User user) {
         this.following.add(user);

@@ -3,7 +3,6 @@ package com.example.demo.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -27,10 +26,10 @@ public class Comment {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    // どの当行に対するコメントか（Postとの多対一リレーション）
+    // どの当行に対するコメントか（Billとの多対一リレーション）
     @ManyToOne
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
+    @JoinColumn(name = "bill_id", nullable = false)
+    private Bill bill;
 
     // データベース保存時に自動で日時を設定する
     @PrePersist

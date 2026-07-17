@@ -1,11 +1,11 @@
 package com.example.demo.controller.async;
 
-import com.example.demo.model.Post;
+import com.example.demo.model.Bill;
 import com.example.demo.model.User;
 import com.example.demo.model.Like;
 import com.example.demo.model.PostNotification;
 import com.example.demo.repository.LikeRepository;
-import com.example.demo.repository.PostRepository;
+import com.example.demo.repository.BillRepository;
 import com.example.demo.repository.NotificationsRepository;
 
 import jakarta.servlet.http.HttpSession;
@@ -25,7 +25,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class LikeApiController {
     
-	private final PostRepository postRepository;
+	private final BillRepository postRepository;
 	private final LikeRepository likeRepository;
 	private final NotificationsRepository notificationRepository;
 
@@ -42,7 +42,7 @@ public class LikeApiController {
 		}
 		
 		// 1. 対象の投稿を探す
-		Post post = postRepository.findById(id)
+		Bill post = postRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("Invalid post ID: " + id));
 
 		// 3. 既に自分がこの投稿にいいねしているかチェック

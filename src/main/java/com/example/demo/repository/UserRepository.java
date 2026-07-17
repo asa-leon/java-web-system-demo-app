@@ -29,6 +29,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 削除処理の直前にSQLで自分自身の投稿に紐づく post_tags のデータを一掃する
     @Modifying
     @Transactional
-    @Query(value = "DELETE FROM post_tags WHERE post_id IN (SELECT id FROM posts WHERE user_id = :id)", nativeQuery = true)
-    void deletePostTagsByUserId(@Param("id") Long idLong);
+    @Query(value = "DELETE FROM bill_tags WHERE bill_id IN (SELECT id FROM bills WHERE user_id = :id)", nativeQuery = true)
+    void deleteBillTagsByUserId(@Param("id") Long idLong);
 }

@@ -26,7 +26,7 @@ public class Vote {
     // どの投稿に投票したか
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
+    private Bill post;
 
     // いつ投票したか
     @Column(name = "created_at", nullable = false)

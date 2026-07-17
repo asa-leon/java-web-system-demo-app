@@ -22,7 +22,7 @@ public class Like {
 
 	// いいねされた投稿
 	@ManyToOne
-	@JoinColumn(name = "post_id", nullable = false,
-		foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE"))
-	private Post post;
+	@JoinColumn(name = "bill_id", nullable = false,
+		foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY (bill_id) REFERENCES bills(id) ON DELETE CASCADE"))
+	private Bill bill;
 }

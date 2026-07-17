@@ -14,13 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.demo.model.Message;
 import com.example.demo.model.MessageNotification;
 import com.example.demo.model.Notification;
-import com.example.demo.model.Post;
+import com.example.demo.model.Bill;
 import com.example.demo.model.PostNotification;
 import com.example.demo.model.User;
 import com.example.demo.repository.MessageRepository;
 import com.example.demo.repository.NotificationsRepository;
 import com.example.demo.repository.UserRepository;
-import com.example.demo.repository.PostRepository;
+import com.example.demo.repository.BillRepository;
 
 @SpringBootTest
 @Transactional
@@ -33,7 +33,7 @@ public class NotificationInheritanceTests {
 	private UserRepository userRepository;
 
 	@Autowired
-	private PostRepository postRepository;
+	private BillRepository postRepository;
 
 	private User sender;
 	private User receiver;
@@ -80,7 +80,7 @@ public class NotificationInheritanceTests {
 	@Test
 	@DisplayName("投稿にコメントされたときに、投稿者向けのコメント通知が自動生成されること")
 	void testCommentNotificationCreation() {
-		Post post = new Post();
+		Bill post = new Bill();
 		post.setUser(receiver); // 投稿者はreceriver
 		post.setContent("テスト投稿です。");
 		postRepository.save(post);

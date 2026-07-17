@@ -25,5 +25,5 @@ public class PostNotification extends Notification {
 	@JoinColumn(name = "post_id",
 		foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE")
 	)
-	private Post post;
+	private Bill post;
 }

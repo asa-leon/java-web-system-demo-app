@@ -20,37 +20,32 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.model.Comment;
-import com.example.demo.model.Post;
+import com.example.demo.model.Bill;
 import com.example.demo.model.PostNotification;
 import com.example.demo.model.User;
 import com.example.demo.model.Tag;
 import com.example.demo.repository.CommentRepository;
-import com.example.demo.repository.PostRepository;
+import com.example.demo.repository.BillRepository;
 import com.example.demo.repository.TagRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.VoteRepository;
 import com.example.demo.repository.NotificationsRepository;
 
-//import org.springframework.data.jpa.domain.Specification;
-//import org.springframework.data.domain.Sort;
-
 @Controller
 @RequiredArgsConstructor // これを書くことでconstructor(this.xx = xx)を書かなくて済む
-public class PostController {
+public class BillController {
 
 	private final LikeRepository likeRepository;
-	private final PostRepository postRepository;
+	private final BillRepository billRepository;
 	private final UserRepository userRepository;
 	private final CommentRepository commentRepository;
 	private final TagRepository tagRepository;
-
-	// Vote-1: レポジトリをインジェクションしておく
 	private final VoteRepository voteRepository;
 	private final NotificationsRepository notificationsRepository;
 
 	// 投稿一覧を表示する窓口
-	@GetMapping("/posts")
-	public String postList(
+	@GetMapping("/bills")
+	public String billList(
 			@RequestParam(name = "keyword", required = false) String keyword,
 			HttpSession session,
 			HttpServletResponse response,
@@ -82,40 +77,40 @@ public class PostController {
 						model.addAttribute("loginUser", currentUser);
 
 						// 全体に表示する投稿一覧を取得（これはログイン有無に関係なく実行）
-						List<Post> posts;
+						List<Bill> bills;
 
 						if (keyword != null && !keyword.trim().isEmpty()) {
-							posts = postRepository.findByContentContainingIgnoreCaseOrderByCreatedAtDesc(keyword);
+							bills = billRepository.findByTitleContainingIgnoreCaseOrderByCreatedAtDesc(keyword);
 							model.addAttribute("keyword", keyword); // 画面にキーワードを保持させる
 						} else {
 							// キーワードがなければ、今まで通り全件を最新順で取得
-							posts = postRepository.findAllByOrderByCreatedAtDesc();
+							bills = billRepository.findAllByOrderByCreatedAtDesc();
 						}
 
 						// Vote-2: 各投稿にいいね数と、Vote数及び自分がVoteしたかの情報を付与する
-						for (Post post : posts) {
+						for (Bill bill : bills) {
 
 							// 1-1. 総いいね数をカウントしてセット
-							post.setLikeCount(likeRepository.countByPost(post));
+							bill.setLikeCount(likeRepository.countByPost(bill));
 
 							// 1-2. ログイン中の場合、自分がいいねしたかを判定してセット
 							if (currentUser != null) {
-								post.setLikedByMe(likeRepository.existsByUserAndPost(currentUser, post));
+								bill.setLikedByMe(likeRepository.existsByUserAndPost(currentUser, bill));
 							} else {
-								post.setLikedByMe(false); // 念のためユーザーがいない場合は一律false
+								bill.setLikedByMe(false); // 念のためユーザーがいない場合は一律false
 							}
 
 							// 総Vote数をカウントしてセット
-							post.setVoteCount(voteRepository.countByPost(post));
+							bill.setVoteCount(voteRepository.countByPost(bill));
 
 							// ログイン中の場合、自分がVoteしたかを判定してセット
 							if (currentUser != null) {
-								post.setVotedByMe(voteRepository.existsByUserAndPost(currentUser, post));
+								bill.setVotedByMe(voteRepository.existsByUserAndPost(currentUser, bill));
 							} else {
-								post.setVotedByMe(false); // 念のためユーザーがいない場合は一律false
+								bill.setVotedByMe(false); // 念のためユーザーがいない場合は一律false
 							}
 						}
-
+						model.addAttribute("bills", bills);
 					});
 		} else {
 			// 未ログインの場合は、画面側で制御できるように null を明示するか、ログイン状態をfalseにする
@@ -123,34 +118,17 @@ public class PostController {
 		}
 
 		// 全体に表示する投稿一覧を取得（これはログイン有無に関係なく実行）
-		List<Post> posts;
+		List<Bill> bills;
 
 		if (keyword != null && !keyword.trim().isEmpty()) {
-			posts = postRepository.findByContentContainingIgnoreCaseOrderByCreatedAtDesc(keyword);
+			bills = billRepository.findByTitleContainingIgnoreCaseOrderByCreatedAtDesc(keyword);
 			model.addAttribute("keyword", keyword); // 画面にキーワードを保持させる
 		} else {
 			// キーワードがなければ、今まで通り全件を最新順で取得
-			posts = postRepository.findAllByOrderByCreatedAtDesc();
+			bills = billRepository.findAllByOrderByCreatedAtDesc();
 		}
 
-		model.addAttribute("posts", posts);
-
-		/*
-		 * ドット繋ぎで書く場合のコード
-		 * // 1.最新順（降順）ソートの条件を用意
-		 * Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
-		 * 
-		 * // 2.Repositoryで作ったパーツをドットで繋いで「仕様書（spec）を完成させる
-		 * Specification<Post> spec = Specification
-		 * .where(PostRepository.containsContent(keyword)));
-		 * // もし他にも条件があれば、ここに .and(PostRepository.isUser(1L)) の様にドットで繋いで行ける
-		 * 
-		 * // 3.条件付きの findAll を発動
-		 * List<Post> posts =postRepository.findAll(spec, sort);
-		 * 
-		 * model.addAttribute("posts", posts);
-		 * model.addAttribute("keyword", keyword);
-		 */
+		model.addAttribute("bills", bills);
 
 		// 現在のタブの初期値をallにしておく
 		model.addAttribute("currentTab", "all");
@@ -158,28 +136,32 @@ public class PostController {
 		// トレンド上位5件を画面に渡す
 		model.addAttribute("trends", tagRepository.findTop5Trends());
 
-		return "post_list";
+		return "bill_list";
 	}
 
 	// 投稿フォーム画面を表示する
-	@GetMapping("/posts/new")
-	public String showNewPostForm(Model model) {
-		model.addAttribute("post", new Post());
+	@GetMapping("/bills/new")
+	public String showNewBillForm(Model model) {
+		model.addAttribute("bill", new Bill());
 
 		// セレクトボックスで選べるように、全ユーザーの一覧を画面に渡す
 		model.addAttribute("users", userRepository.findAll());
+
+		// 【超重要】提出先の委員会を選べるように、全委員会リストを画面に渡す
+		// model.addAttribute("committees", committeeRepository.findAll());
+		// ※CommitteeRepository追加後に有効化
 
 		// データベースからすべてのタグを取得して、画面に渡す
 		List<Tag> allTags = tagRepository.findAll();
 		model.addAttribute("allTags", allTags);
 
-		return "post_form";
+		return "bill_form";
 	}
 
 	// 投稿をデータベースに保存する
-	@PostMapping("/posts/create")
-	public String createPost(
-			@Valid Post post,
+	@PostMapping("/bills/create")
+	public String createBill(
+			@Valid Bill bill,
 			BindingResult bindingResult,
 			HttpSession session,
 			Model model) {
@@ -195,19 +177,22 @@ public class PostController {
 			// エラーで戻った時も、タグ一覧を再セットしてあげる
 			model.addAttribute("allTags", tagRepository.findAll());
 
-			return "post_form";
+			// エラー時も、委員会リストを再セット
+			// model.addAttribute("committees", committeeRepository.findAll());
+
+			return "bill_form";
 		}
 
-		post.setUser(currentUser);
+		bill.setUser(currentUser);
 
 		// MARK: ハッシュタグ抽出ロジック
-		String content = post.getContent();
+		String description = bill.getDescription();
 		List<Tag> tagList = new ArrayList<>();
 
-		if (content != null && !content.isEmpty()) {
+		if (description != null && !description.isEmpty()) {
 			// 正規表現で「#」から始まる単語を抽出（全角・半角対応）
 			Pattern pattern = Pattern.compile("[#＃][A-Za-z0-9ぁ-んァ-ヶ一-龠ー_]+");
-			Matcher matcher = pattern.matcher(content);
+			Matcher matcher = pattern.matcher(description);
 
 			while (matcher.find()) {
 				// 先頭の「#」を消して、アルファベットは小文字に統一
@@ -229,33 +214,33 @@ public class PostController {
 		}
 
 		// 投稿オブジェクトに、抽出したタグのリストをセット（これで中間テーブルに自動保存される）
-		post.setTags(tagList);
+		bill.getTags().addAll(tagList);
 
 		// データベースに保存
-		postRepository.save(post);
+		billRepository.save(bill);
 
-		return "redirect:/posts";
+		return "redirect:/bills";
 	}
 
 	// 投稿を削除する
-	@PostMapping("/posts/{id}/delete")
-	public String deletePost(@PathVariable("id") Long id) {
+	@PostMapping("/bills/{id}/delete")
+	public String deleteBill(@PathVariable("id") Long id) {
 
 		// URLから受け取ったIDを使って、データベースから削除する
-		postRepository.deleteById(id);
+		billRepository.deleteById(id);
 
-		return "redirect:/posts";
+		return "redirect:/bills";
 	}
 
 	// 特定のユーザーの投稿一覧を表示するルート
-	@GetMapping("/posts/user/{userId}")
-	public String userPostList(
+	@GetMapping("/bills/user/{userId}")
+	public String userBillList(
 			@PathVariable("userId") Long userId,
 			HttpSession session,
 			Model model) {
 
 		// 1. 指定されたユーザーIDの投稿だけを最新順で取得
-		List<Post> posts = postRepository.findByUserIdOrderByCreatedAtDesc(userId);
+		List<Bill> bills = billRepository.findByUserIdOrderByCreatedAtDesc(userId);
 
 		// 2. セッションからユーザー情報を取得
 		User sessionUser = (User) session.getAttribute("loginUser");
@@ -268,40 +253,40 @@ public class PostController {
 					model.addAttribute("loginUser", currentUser);
 
 					// 各投稿にいいね・Vote情報を付与
-					for (Post post : posts) {
-						post.setLikeCount(likeRepository.countByPost(post));
-						post.setLikedByMe(likeRepository.existsByUserAndPost(currentUser, post));
+					for (Bill bill : bills) {
+						bill.setLikeCount(likeRepository.countByPost(bill));
+						bill.setLikedByMe(likeRepository.existsByUserAndPost(currentUser, bill));
 
-						post.setVoteCount(voteRepository.countByPost(post));
-						post.setVotedByMe(voteRepository.existsByUserAndPost(currentUser, post));
+						bill.setVoteCount(voteRepository.countByPost(bill));
+						bill.setVotedByMe(voteRepository.existsByUserAndPost(currentUser, bill));
 					}
 				});
 		} else {
 
 			// 未ログインの場合はnullを明示し、投稿の自分のアクションフラグを一律falseにする
 			model.addAttribute("loginUser", null);
-			for (Post post : posts) {
-				post.setLikeCount(likeRepository.countByPost(post));
-				post.setLikedByMe(false);
-				post.setVoteCount(voteRepository.countByPost(post));
-				post.setVotedByMe(false);
+			for (Bill bill : bills) {
+				bill.setLikeCount(likeRepository.countByPost(bill));
+				bill.setLikedByMe(false);
+				bill.setVoteCount(voteRepository.countByPost(bill));
+				bill.setVotedByMe(false);
 			}
 		}
 
 		// 2. 画面のタイトル等に表示するために、そのユーザーの名前も取得（任意）
-		if (!posts.isEmpty()) {
-			model.addAttribute("targetUser", posts.get(0).getUser());
+		if (!bills.isEmpty()) {
+			model.addAttribute("targetUser", bills.get(0).getUser());
 		} else {
 			// 投稿が空の場合でも動くように、ユーザー自身を直接取得してモデルに入れると安全
 			model.addAttribute("targetUser", userRepository.findById(userId).orElse(null));
 		}
 
-		model.addAttribute("posts", posts);
-		return "user_post_list";
+		model.addAttribute("bills", bills);
+		return "user_bill_list";
 	}
 
 	// フォローしているユーザーの投稿だけを表示するタイムライン
-	@GetMapping("/posts/following")
+	@GetMapping("/bills/following")
 	public String followingPostList(HttpSession session, Model model) {
 
 		// 1. セッションからログインユーザーを取得
@@ -318,36 +303,36 @@ public class PostController {
 				.map(User::getId)
 				.toList();
 
-		List<Post> posts;
+		List<Bill> bills;
 		if (followingUserIds.isEmpty()) {
 			// まだ誰もフォローしていない場合は、からのリストを返す（エラー回避）
-			posts = new java.util.ArrayList<>();
+			bills = new java.util.ArrayList<>();
 		} else {
 			// 3. フォローしている人のIDリストをリポジトリに渡して、投稿を取得する
-			posts = postRepository.findByUserIdInOrderByCreatedAtDesc(followingUserIds);
+			bills = billRepository.findByUserIdInOrderByCreatedAtDesc(followingUserIds);
 		}
 
 		// 4. 画面にデータを渡す
-		model.addAttribute("posts", posts);
+		model.addAttribute("bills", bills);
 		model.addAttribute("loginUser", me);
 		model.addAttribute("currentTab", "following"); // 今どっちのタブにいるかを判定するためのフラグ
 
 		// トレンド上位5件を画面に渡す
 		model.addAttribute("trends", tagRepository.findTop5Trends());
 
-		return "post_list"; // 画面は新しく作らず、既存の post_list.html を使いまわす。
+		return "bill_list"; // 画面は新しく作らず、既存の bill_list.html を使いまわす。
 	}
 
 	// 特定の投稿の詳細画面を表示する
-	@GetMapping("/posts/{id}")
-	public String postDetail(
+	@GetMapping("/bills/{id}")
+	public String billDetail(
 			@PathVariable("id") Long id,
 			HttpSession session,
 			Model model) {
 
 		// 1. 対象の投稿を取得
-		Post post = postRepository.findById(id)
-				.orElseThrow(() -> new IllegalArgumentException("指定された投稿が見つかりません:" + id));
+		Bill bill = billRepository.findById(id)
+				.orElseThrow(() -> new IllegalArgumentException("指定された法案が見つかりません:" + id));
 
 		// セッションからログインユーザーを取得（最新情報をDBから引き直す）
 		User sessionUser = (User) session.getAttribute("loginUser");
@@ -357,29 +342,29 @@ public class PostController {
 		}
 
 		// 取得した1件の投稿にいいね数と投票数の情報を詰め込む
-		post.setLikeCount(likeRepository.countByPost(post));
-		post.setVoteCount(voteRepository.countByPost(post));
+		bill.setLikeCount(likeRepository.countByPost(bill));
+		bill.setVoteCount(voteRepository.countByPost(bill));
 
 		if (currentUser != null) {
-			post.setLikedByMe(likeRepository.existsByUserAndPost(currentUser, post));
-			post.setVotedByMe(voteRepository.existsByUserAndPost(currentUser, post));
+			bill.setLikedByMe(likeRepository.existsByUserAndPost(currentUser, bill));
+			bill.setVotedByMe(voteRepository.existsByUserAndPost(currentUser, bill));
 			model.addAttribute("loginUser", currentUser); // 常に最新のユーザーを渡す
 		} else {
-			post.setLikedByMe(false);
-			post.setVotedByMe(false);
+			bill.setLikedByMe(false);
+			bill.setVotedByMe(false);
 			model.addAttribute("loginUser", null);
 		}
 
 		// 2. 画面にデータを渡す
-		model.addAttribute("post", post);
-		// Post.java に @OneToMany を書いたので、JPAが自動で紐づくコメントを一緒に持ってきてくれる
-		model.addAttribute("comments", post.getComments());
+		model.addAttribute("bill", bill);
+		// Bill.java に @OneToMany を書いたので、JPAが自動で紐づくコメントを一緒に持ってきてくれる
+		model.addAttribute("comments", bill.getComments());
 
-		return "post_detail";
+		return "bill_detail";
 	}
 
-	// コメントを投稿する処理
-	@PostMapping("/posts/{id}/comments")
+	// 法案に対して意見（コメント）を投稿する
+	@PostMapping("/bills/{id}/comments")
 	public String createComment(
 			@PathVariable("id") Long id,
 			@RequestParam("content") String content,
@@ -394,53 +379,53 @@ public class PostController {
 
 		// 最新のユーザー情報をDBから引き直す（Lazy/セッション不整合対策）
 		User me = userRepository.findById(sessionUser.getId())
-			.orElseThrow(() -> new IllegalArgumentException("User not found"));
+			.orElseThrow(() -> new IllegalArgumentException("ユーザーが見つかりません"));
 
 		// 2. どの投稿に対するコメントか、親を取得
-		Post post = postRepository.findById(id)
-				.orElseThrow(() -> new IllegalArgumentException("投稿が見つかりません"));
+		Bill bill = billRepository.findById(id)
+				.orElseThrow(() -> new IllegalArgumentException("法案が見つかりません"));
 
 		// 3. コメントオブジェクトを生成してデータをセット
 		Comment comment = new Comment();
 		comment.setContent(content);
-		comment.setPost(post);
+		comment.setBill(bill);
 		comment.setUser(me); // 最新のユーザーオブジェクトを紐づける
 
 		// 4. データベースに保存
 		commentRepository.save(comment);
 
-		// 5. 通知機能：自作自演（自分の投稿に自分でコメント）でなければ、投稿の作者宛にコメント通知を作成して保存
-		if (!post.getUser().getId().equals(me.getId())) {
+		// 5. 通知機能：自作自演（自分の提案に自分でコメント）でなければ、提案者宛にコメント通知を作成して保存
+		if (!bill.getUser().getId().equals(me.getId())) {
 			PostNotification notification = new PostNotification();
 			notification.setType(PostNotification.PostNotificationType.COMMENT);
 			notification.setSender(me);
-			notification.setReceiver(post.getUser());
-			notification.setPost(post);
+			notification.setReceiver(bill.getUser());
+			// notification.setPost(bill); //通知機能側のBill対応は一旦保留、または型に合わせて後ほど修正
 
 			notificationsRepository.save(notification);
 		}
 
 		// 6. 書き込みが終わったら、元の詳細画面にリダイレクトで戻る
-		return "redirect:/posts/" + id;
+		return "redirect:/bills/" + id;
 	}
 
-	// タグに基づく投稿を取得して画面に渡す処理
+	// タグに基づく提案を取得して画面に渡す処理
 	@GetMapping("/tags/{tagName}")
 	public String showPostsByTag(@PathVariable("tagName") String tagName, Model model) {
 		// 1. 指定されたタグ名がついている投稿だけをリポジトリから取得
-		List<Post> taggedPosts = postRepository.findByTagsName(tagName);
+		List<Bill> taggedBills = billRepository.findByTagsName(tagName);
 
-		// 2. タイムライン（post_list.html）と同じ変数名「posts」で画面に渡す
-		model.addAttribute("posts", taggedPosts);
+		// 2. タイムライン（bill_list.html）と同じ変数名「bills」で画面に渡す
+		model.addAttribute("bills", taggedBills);
 
 		// 3. 今何のタグで絞り込んでいるかを画面に表示するために、タグ名も渡しておく
 		model.addAttribute("currentTag", tagName);
 
-		// 4. 新しい画面を作らず、既存の「post_list.html」をそのまま使いまわす
+		// 4. 新しい画面を作らず、既存の「bill_list.html」をそのまま使いまわす
 
 		// 割り込み：トレンド上位5件を画面に渡す
 		model.addAttribute("trends", tagRepository.findTop5Trends());
 
-		return "post_list";
+		return "bill_list";
 	}
 }
