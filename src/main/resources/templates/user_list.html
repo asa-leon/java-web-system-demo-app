@@ -58,7 +58,7 @@
 
                     <a th:href="@{/users/edit/{id}(id=${user.id})}" class="edit-link">編集</a>
 
-                    <form th:action="@{/users/delete/{id}(id=${user.id})}" method="post" style="margin: 0;">
+                    <form th:action="@{/users/delete/{id}(id=${user.id})}" method="post">
                         <button type="submit" class="delete-btn" onclick="return confirm('本当に削除してもよろしいですか？');">
                             削除
                         </button>

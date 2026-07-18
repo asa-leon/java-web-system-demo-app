@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>机上院 - 新規法案提出</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body class="centered-layout">
+    <div class="container">
+
+        <div class="card-container">
+            <h2>🏛️ 新規法案提出</h2>
+
+            <form th:action="@{/bills/create}" th:object="${bill}" method="post">
+
+                <!-- 法案名入力フィールド -->
+                <div class="form-group">
+                    <label for="title">📜 法案名</label>
+                    <input type="text" id="title" th:field="*{title}" rows="4" placeholder="例：デジタル審議促進法案" />
+
+                    <p class="error-message" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></p>
+                </div>
+                
+                <!-- 提案理由入力フィールド -->
+                <div class="form-group">
+                    <label for="description">✍️ 提案理由・法案本文</label>
+                    <textarea id="description" th:field="*{description}" rows="8" 
+                        placeholder="この法案を提出する背景や、具体的な条文、目的を記述してください。#ハッシュタグ もここに含めることができます
+                        "></textarea>
+
+                    <p class="error-message" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
+                </div>
+
+                <!-- ボタンエリア -->
+                <button type="submit" class="submit-btn">🏛️ 議場へ提出する</button>
+            </form>
+
+            <div class="footer-links">
+                <a th:href="@{/bills}">🔙 審議一覧に戻る</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const textarea = document.getElementById('content');
+            const tagButtons = document.querySelectorAll('.tag-helper-btn');
+
+            tagButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    // カスタム属性「data-tag-name」から、シャープなしのタグ名を取得
+                    const tagName = button.getAttribute('data-tag-name');
+
+                    // 挿入する用の文字列を作成（連続で押しやすいように末尾にスペースを空ける）
+                    const tagText = `#${tagName} `;
+
+                    // 現在の入力内容の末尾にガチャンと結合
+                    textarea.value = textarea.value + tagText;
+
+                    // 入力したら、すぐに文字の続きが打てるように入力欄にフォーカスを戻す
+                    textarea.focus();
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

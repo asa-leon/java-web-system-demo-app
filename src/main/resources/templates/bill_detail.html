@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>机上院 - 法案詳細審議</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+	<div class="container wide-layout">
+		<div class="main-content">
+			<h2>🏛️ 法案詳細審議</h2>
+
+			<div th:replace="~{header :: common-header(~{})}"></div>
+
+			<!-- 法案メインカード -->
+			<div class="post-card">
+				<div class="post-header">
+					<span class="user-name">
+						<div class="user-avatar-area">
+							<div class="user-avatar">
+								<img th:src="${bill.user != null && bill.user.avatarUrl != null}" 
+									th:src="${bill.user.avatarUrl}" alt="icon">
+								<span th:if="${bill.user == null || bill.user.avatarUrl == null}">👤</span>
+							</div>
+							<a th:href="@{/users/{id}(id=${bill.user.id})}" th:text="${bill.user.name}"></a>
+						</div>
+					</span>
+					<span class="user-id" th:text="'(ID: )' + ${bill.user.id} + ')'"></span>
+
+					<!-- ステータスバッヂ（一覧画面と統一） -->
+					<span th:text="${bill.status.displayName}" class="status-badge"
+						th:class="(
+							${bill.status.name() == 'UNDER_DELIBERATION'} 
+							? 'under-deliberation'
+							: (
+								${bill.status.name() == 'PASSED'}
+								? 'passed'
+								: ''
+							)
+						)">
+					</span>
+
+					<span class="post-time" 
+						th:text="${#temporals.format(bill.createdAt, 'yyyy/MM/dd（E）HH:mm')}"></span>
+				</div>
+
+				<!-- 法案本文表示エリア -->
+				<div class="post-content-container type-detail">
+					<div class="post-content-text">
+						<h3 th:text="${bill.title}" class="bill-title wider"></h3>
+						<p th:text="${bill.description}" class="bill-description wider"></p>
+					</div>
+				</div>
+				
+				<!-- 非同期アクションボタン群 -->
+				<div class="post-actions">
+					<button type="button" class="like-button" th:data-bill-id="${bill.id}"
+						th:classappend="${bill.likedByMe} ? 'liked' : ''">
+						<span class="like-icon" th:text="${bill.likedByMe} ? '❤️' : '🖤'">🖤</span>
+						<span class="like-count" th:text="${bill.likeCount}">0</span>
+					</button>
+
+					<button type="button" class="vote-button" th:data-bill-id="${bill.id}"
+						th:data-is-own="${loginUser != null && bill.user.id == loginUser.id}"
+						th:classappend="${bill.votedByMe} ? 'voted' : ''">
+						<span class="vote-icon" th:text="${bill.votedByMe} ? '★' : '☆'">☆</span>
+						<span class="vote-count" th:text="${bill.voteCount}">0</span>
+					</button>
+				</div>
+
+				<!-- 削除（撤回）ボタン -->
+				 <form th:action="@{/bills/{id}/delete(id=${bill.id})}" method="post">
+					<button type="submit" class="delete-btn" onclick="return confirm('本当にこの法案を撤回（削除）しますか？')">
+						🗑️ 撤回
+					</button>
+				 </form>
+			</div>
+
+			<!-- 審議コメント（議論）セクション -->
+			<section class="comment-section">
+				<h3>💬 審議コメント・質疑応答</h3>
+
+				<!-- コメント投稿フォーム -->
+				<form th:action="@{/bills/{id}/comments(id=${bill.id})}" th:object="${commentForm}" method="post" class="comment-form">
+					<div class="form-group">
+<textarea th:field="*{content}" rows="3" placeholder="この法案に対する意見、質問、修正要求などを入力してください..."></textarea>
+<p class="error-message" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></p>
+					</div>
+					
+					<button type="submit" class="submit-btn comment">💬 発言する</button>
+				</form>
+
+				<div class="comment-list">
+					<div th:if="${#lists.isEmpty(bill.comments)}" class="empty-message">
+						<p>>まだこの法案に対するコメントはありません。最初の議論を始めましょう。</p>
+					</div>
+
+					<div th:each="comment : ${bill.comments}" class="comment-card">
+						<div class="comment-meta">
+							<span class="comment-user">
+								<a th:href="@{/users/{id}(id=${comment.user.id})}" th:text="${comment.user.name}"></a>
+							</span>
+							<span class="user-id" th:text="'ID: ' + ${comment.user.id} + ')'"></span>
+							<span class="post-time" th:text="${#temporals.format(comment.createdAt, 'MM/dd（E）HH:mm')}"></span>
+						</div>
+						<!-- コメント本文（開業を維持、ハッシュタグ自動リンク対象） -->
+						 <div class="comment-content">
+							<p th:text="${comment.content}"></p>
+						 </div>
+					</div>
+				</div>
+			</section>
+
+			<div class="nav-back">
+				<a th:href="@{/bills}">🔙 審議一覧に戻る</a>
+			</div>
+		</div>
+
+		<div class="sidebar">
+			<div class="trend-card">
+				<h3 class="trend-title">⚡ いまのトレンド</h3>
+				<p th:if="${#lists.isEmpty(trends)}" class="no-trends">まだトレンドはありません。</p>
+				<div th:each="t : ${trends}" class="trend-item">
+					<a th:href="@{/tags/{tagName}(tagName=${t.name})}" class="trend-link" th:text="'#' + ${t.name}"></a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="toast-container"></div>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+
+			// =====================
+			// ★ Voteボタンの制御
+			// =====================
+			function showWarningToast(message) {
+				const container = document.getElementById('toast-container');
+				const toast = document.createElement('div');
+				toast.classList.add('toast-body');
+				toast.textContent = message;
+				container.appendChild(toast);
+				setTimeout(() => toast.remove(), 2500);
+			}
+
+			document.querySelectorAll('[data-is-own="true"]').forEach(btn => btn.classList.add('own-post-btn'));
+
+			// 1. 法案本文及びコメント内のハッシュタグ自動リンク処理
+			const textElements = document.querySelectorAll('.post-content-text p, .comment-content p');
+			textElements.forEach(function (element) {
+				const text = element.textContent;
+				const hashtagRegex = /[#＃][A-Za-z0-9ぁ-んァ-ヶ一-龠ー_]+/g;
+				if (!hashtagRegex.test(text)) return;
+
+				element.innerHTML = text.replace(hashtagRegex, function (match) {
+					const tagName = match.substring(1).toLowerCase();
+					return `<a href="/tags/${tagName}" class="hashtag-text">${match}</a>`;
+				});
+			});
+
+			// ======================
+			// ❤️ いいねボタンの非同期処理
+			// ======================
+			document.querySelectorAll('.like-button').forEach(button => {
+				button.addEventListener('click', async (e) => {
+					const btn = e.currentTarget;
+					const postId = btn.getAttribute('data-bill-id');
+					btn.disabled = true;
+
+					try {
+						// 新設した LikeApiController を叩く
+						const response = await fetch(`/api/bills/${billId}/like`, {
+							method: 'POST'
+						});
+
+						if (response.ok) {
+							const result = await response.json(); // { likes: X, liked: true/false }
+
+							const countSpan = btn.querySelector('.like-count');
+							const iconSpan = btn.querySelector('.like-icon');
+
+							// 数字を最近に書き換え
+							countSpan.textContent = result.likes;
+
+							// 状態に応じてハートとクラスをトグル
+							if (result.liked) {
+								iconSpan.textContent = '❤️';
+								btn.classList.add('liked');
+							} else {
+								iconSpan.textContent = '🖤';
+								btn.classList.remove('liked');
+							}
+						}
+					} catch (error) {
+						console.error('いいねの通信に失敗しました:', error);
+					} finally {
+						btn.disabled = false;
+					}
+				});
+			});
+
+			// =====================
+			// ★ Voteボタンの非同期処理
+			// =====================
+			document.querySelectorAll('.vote-button').forEach(button => {
+				button.addEventListener('click', async (e) => {
+					const btn = e.currentTarget;
+
+					// 自分の投稿なら通信させずにトーストを出して終了
+					if (btn.getAttribute('data-is-own') === 'true') {
+						showWarningToast('🏛️ 自身の提出法案に「投票」することはできません');
+						return;
+					}
+
+					const postId = btn.getAttribute('data-bill-id');
+					btn.disabled = true;
+
+					try {
+						const response = await fetch(`/api/bills/${billId}/vote`, {
+							method: 'POST'
+						});
+
+						if (response.ok) {
+							const result = await response.json();
+							const icon = btn.querySelector('.vote-icon');
+							const countSpan = btn.querySelector('.vote-count');
+
+							countSpan.textContent = result.voteCount;
+
+							if (result.voted) {
+								icon.textContent = '★';
+								btn.classList.add('voted');
+							} else {
+								icon.textContent = '☆';
+								btn.classList.remove('voted');
+							}
+						}
+					} catch (error) {
+						console.error('Voteの通信に失敗しました:', error);
+					} finally {
+						btn.disabled = false;
+					}
+				});
+			});
+		});
+	</script>
+</body>
+
+</html>
