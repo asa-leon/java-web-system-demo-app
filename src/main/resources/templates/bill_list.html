@@ -42,15 +42,15 @@
 					<span class="user-name">
 						<div class="user-avatar-area">
 							<div class="user-avatar">
-								<img th:if="${post.user != null && post.user.avatarUrl != null}"
-									th:src="${post.user.avatarUrl}" alt="icon">
-								<span th:if="${post.user == null || post.user.avatarUrl == null}">👤</span>
+								<img th:if="${bill.user != null && bill.user.avatarUrl != null}"
+									th:src="${bill.user.avatarUrl}" alt="icon">
+								<span th:if="${bill.user == null || bill.user.avatarUrl == null}">👤</span>
 							</div>
-							<a th:href="@{/users/{id}(id=${post.user.id})}" th:text="${post.user.name}"></a>
+							<a th:href="@{/users/{id}(id=${bill.user.id})}" th:text="${bill.user.name}"></a>
 						</div>
 
 					</span>
-					<span class="user-id" th:text="'(ID: ' + ${post.user.id} + ')'"></span>
+					<span class="user-id" th:text="'(ID: ' + ${bill.user.id} + ')'"></span>
 
 					<!-- ステータス表示バッヂを設置 -->
 					<span th:text="${bill.status.displayName}" class="status-badge"
@@ -67,7 +67,7 @@
 					</span>
 
 					<span class="post-time"
-						th:text="${#temporals.format(post.createdAt, 'yyyy/MM/dd（E）HH:mm:ss')}"></span>
+						th:text="${#temporals.format(bill.createdAt, 'yyyy/MM/dd（E）HH:mm:ss')}"></span>
 				</div>
 
 				<div class="post-content-container">

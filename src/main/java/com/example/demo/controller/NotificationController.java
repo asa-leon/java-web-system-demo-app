@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Notification;
-import com.example.demo.model.PostNotification;
+import com.example.demo.model.BillNotification;
 import com.example.demo.model.User;
 import com.example.demo.repository.NotificationsRepository;
 import jakarta.servlet.http.HttpSession;
@@ -60,15 +60,15 @@ public class NotificationController {
         }
 
         // 通知の型に応じて、本来の目的地へリダイレクトさせる
-        if (notification.isPostNotification()) {
-            // PostNotification型にキャストしてpostのIDを取得
-            PostNotification postNav = (PostNotification) notification;
-            return "redirect:/posts/" + postNav.getPost().getId();
+        if (notification.isBillNotification()) {
+            // BillNotification型にキャストしてBillのIDを取得
+            BillNotification billNav = (BillNotification) notification;
+            return "redirect:/bills/" + billNav.getBill().getId();
         } else if (notification.isMessageNotification()) {
             // MessegaNotification型の場合は、送ってきた相手とのチャット画面へ
             return "redirect:/messages/chat/" + notification.getSender().getId();
         }
 
-        return "redirect:/posts"; // 念の為のフォールバック
+        return "redirect:/bills"; // 念の為のフォールバック
     }
 }

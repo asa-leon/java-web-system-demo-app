@@ -3,7 +3,7 @@ package com.example.demo.controller.async;
 import com.example.demo.model.Bill;
 import com.example.demo.model.User;
 import com.example.demo.model.Vote;
-import com.example.demo.model.PostNotification;
+import com.example.demo.model.BillNotification;
 import com.example.demo.repository.BillRepository;
 import com.example.demo.repository.VoteRepository;
 import com.example.demo.repository.NotificationsRepository;
@@ -15,17 +15,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/posts/{postId}/vote")
+@RequestMapping("/api/bills/{billId}/vote")
 @RequiredArgsConstructor
 public class VoteApiController {
     
-    private final BillRepository postRepository;
+    private final BillRepository billRepository;
     private final VoteRepository voteRepository;
     private final NotificationsRepository notificationsRepository;
 
     @PostMapping
     public ResponseEntity<?> toggleVote(
-        @PathVariable("postId") Long postId,
+        @PathVariable("billId") Long billId,
         HttpSession session) {
         
         // 0. セッションからログインユーザーを取得
@@ -36,17 +36,17 @@ public class VoteApiController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("ログインが必要です");
         }
         // 1. 対象の投稿を探す
-        Bill post = postRepository.findById(postId)
-            .orElseThrow(() -> new IllegalArgumentException("Invalid post ID"));
+        Bill bill = billRepository.findById(billId)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid bill ID"));
 
         // 2-2. html側で自分自身への投票禁止を回避された場合の処理
-        if (post.getUser().getId().equals(currentUser.getId())) {
+        if (bill.getUser().getId().equals(currentUser.getId())) {
             // 処理を進行させずにここで静かに弾く
             return ResponseEntity.badRequest().body("自分の投稿にはアクションできません。");
         }
 
         // 3. すでにVoteしているかチェック
-        var existingVote = voteRepository.findByUserAndPost(currentUser, post);
+        var existingVote = voteRepository.findByUserAndBill(currentUser, bill);
 
         boolean voted;
         if (existingVote.isPresent()) {
@@ -57,24 +57,24 @@ public class VoteApiController {
             // なければいいね登録
             Vote vote = new Vote();
             vote.setUser(currentUser);
-            vote.setPost(post);
+            vote.setBill(bill);
             voteRepository.save(vote);
             voted = true;
 
             // 通知機能： 投票（Vote）通知を裏で作成して保存する
-            if (!post.getUser().getId().equals(currentUser.getId())) {
-                PostNotification notification = new PostNotification();
-                notification.setType(PostNotification.PostNotificationType.VOTE); // タイプ：VOTE
+            if (!bill.getUser().getId().equals(currentUser.getId())) {
+                BillNotification notification = new BillNotification();
+                notification.setType(BillNotification.BillNotificationType.VOTE); // タイプ：VOTE
                 notification.setSender(currentUser);
-                notification.setReceiver(post.getUser());
-                notification.setPost(post);
+                notification.setReceiver(bill.getUser());
+                notification.setBill(bill);
 
                 notificationsRepository.save(notification);
             }
         }
 
         // 最新の総Vote数を数えなおす
-        long newCount = voteRepository.countByPost(post);
+        long newCount = voteRepository.countByBill(bill);
 
         // フロントエンドに結果を返す（JSON）
         return ResponseEntity.ok(Map.of(

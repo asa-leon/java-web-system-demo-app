@@ -212,7 +212,7 @@ public class UserController {
         }
 
         // 自分の投稿に紐づいているハッシュタグの関係性を先に削除する
-        userRepository.deletePostTagsByUserId(id);
+        userRepository.deleteBillTagsByUserId(id);
 
         // SQLレベルで、自分に関するフォロー・被フォローの繋がりを両方とも一斉に削除する
         userRepository.deleteFollowRelationsByUserId(id);
@@ -224,7 +224,7 @@ public class UserController {
         session.invalidate();
 
         // 削除が終わったら、ホーム（タイムライン画面）にリダイレクトさせる
-        return "redirect:/posts";
+        return "redirect:/bills";
     }
 
     // ユーザーをフォローする窓口
@@ -258,7 +258,7 @@ public class UserController {
         session.setAttribute("loginUser", me);
 
         // 5. ボタンを押した元の画面にそのままリダイレクトで戻る
-        return referer != null ? "redirect:" + referer.replaceFirst("^https?://[^/]+", "") : "redirect:/posts";
+        return referer != null ? "redirect:" + referer.replaceFirst("^https?://[^/]+", "") : "redirect:/bills";
     }
 
     // ユーザーのフォローを解除する窓口
@@ -287,7 +287,7 @@ public class UserController {
         // MARK: save()の後、セッション内のユーザー情報も最新（フォロー解除後）に更新しておく
         session.setAttribute("loginUser", me);
 
-        return referer != null ? "redirect:" + referer.replaceFirst("^https?://[^/]+", "") : "redirect:/posts";
+        return referer != null ? "redirect:" + referer.replaceFirst("^https?://[^/]+", "") : "redirect:/bills";
     }
 
     @GetMapping("/users/{id}")

@@ -40,7 +40,7 @@ public class LoginController {
 		if (user != null && PasswordUtil.checkPassword(password, user.getPassword())) {
 			// 認証成功：セッションにログインユーザーのオブジェクトを「loginUser」という名前で丸ごと保存
 			session.setAttribute("loginUser", user);
-			return "redirect:/posts";
+			return "redirect:/bills";
 		}
 
 		// 認証失敗：エラーメッセージを一時的に保持させてログイン画面にリダイレクト

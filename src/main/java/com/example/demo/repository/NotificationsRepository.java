@@ -23,9 +23,9 @@ public interface NotificationsRepository extends JpaRepository<Notification, Lon
     @Query("SELECT COUNT(n) FROM Notification n WHERE n.receiver = :receiver AND n.isRead = false AND TYPE(n) = MessageNotification")
     long countUnreadMessageNotifications(@Param("receiver") User receiver);
 
-    // ポスト関連通知（PostNotification）の未読数をカウント
-    @Query("SELECT COUNT(n) FROM Notification n WHERE n.receiver = :receiver AND n.isRead = false AND TYPE(n) = PostNotification")
-    long countUnreadPostNotifications(@Param("receiver") User receiver);
+    // ポスト関連通知（BillNotification）の未読数をカウント
+    @Query("SELECT COUNT(n) FROM Notification n WHERE n.receiver = :receiver AND n.isRead = false AND TYPE(n) = BillNotification")
+    long countUnreadBillNotifications(@Param("receiver") User receiver);
 
     // DM一覧用：特定の相手から自分宛の未読メッセージ通知の「数」をカウントする
     @Query("SELECT COUNT(n) FROM Notification n WHERE n.receiver = :receiver AND n.sender = :sender AND n.isRead = false AND TYPE(n) = MessageNotification")

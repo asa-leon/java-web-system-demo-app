@@ -15,7 +15,7 @@ import com.example.demo.model.Message;
 import com.example.demo.model.MessageNotification;
 import com.example.demo.model.Notification;
 import com.example.demo.model.Bill;
-import com.example.demo.model.PostNotification;
+import com.example.demo.model.BillNotification;
 import com.example.demo.model.User;
 import com.example.demo.repository.MessageRepository;
 import com.example.demo.repository.NotificationsRepository;
@@ -33,7 +33,7 @@ public class NotificationInheritanceTests {
 	private UserRepository userRepository;
 
 	@Autowired
-	private BillRepository postRepository;
+	private BillRepository billRepository;
 
 	private User sender;
 	private User receiver;
@@ -80,16 +80,17 @@ public class NotificationInheritanceTests {
 	@Test
 	@DisplayName("投稿にコメントされたときに、投稿者向けのコメント通知が自動生成されること")
 	void testCommentNotificationCreation() {
-		Bill post = new Bill();
-		post.setUser(receiver); // 投稿者はreceriver
-		post.setContent("テスト投稿です。");
-		postRepository.save(post);
+		Bill bill = new Bill();
+		bill.setUser(receiver); // 投稿者はreceriver
+		bill.setTitle("テストタイトルです。");
+		bill.setDescription("テストディスクリプションです。");
+		billRepository.save(bill);
 
-		PostNotification commentNotification = new PostNotification();
-		commentNotification.setType(PostNotification.PostNotificationType.COMMENT);
+		BillNotification commentNotification = new BillNotification();
+		commentNotification.setType(BillNotification.BillNotificationType.COMMENT);
 		commentNotification.setSender(sender);
 		commentNotification.setReceiver(receiver);
-		commentNotification.setPost(post);
+		commentNotification.setBill(bill);
 		commentNotification.setRead(false);
 
 		notificationsRepository.save(commentNotification);
@@ -98,26 +99,26 @@ public class NotificationInheritanceTests {
 		List<Notification> notifications = notificationsRepository.findByReceiverOrderByIdDesc(receiver);
 		assertThat(notifications).isNotEmpty();
 
-		PostNotification savedNotification = (PostNotification) notifications.get(0);
-		assertThat(savedNotification.getType()).isEqualTo(PostNotification.PostNotificationType.COMMENT);
-		assertThat(savedNotification.getPost().getId()).isEqualTo(post.getId());
+		BillNotification savedNotification = (BillNotification) notifications.get(0);
+		assertThat(savedNotification.getType()).isEqualTo(BillNotification.BillNotificationType.COMMENT);
+		assertThat(savedNotification.getBill().getId()).isEqualTo(bill.getId());
 	}
 
 	@Test
 	@DisplayName("特定の通知IDを指定して、その通知だけを個別に既読に更新できること")
 	void testMarkAsReadIndividually() {
 		// 1. 未読の通知を2つ作成して保存
-		PostNotification n1 = new PostNotification();
+		BillNotification n1 = new BillNotification();
 		n1.setSender(sender);
 		n1.setReceiver(receiver);
-		n1.setType(PostNotification.PostNotificationType.LIKE);
+		n1.setType(BillNotification.BillNotificationType.LIKE);
 		n1.setRead(false);
 		notificationsRepository.save(n1);
 
-		PostNotification n2 = new PostNotification();
+		BillNotification n2 = new BillNotification();
 		n2.setSender(sender);
 		n2.setReceiver(receiver);
-		n2.setType(PostNotification.PostNotificationType.COMMENT);
+		n2.setType(BillNotification.BillNotificationType.COMMENT);
 		n2.setRead(false);
 		notificationsRepository.save(n2);
 

@@ -3,7 +3,7 @@ package com.example.demo.controller.async;
 import com.example.demo.model.Bill;
 import com.example.demo.model.User;
 import com.example.demo.model.Like;
-import com.example.demo.model.PostNotification;
+import com.example.demo.model.BillNotification;
 import com.example.demo.repository.LikeRepository;
 import com.example.demo.repository.BillRepository;
 import com.example.demo.repository.NotificationsRepository;
@@ -21,11 +21,11 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/posts/{id}/like") // 分かりやすく /api/を頭につけたURLにする
+@RequestMapping("/api/bills/{id}/like") // 分かりやすく /api/を頭につけたURLにする
 @RequiredArgsConstructor
 public class LikeApiController {
     
-	private final BillRepository postRepository;
+	private final BillRepository billRepository;
 	private final LikeRepository likeRepository;
 	private final NotificationsRepository notificationRepository;
 
@@ -42,11 +42,11 @@ public class LikeApiController {
 		}
 		
 		// 1. 対象の投稿を探す
-		Bill post = postRepository.findById(id)
-			.orElseThrow(() -> new IllegalArgumentException("Invalid post ID: " + id));
+		Bill bill = billRepository.findById(id)
+			.orElseThrow(() -> new IllegalArgumentException("Invalid bill ID: " + id));
 
 		// 3. 既に自分がこの投稿にいいねしているかチェック
-		Optional<Like> existingLike = likeRepository.findByUserAndPost(currentUser, post);
+		Optional<Like> existingLike = likeRepository.findByUserAndBill(currentUser, bill);
 
 		boolean liked;
 		if (existingLike.isPresent()) {
@@ -57,25 +57,25 @@ public class LikeApiController {
 			// 3-2. なければ「いいね登録」：レコードを新規保存
 			Like newLike = new Like();
 			newLike.setUser(currentUser);
-			newLike.setPost(post);
+			newLike.setBill(bill);
 			likeRepository.save(newLike);
 			liked = true;
 
 			// 通知機能： いいね通知を裏で作成して保存する
 			// 自作自演（自分の投稿に自分でいいね）でなければ通知を送る
-			if (!post.getUser().getId().equals(currentUser.getId())) {
-				PostNotification notification = new PostNotification();
-				notification.setType(PostNotification.PostNotificationType.LIKE); // タイプ：LIKE
+			if (!bill.getUser().getId().equals(currentUser.getId())) {
+				BillNotification notification = new BillNotification();
+				notification.setType(BillNotification.BillNotificationType.LIKE); // タイプ：LIKE
 				notification.setSender(currentUser); // アクションを起こした人（自分）
-				notification.setReceiver(post.getUser()); // 通知を受ける人（投稿の作者）
-				notification.setPost(post); // 対象の投稿
+				notification.setReceiver(bill.getUser()); // 通知を受ける人（投稿の作者）
+				notification.setBill(bill); // 対象の投稿
 
 				notificationRepository.save(notification);
 			}
 		}
 
 		// 4. 最新の総いいね数をカウントし直す
-		long currentLikeCount = likeRepository.countByPost(post);
+		long currentLikeCount = likeRepository.countByBill(bill);
 
 		// 5. フロントに「最新の数」と「自分がいいね状態か」をデータで返す
 		return ResponseEntity.ok(Map.of(

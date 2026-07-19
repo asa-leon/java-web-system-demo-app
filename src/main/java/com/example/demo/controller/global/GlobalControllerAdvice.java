@@ -24,16 +24,16 @@ public class GlobalControllerAdvice {
 
             // 分離した未読数をそれぞれ取得して格納
             long unreadMessageCount = notificationsRepository.countUnreadMessageNotifications(currentUser);
-            long unreadPostCount = notificationsRepository.countUnreadPostNotifications(currentUser);
+            long unreadBillCount = notificationsRepository.countUnreadBillNotifications(currentUser);
 
             model.addAttribute("unreadMessageCount", unreadMessageCount);
-            model.addAttribute("unreadPostCount", unreadPostCount);
+            model.addAttribute("unreadBillCount", unreadBillCount);
 
             // 既存のHTMLが崩れない様、全体の未読数（合算）も残しておく
-            model.addAttribute("unreadCount", unreadMessageCount + unreadPostCount);
+            model.addAttribute("unreadCount", unreadMessageCount + unreadBillCount);
         } else {
             model.addAttribute("unreadMessageCount", 0L);
-            model.addAttribute("unreadPostCount", 0L);
+            model.addAttribute("unreadBillCount", 0L);
             model.addAttribute("unreadCount", 0L);
         }
     }

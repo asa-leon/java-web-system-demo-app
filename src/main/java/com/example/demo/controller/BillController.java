@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.model.Comment;
 import com.example.demo.model.Bill;
-import com.example.demo.model.PostNotification;
+import com.example.demo.model.BillNotification;
 import com.example.demo.model.User;
 import com.example.demo.model.Tag;
 import com.example.demo.repository.CommentRepository;
@@ -287,7 +287,7 @@ public class BillController {
 
 	// フォローしているユーザーの投稿だけを表示するタイムライン
 	@GetMapping("/bills/following")
-	public String followingPostList(HttpSession session, Model model) {
+	public String followingBillList(HttpSession session, Model model) {
 
 		// 1. セッションからログインユーザーを取得
 		User me = (User) session.getAttribute("loginUser");
@@ -396,11 +396,11 @@ public class BillController {
 
 		// 5. 通知機能：自作自演（自分の提案に自分でコメント）でなければ、提案者宛にコメント通知を作成して保存
 		if (!bill.getUser().getId().equals(me.getId())) {
-			PostNotification notification = new PostNotification();
-			notification.setType(PostNotification.PostNotificationType.COMMENT);
+			BillNotification notification = new BillNotification();
+			notification.setType(BillNotification.BillNotificationType.COMMENT);
 			notification.setSender(me);
 			notification.setReceiver(bill.getUser());
-			// notification.setPost(bill); //通知機能側のBill対応は一旦保留、または型に合わせて後ほど修正
+			// notification.setBill(bill); //通知機能側のBill対応は一旦保留、または型に合わせて後ほど修正
 
 			notificationsRepository.save(notification);
 		}
@@ -411,7 +411,7 @@ public class BillController {
 
 	// タグに基づく提案を取得して画面に渡す処理
 	@GetMapping("/tags/{tagName}")
-	public String showPostsByTag(@PathVariable("tagName") String tagName, Model model) {
+	public String showBillsByTag(@PathVariable("tagName") String tagName, Model model) {
 		// 1. 指定されたタグ名がついている投稿だけをリポジトリから取得
 		List<Bill> taggedBills = billRepository.findByTagsName(tagName);
 

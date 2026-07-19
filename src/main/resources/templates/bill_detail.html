@@ -20,7 +20,7 @@
 					<span class="user-name">
 						<div class="user-avatar-area">
 							<div class="user-avatar">
-								<img th:src="${bill.user != null && bill.user.avatarUrl != null}" 
+								<img th:if="${bill.user != null && bill.user.avatarUrl != null}"
 									th:src="${bill.user.avatarUrl}" alt="icon">
 								<span th:if="${bill.user == null || bill.user.avatarUrl == null}">👤</span>
 							</div>
@@ -30,8 +30,7 @@
 					<span class="user-id" th:text="'(ID: )' + ${bill.user.id} + ')'"></span>
 
 					<!-- ステータスバッヂ（一覧画面と統一） -->
-					<span th:text="${bill.status.displayName}" class="status-badge"
-						th:class="(
+					<span th:text="${bill.status.displayName}" class="status-badge" th:class="(
 							${bill.status.name() == 'UNDER_DELIBERATION'} 
 							? 'under-deliberation'
 							: (
@@ -42,8 +41,7 @@
 						)">
 					</span>
 
-					<span class="post-time" 
-						th:text="${#temporals.format(bill.createdAt, 'yyyy/MM/dd（E）HH:mm')}"></span>
+					<span class="post-time" th:text="${#temporals.format(bill.createdAt, 'yyyy/MM/dd（E）HH:mm')}"></span>
 				</div>
 
 				<!-- 法案本文表示エリア -->
@@ -53,7 +51,7 @@
 						<p th:text="${bill.description}" class="bill-description wider"></p>
 					</div>
 				</div>
-				
+
 				<!-- 非同期アクションボタン群 -->
 				<div class="post-actions">
 					<button type="button" class="like-button" th:data-bill-id="${bill.id}"
@@ -71,11 +69,11 @@
 				</div>
 
 				<!-- 削除（撤回）ボタン -->
-				 <form th:action="@{/bills/{id}/delete(id=${bill.id})}" method="post">
+				<form th:action="@{/bills/{id}/delete(id=${bill.id})}" method="post">
 					<button type="submit" class="delete-btn" onclick="return confirm('本当にこの法案を撤回（削除）しますか？')">
 						🗑️ 撤回
 					</button>
-				 </form>
+				</form>
 			</div>
 
 			<!-- 審議コメント（議論）セクション -->
@@ -83,12 +81,14 @@
 				<h3>💬 審議コメント・質疑応答</h3>
 
 				<!-- コメント投稿フォーム -->
-				<form th:action="@{/bills/{id}/comments(id=${bill.id})}" th:object="${commentForm}" method="post" class="comment-form">
+				<form th:action="@{/bills/{id}/comments(id=${bill.id})}" th:object="${commentForm}" method="post"
+					class="comment-form">
 					<div class="form-group">
-<textarea th:field="*{content}" rows="3" placeholder="この法案に対する意見、質問、修正要求などを入力してください..."></textarea>
-<p class="error-message" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></p>
+						<textarea th:field="*{content}" rows="3"
+							placeholder="この法案に対する意見、質問、修正要求などを入力してください..."></textarea>
+						<p class="error-message" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></p>
 					</div>
-					
+
 					<button type="submit" class="submit-btn comment">💬 発言する</button>
 				</form>
 
@@ -103,12 +103,13 @@
 								<a th:href="@{/users/{id}(id=${comment.user.id})}" th:text="${comment.user.name}"></a>
 							</span>
 							<span class="user-id" th:text="'ID: ' + ${comment.user.id} + ')'"></span>
-							<span class="post-time" th:text="${#temporals.format(comment.createdAt, 'MM/dd（E）HH:mm')}"></span>
+							<span class="post-time"
+								th:text="${#temporals.format(comment.createdAt, 'MM/dd（E）HH:mm')}"></span>
 						</div>
 						<!-- コメント本文（開業を維持、ハッシュタグ自動リンク対象） -->
-						 <div class="comment-content">
+						<div class="comment-content">
 							<p th:text="${comment.content}"></p>
-						 </div>
+						</div>
 					</div>
 				</div>
 			</section>

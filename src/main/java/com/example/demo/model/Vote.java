@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "votes", uniqueConstraints = {
     // 同じユーザーが同じ投稿に「2回以上Voteできない」様に制約をかける
-    @UniqueConstraint(columnNames = {"user_id", "post_id"})
+    @UniqueConstraint(columnNames = {"user_id", "bill_id"})
 })
 @Getter
 @Setter
@@ -25,8 +25,8 @@ public class Vote {
 
     // どの投稿に投票したか
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
-    private Bill post;
+    @JoinColumn(name = "bill_id", nullable = false)
+    private Bill bill;
 
     // いつ投票したか
     @Column(name = "created_at", nullable = false)

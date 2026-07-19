@@ -26,7 +26,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = "DELETE FROM user_follows WHERE follower_id = :id OR following_id = :id", nativeQuery=true)
     void deleteFollowRelationsByUserId(@Param("id") Long id);
 
-    // 削除処理の直前にSQLで自分自身の投稿に紐づく post_tags のデータを一掃する
+    // 削除処理の直前にSQLで自分自身の投稿に紐づく bill_tags のデータを一掃する
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM bill_tags WHERE bill_id IN (SELECT id FROM bills WHERE user_id = :id)", nativeQuery = true)

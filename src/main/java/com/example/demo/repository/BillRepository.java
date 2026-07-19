@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.demo.model.Bill;
 
 //MARK: JpaSpecificationExecutor を継承することで findAll(spec, sort) が使えるようになる
-public interface BillRepository extends JpaRepository<Bill, Long>/* , JpaSpecificationExecutor<Post> */ {
+public interface BillRepository extends JpaRepository<Bill, Long> {
     // 基本的なCRUD操作はこれだけで自動実装される
 
     // 簡単な一行繋ぎで検索条件を定義する方法 

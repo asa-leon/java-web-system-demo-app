@@ -51,8 +51,8 @@ public class Notification {
     }
 
     // 画面の出し分け用メソッド
-    public boolean isPostNotification() {
-        return this instanceof PostNotification;
+    public boolean isBillNotification() {
+        return this instanceof BillNotification;
     }
 
     public boolean isMessageNotification() {
