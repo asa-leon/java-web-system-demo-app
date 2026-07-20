@@ -58,4 +58,37 @@ public class Notification {
     public boolean isMessageNotification() {
         return this instanceof MessageNotification;
     }
+
+    // 法案通知のタイプ名を安全に返す（DM通知の場合は空文字）
+    public String getBillNotificationType() {
+        if (this instanceof BillNotification) {
+            return ((BillNotification) this).getType().name();
+        }
+        return "";
+    }
+
+    // 安全にキャストされた、BillNotificationを返す（DM通知の場合はnull）
+    public BillNotification asBillNotification() {
+        return this instanceof BillNotification ? (BillNotification) this : null;
+    }
+
+    // 法案のタイトルを安全に取得する（データが不完全な場合やDMの場合は空文字）
+    public String getBillTitle() {
+        if (this instanceof BillNotification) {
+            BillNotification billNav = (BillNotification) this;
+            if (billNav.getBill() != null) {
+                return billNav.getBill().getTitle();
+            }
+        }
+        return "無効な投稿";
+    }
+
+    // メッセージ通知の判定を文字列でも取れるようにする（統一感の為）
+    // HTML側からは、n.messageNotificationTypeでアクセス可能
+    public String getMessageNotificationType() {
+        if (this instanceof MessageNotification) {
+            return "MESSAGE";
+        }
+        return "";
+    }
 }

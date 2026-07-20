@@ -13,24 +13,38 @@
         <div class="card-container">
             <h2>🏛️ 新規法案提出</h2>
 
-            <form th:action="@{/bills/create}" th:object="${bill}" method="post">
+            <form th:action="@{/bills/create}" th:object="${billForm}" method="post">
 
                 <!-- 法案名入力フィールド -->
                 <div class="form-group">
                     <label for="title">📜 法案名</label>
-                    <input type="text" id="title" th:field="*{title}" rows="4" placeholder="例：デジタル審議促進法案" />
+                    <input type="text" id="title" th:field="*{title}" class="form-control" rows="3" placeholder="例：デジタル審議促進法案" />
 
-                    <p class="error-message" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></p>
+                    <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="error-message"></p>
                 </div>
-                
+
+                <!-- 委員会選択プルダウン -->
+                <div class="form-group">
+                    <label for="committeeId">担当委員会</label>
+                    <select id="committeeId" th:field="*{committeeId}" class="form-control">
+                        <option value="">-- 委員会を選択してください --</option>
+                        <option th:each="c : ${committees}"
+                            th:value="${c.id}"
+                            th:text="${c.name}">
+                            常任委員会
+                        </option>
+                    </select>
+                    <div th:if="${#fields.hasErrors('committeeId')}" th:errors="*{committeeId}" class="error-message"></div>
+                </div>
+
                 <!-- 提案理由入力フィールド -->
                 <div class="form-group">
                     <label for="description">✍️ 提案理由・法案本文</label>
-                    <textarea id="description" th:field="*{description}" rows="8" 
+                    <textarea id="description" th:field="*{description}" class="form-control" rows="5" 
                         placeholder="この法案を提出する背景や、具体的な条文、目的を記述してください。#ハッシュタグ もここに含めることができます
                         "></textarea>
 
-                    <p class="error-message" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
+                    <p th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="error-message"></p>
                 </div>
 
                 <!-- ボタンエリア -->

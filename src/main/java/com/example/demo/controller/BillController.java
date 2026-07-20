@@ -15,21 +15,26 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.model.Comment;
+import com.example.demo.form.CommentForm;
 import com.example.demo.model.Bill;
 import com.example.demo.model.BillNotification;
 import com.example.demo.model.User;
 import com.example.demo.model.Tag;
+import com.example.demo.form.BillForm;
+import com.example.demo.model.Committee;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.BillRepository;
 import com.example.demo.repository.TagRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.VoteRepository;
 import com.example.demo.repository.NotificationsRepository;
+import com.example.demo.repository.CommitteeRepository;
 
 @Controller
 @RequiredArgsConstructor // これを書くことでconstructor(this.xx = xx)を書かなくて済む
@@ -42,6 +47,7 @@ public class BillController {
 	private final TagRepository tagRepository;
 	private final VoteRepository voteRepository;
 	private final NotificationsRepository notificationsRepository;
+	private final CommitteeRepository committeeRepository;
 
 	// 投稿一覧を表示する窓口
 	@GetMapping("/bills")
@@ -142,14 +148,12 @@ public class BillController {
 	// 投稿フォーム画面を表示する
 	@GetMapping("/bills/new")
 	public String showNewBillForm(Model model) {
-		model.addAttribute("bill", new Bill());
 
-		// セレクトボックスで選べるように、全ユーザーの一覧を画面に渡す
-		model.addAttribute("users", userRepository.findAll());
+		// エンティティではなくFromオブジェクトを画面に渡す
+		model.addAttribute("billForm", new BillForm());
 
 		// 【超重要】提出先の委員会を選べるように、全委員会リストを画面に渡す
-		// model.addAttribute("committees", committeeRepository.findAll());
-		// ※CommitteeRepository追加後に有効化
+		model.addAttribute("committees", committeeRepository.findAll());
 
 		// データベースからすべてのタグを取得して、画面に渡す
 		List<Tag> allTags = tagRepository.findAll();
@@ -161,7 +165,7 @@ public class BillController {
 	// 投稿をデータベースに保存する
 	@PostMapping("/bills/create")
 	public String createBill(
-			@Valid Bill bill,
+			@Valid @ModelAttribute("billForm") BillForm billForm,
 			BindingResult bindingResult,
 			HttpSession session,
 			Model model) {
@@ -172,18 +176,27 @@ public class BillController {
 			return "redirect:/login";
 		}
 
-		// バリデーションエラー（140文字超過など）があれば元の画面に戻す
+		// バリデーションエラーがあれば元の画面に戻す
 		if (bindingResult.hasErrors()) {
 			// エラーで戻った時も、タグ一覧を再セットしてあげる
 			model.addAttribute("allTags", tagRepository.findAll());
 
 			// エラー時も、委員会リストを再セット
-			// model.addAttribute("committees", committeeRepository.findAll());
+			model.addAttribute("committees", committeeRepository.findAll());
 
 			return "bill_form";
 		}
 
+		// Form から Entity への詰め替え
+		Bill bill = new Bill();
+		bill.setTitle(billForm.getTitle());
+		bill.setDescription(billForm.getDescription());
 		bill.setUser(currentUser);
+
+		// 選択されたIDからCommitteeを取得してセット
+		Committee committee = committeeRepository.findById(billForm.getCommitteeId())
+			.orElseThrow(() -> new IllegalArgumentException("無効な委員会IDです: " + billForm.getCommitteeId()));
+		bill.setCommittee(committee);
 
 		// MARK: ハッシュタグ抽出ロジック
 		String description = bill.getDescription();
@@ -360,6 +373,11 @@ public class BillController {
 		// Bill.java に @OneToMany を書いたので、JPAが自動で紐づくコメントを一緒に持ってきてくれる
 		model.addAttribute("comments", bill.getComments());
 
+		// HTMLのth:object="{commentForm}"を受け止める為に空のオブジェクトを必ず渡す
+		model.addAttribute("commentForm", new CommentForm());
+
+		model.addAttribute("trends", tagRepository.findTop5Trends());
+
 		return "bill_detail";
 	}
 
@@ -367,8 +385,10 @@ public class BillController {
 	@PostMapping("/bills/{id}/comments")
 	public String createComment(
 			@PathVariable("id") Long id,
-			@RequestParam("content") String content,
-			HttpSession session) {
+			@Valid CommentForm commentForm, // Validアノテーションで読み込む
+			BindingResult bindingResult, // これで上記と関連してバリデーション結果を受け取る
+			HttpSession session,
+			Model model) {				// エラー時に画面を再構成する為Modelを追加
 
 		// 1. セッションからは「箱」としてユーザーを取得
 		User sessionUser = (User) session.getAttribute("loginUser");
@@ -385,9 +405,24 @@ public class BillController {
 		Bill bill = billRepository.findById(id)
 				.orElseThrow(() -> new IllegalArgumentException("法案が見つかりません"));
 
+		// バリデーションエラー（空欄や文字数超過）がある場合の処理
+		if (bindingResult.hasErrors()) {
+			// 詳細画面を再表示するために、billDetailと同じデータを詰め直す
+			bill.setLikeCount(likeRepository.countByBill(bill));
+			bill.setVoteCount(voteRepository.countByBill(bill));
+			bill.setLikedByMe(likeRepository.existsByUserAndBill(me, bill));
+			bill.setVotedByMe(voteRepository.existsByUserAndBill(me, bill));
+
+			model.addAttribute("bill", bill);
+			model.addAttribute("loginUser", me);
+			model.addAttribute("trends", tagRepository.findTop5Trends());
+
+			return "bill_detail"; // リダイレクトではなく、エラーを持ったまま詳細画面のHTMLを表示
+		}
+
 		// 3. コメントオブジェクトを生成してデータをセット
 		Comment comment = new Comment();
-		comment.setContent(content);
+		comment.setContent(commentForm.getContent()); // フォームから値を取得
 		comment.setBill(bill);
 		comment.setUser(me); // 最新のユーザーオブジェクトを紐づける
 
@@ -400,7 +435,7 @@ public class BillController {
 			notification.setType(BillNotification.BillNotificationType.COMMENT);
 			notification.setSender(me);
 			notification.setReceiver(bill.getUser());
-			// notification.setBill(bill); //通知機能側のBill対応は一旦保留、または型に合わせて後ほど修正
+			notification.setBill(bill);
 
 			notificationsRepository.save(notification);
 		}

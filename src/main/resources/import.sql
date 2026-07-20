@@ -1,6 +1,6 @@
 -- 1. 親テーブル（users, committees）のデータをID固定で投入
-INSERT INTO users (id, user_id, name, email, password, icon) VALUES (1, 'gemini', 'Gemini', 'gemini@example.com', '$2a$08$iBx1mr0xyL7UpU8qIHNaPOm6y07YKjxDgUA2CTe3HdFpgo3s4Ool6', '🚀');
-INSERT INTO users (id, user_id, name, email, password, icon) VALUES (2, 'higako', 'Higako', 'higako@example.com', '$2a$08$iBx1mr0xyL7UpU8qIHNaPOm6y07YKjxDgUA2CTe3HdFpgo3s4Ool6', '🐱');
+INSERT INTO users (id, user_id, name, email, password, avatar_url) VALUES (1, 'gemini', 'Gemini', 'gemini@example.com', '$2a$08$iBx1mr0xyL7UpU8qIHNaPOm6y07YKjxDgUA2CTe3HdFpgo3s4Ool6', '/images/avatars/user_1_574582b9-7827-4533-ae20-b82008a72e74.png');
+INSERT INTO users (id, user_id, name, email, password) VALUES (2, 'higako', 'Higako', 'higako@example.com', '$2a$08$iBx1mr0xyL7UpU8qIHNaPOm6y07YKjxDgUA2CTe3HdFpgo3s4Ool6');
 
 INSERT INTO committees (id, name, description, icon) VALUES (1, '内閣・総務委員会', '祝日の追加や、ネットのルール、行政に関する法案を審議します。', '🏛️');
 

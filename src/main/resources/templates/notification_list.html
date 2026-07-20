@@ -21,34 +21,34 @@
 
 		<!-- 通知ループ処理 -->
 		<div th:each="n : ${notifications}" 
-			th:class="${n.read} ? 'notification-card' : 'notification-card unread'">
+			th:class="${n.isRead} ? 'notification-card' : 'notification-card unread'">
 
 			<!-- 1. 投稿関連の通知（PostNotification型）の場合-->
-			<th:block th:if="${n.postNotification}">
+			<th:block th:if="${n.billNotification}">
 				<!-- タイプ別のアイコン表示 -->
 				<div class="notification-icon">
-					<span th:if="${n.type.name() == 'LIKE'}">❤️</span>
-					<span th:if="${n.type.name() == 'VOTE'}">🏛️</span>
-					<span th:if="${n.type.name() == 'COMMENT'}">💬</span>
+					<span th:if="${n.billNotificationType == 'LIKE'}">❤️</span>
+					<span th:if="${n.billNotificationType == 'VOTE'}">🏛️</span>
+					<span th:if="${n.billNotificationType == 'COMMENT'}">💬</span>
 				</div>
 
 				<div class="notification-body">
 					<!-- 送信者（アクションした人）の名前 -->
-					<span class="sender-name" th:text="${n.sender.icon} + ' ' + ${n.sender.name}"></span> さんが、
+					<span class="sender-name" th:text="${n.sender.name}"></span> さんが、
 
 					<!-- タイプ別のテキスト切り替え -->
-					<span th:if="${n.type.name() == 'LIKE'}">あなたの投稿に「いいね」しました。</span>
-					<span th:if="${n.type.name() == 'VOTE'}">あなたの提出法案に「投票」しました。</span>
-					<span th:if="${n.type.name() == 'COMMENT'}">あなたの投稿に「コメント」しました。</span>
+					<span th:if="${n.billNotificationType == 'LIKE'}">あなたの投稿に「いいね」しました。</span>
+					<span th:if="${n.billNotificationType == 'VOTE'}">あなたの提出法案に「投票」しました。</span>
+					<span th:if="${n.billNotificationType == 'COMMENT'}">あなたの投稿に「コメント」しました。</span>
 
 					<!-- 直接URLではなく、既読化コントローラー（PostController.readAndRedirect()）を通す -->
 					<a th:href="@{/notifications/{id}/read(id=${n.id})}" class="post-preview"
-						th:text="'「' + ${n.post.content} + '」'"></a>
+						th:text="'「' + ${n.billTitle} + '」'"></a>
 				</div>
 			</th:block>
 
 			<!-- 2. メッセージ関連の通知（MessageNotification型）の場合 -->
-			<th:block th:if="${n.messageNotification}">
+			<th:block th:if="${n.messageNotificationType == 'MESSAGE'}">
 				<!-- メッセージ用のアイコン -->
 				<div class="notification-icon">
 					<span>✉️</span>

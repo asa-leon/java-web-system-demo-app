@@ -1,6 +1,8 @@
 package com.example.demo.controller.global;
 
+import java.util.List;
 import com.example.demo.model.User;
+import com.example.demo.model.Notification;
 import com.example.demo.repository.NotificationsRepository;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +24,17 @@ public class GlobalControllerAdvice {
 
         if (currentUser != null) {
 
+            // リポジトリの基本メソッドで全件取得し、Java側で安全にカウントする
+            List<Notification> allNotifications = notificationsRepository.findByReceiverOrderByCreatedAtDesc(currentUser);
+
             // 分離した未読数をそれぞれ取得して格納
-            long unreadMessageCount = notificationsRepository.countUnreadMessageNotifications(currentUser);
-            long unreadBillCount = notificationsRepository.countUnreadBillNotifications(currentUser);
+            long unreadMessageCount = allNotifications.stream()
+                .filter(n -> !n.isRead() && n.isMessageNotification())
+                .count();
+
+            long unreadBillCount = allNotifications.stream()
+                .filter(n -> !n.isRead() && n.isBillNotification())
+                .count();
 
             model.addAttribute("unreadMessageCount", unreadMessageCount);
             model.addAttribute("unreadBillCount", unreadBillCount);

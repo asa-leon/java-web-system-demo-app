@@ -112,18 +112,24 @@ h3 {
     color: #9ca3af;
 }
 
-.user-name {
+.user-name,
+.comment-user,
+.user-avatar-area {
     color: #60a5fa;
     font-weight: bold;
 }
 
-.user-name a {
+.user-name a,
+.comment-user a,
+.user-avatar-area a {
     color: #e5e7eb;
     text-decoration: none;
     transition: color 0.2s;
 }
 
-.user-name a:hover {
+.user-name a:hover,
+.comment-user a:hover,
+.user-avatar-area a:hover {
     color: #60a5fa;
     text-decoration: underline;
 }
@@ -788,20 +794,24 @@ form:has(.delete-btn) {
 }
 
 .user-avatar img {
-    width: 32px;
-    height: auto;
-    border-radius: 50%;
-
-}
-
-.user-image {
     width: 60px;
     height: auto;
     border-radius: 50%;
 }
 
-.user-image.no-avatar {
+.user-avatar span {
     font-size: 2.8rem;
+}
+
+
+.user-avatar.sm img {
+    width: 32px;
+    height: auto;
+    border-radius: 50%;
+}
+
+.user-avatar.sm span {
+    font-size: 1.4rem;
 }
 
 .user-email {

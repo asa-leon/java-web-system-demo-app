@@ -19,14 +19,6 @@ public interface NotificationsRepository extends JpaRepository<Notification, Lon
     // 自分（Receiver）宛の通知をIDの降順（新しい順）で全件取得する
     List<Notification> findByReceiverOrderByIdDesc(User receiver);
 
-    // メッセージ通知（MessageNotification）の未読数をカウント
-    @Query("SELECT COUNT(n) FROM Notification n WHERE n.receiver = :receiver AND n.isRead = false AND TYPE(n) = MessageNotification")
-    long countUnreadMessageNotifications(@Param("receiver") User receiver);
-
-    // ポスト関連通知（BillNotification）の未読数をカウント
-    @Query("SELECT COUNT(n) FROM Notification n WHERE n.receiver = :receiver AND n.isRead = false AND TYPE(n) = BillNotification")
-    long countUnreadBillNotifications(@Param("receiver") User receiver);
-
     // DM一覧用：特定の相手から自分宛の未読メッセージ通知の「数」をカウントする
     @Query("SELECT COUNT(n) FROM Notification n WHERE n.receiver = :receiver AND n.sender = :sender AND n.isRead = false AND TYPE(n) = MessageNotification")
     long countUnreadMessageNotificationsFromPartner(@Param("receiver") User receiver, @Param("sender") User sender);

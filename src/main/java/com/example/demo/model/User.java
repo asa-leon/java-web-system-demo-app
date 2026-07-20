@@ -55,8 +55,6 @@ public class User {
     @NotBlank(message = "パスワードは必須入力です")
     private String password;
 
-    private String icon = "🚀"; // デフォルト値を設定（画像パスの指定もできる）
-
     // 自分がフォローしているユーザーのリスト
     @ManyToMany
     @JoinTable(
