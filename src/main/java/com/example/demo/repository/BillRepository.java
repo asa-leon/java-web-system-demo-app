@@ -30,4 +30,7 @@ public interface BillRepository extends JpaRepository<Bill, Long> {
     // 紐づいているタグの名前（tags.name）を条件に、投稿一覧を検索する
     List<Bill> findByTagsName(String tagName);
 
+    // 各委員会に提出された法案一覧を取得する
+    List<Bill> findByCommitteeIdOrderByCreatedAtDesc(Long committeeId);
+
 }

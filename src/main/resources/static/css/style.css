@@ -1247,6 +1247,150 @@ form:has(.delete-btn) {
 }
 
 /* ==========================================
+   🏛️ 委員会のグリッド・サブルーアウト・追加部品
+   ========================================== */
+
+/* 1. サブタイトル（h2やh3の下に置く説明文や補足テキスト） */
+.subtitle {
+    color: #9ca3af;
+    font-size: 0.95rem;
+    margin-top: -12px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.subtitle.wider {
+    font-size: 1.05rem;
+    margin-bottom: 24px;
+}
+
+/* 2. 委員会・グリッドレイアウト */
+.committee-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+    margin-bottom: 24px;
+}
+
+/* 3. 委員会個別カード */
+.committee-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.committee-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(96, 165, 250, 0.4);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* 4. 委員会カード内のヘッダー・タイトル・説明 */
+.committee-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.committee-title {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.committee-title a {
+    color: #ffffff;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.committee-title a:hover {
+    color: #60a5fa;
+}
+
+.committee-icon {
+    font-size: 1.4rem;
+}
+
+.committee-desc {
+    color: #d1d5db;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin: 0 0 14px 0;
+    /* 3行を超えたら省略記号化 */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.committee-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #9ca3af;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 10px;
+    margin-top: auto;
+}
+
+.committee-member-count {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* 5. 委員会所属・参加ボタン関連 */
+.committee-action {
+    margin-top: 12px;
+}
+
+.join-btn {
+    width: 100%;
+    padding: 8px 12px;
+    background: rgba(37, 99, 235, 0.2);
+    border: 1px solid rgba(37, 99, 235, 0.5);
+    color: #60a5fa;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.join-btn:hover {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+}
+
+.joined-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background: rgba(56, 161, 105, 0.15);
+    border: 1px solid rgba(56, 161, 105, 0.4);
+    color: #38a169;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+/* ==========================================
    📱 レスポンシブ
    ========================================== */
 @media screen and (max-width: 768px) {

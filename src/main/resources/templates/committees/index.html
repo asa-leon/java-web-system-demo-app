@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>常任委員会一覧 - 机上院</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+	<div class="container wide-layout">
+		<main class="main-content">
+			<h2>🏛️ 常任委員会案内</h2>
+
+			<header th:replace="~{header :: common-header(~{})}"></header>
+
+			<p class="subtitle">机上院には5つの常任委員会が設置されています。<br>
+				提出された法案は各委員会にて議論・審議されます。</p>
+
+			<div class="card-container">
+				<!-- 委員会カード一覧 -->
+				<div class="committee-grid">
+					<div class="committee-card" th:each="c : ${committees}">
+						<div class="committee-card-header">
+							<span class="committee-icon">
+								<i th:class="'bi ' + ${c.icon}"></i>
+							</span>
+							<h2 th:text="${c.name}">内閣・行政改革委員会</h2>
+						</div>
+
+						<p class="committee-description" th:text="${c.description}">
+							委員会についての説明文が入ります。
+						</p>
+
+						<div class="committee-card-footer">
+							<a th:href="@{/committees/{id}(id=${c.id})}" class="btn btn-secondary">
+								所属法案を見る ➔
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+
+		<aside class="sidebar">
+			<div class="trend-card">
+				<h3 class="trend-title">⚡ いまのトレンド</h3>
+				<p th:if="${#lists.isEmpty(trends)}" class="no-trends">まだトレンドはありません。</p>
+				<div th:each="t : ${trends}" class="trend-item">
+					<a th:href="@{/tags/{tagName}(tagName=${t.name})}" class="trend-link" th:text="'#' + ${t.name}"></a>
+				</div>
+			</div>
+		</aside>
+	</div>
+</body>
+
+</html>
