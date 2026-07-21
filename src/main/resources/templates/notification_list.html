@@ -7,12 +7,14 @@
 	<link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 
-<body>
+<body class="centered-layout">
 
 	<div class="container">
+		<header th:replace="~{header :: common-header(~{})}"></header>
+
+		<main class="main-content">
 		<h2>🔔 通知一覧</h2>
 
-		<div th:replace="~{header :: common-header(~{})}"></div>
 
 		<!-- 通知が空の場合 -->
 		<div th:if="${#lists.isEmpty(notifications)}" class="empty-message">
@@ -68,6 +70,7 @@
 
 			<div class="notification-time" th:text="${#temporals.format(n.createdAt, 'MM/dd（E）HH:mm')}"></div>
 		</div>
+		</main>
 	</div>
 </body>
 

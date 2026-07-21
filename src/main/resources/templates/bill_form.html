@@ -10,51 +10,56 @@
 <body class="centered-layout">
     <div class="container">
 
-        <div class="card-container">
+        <header th:replace="~{header :: common-header(~{})}"></header>
+
+        <main class="main-content">
             <h2>🏛️ 新規法案提出</h2>
 
-            <form th:action="@{/bills/create}" th:object="${billForm}" method="post">
+            <div class="card-container">
 
-                <!-- 法案名入力フィールド -->
-                <div class="form-group">
-                    <label for="title">📜 法案名</label>
-                    <input type="text" id="title" th:field="*{title}" class="form-control" rows="3" placeholder="例：デジタル審議促進法案" />
+                <form th:action="@{/bills/create}" th:object="${billForm}" method="post">
 
-                    <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="error-message"></p>
-                </div>
+                    <!-- 法案名入力フィールド -->
+                    <div class="form-group">
+                        <label for="title">📜 法案名</label>
+                        <input type="text" id="title" th:field="*{title}" class="form-control" rows="3"
+                            placeholder="例：デジタル審議促進法案" />
 
-                <!-- 委員会選択プルダウン -->
-                <div class="form-group">
-                    <label for="committeeId">担当委員会</label>
-                    <select id="committeeId" th:field="*{committeeId}" class="form-control">
-                        <option value="">-- 委員会を選択してください --</option>
-                        <option th:each="c : ${committees}"
-                            th:value="${c.id}"
-                            th:text="${c.name}">
-                            常任委員会
-                        </option>
-                    </select>
-                    <div th:if="${#fields.hasErrors('committeeId')}" th:errors="*{committeeId}" class="error-message"></div>
-                </div>
+                        <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="error-message"></p>
+                    </div>
 
-                <!-- 提案理由入力フィールド -->
-                <div class="form-group">
-                    <label for="description">✍️ 提案理由・法案本文</label>
-                    <textarea id="description" th:field="*{description}" class="form-control" rows="5" 
-                        placeholder="この法案を提出する背景や、具体的な条文、目的を記述してください。#ハッシュタグ もここに含めることができます
+                    <!-- 委員会選択プルダウン -->
+                    <div class="form-group">
+                        <label for="committeeId">担当委員会</label>
+                        <select id="committeeId" th:field="*{committeeId}" class="form-control">
+                            <option value="">-- 委員会を選択してください --</option>
+                            <option th:each="c : ${committees}" th:value="${c.id}" th:text="${c.name}">
+                                常任委員会
+                            </option>
+                        </select>
+                        <div th:if="${#fields.hasErrors('committeeId')}" th:errors="*{committeeId}"
+                            class="error-message"></div>
+                    </div>
+
+                    <!-- 提案理由入力フィールド -->
+                    <div class="form-group">
+                        <label for="description">✍️ 提案理由・法案本文</label>
+                        <textarea id="description" th:field="*{description}" class="form-control" rows="5" placeholder="この法案を提出する背景や、具体的な条文、目的を記述してください。#ハッシュタグ もここに含めることができます
                         "></textarea>
 
-                    <p th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="error-message"></p>
+                        <p th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="error-message">
+                        </p>
+                    </div>
+
+                    <!-- ボタンエリア -->
+                    <button type="submit" class="submit-btn">🏛️ 議場へ提出する</button>
+                </form>
+
+                <div class="footer-links">
+                    <a th:href="@{/bills}">🔙 審議一覧に戻る</a>
                 </div>
-
-                <!-- ボタンエリア -->
-                <button type="submit" class="submit-btn">🏛️ 議場へ提出する</button>
-            </form>
-
-            <div class="footer-links">
-                <a th:href="@{/bills}">🔙 審議一覧に戻る</a>
             </div>
-        </div>
+        </main>
     </div>
 
     <script>

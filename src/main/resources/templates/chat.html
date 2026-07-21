@@ -7,11 +7,13 @@
 	<link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 
-<body>
+<body class="centered-layout">
+	
 	<div class="container">
-		<!-- 既存の共通ヘッダーを読み込み -->
 		<div th:replace="~{header :: common-header(~{})}"></div>
 
+		<main class="main-content">
+			<h2>💬 メッセージ</h2>
 		<div class="chat-container">
 			<!-- ヘッダー：相手の名前を表示 -->
 			<div class="chat-header">
@@ -49,13 +51,12 @@
 				<button type="submit" class="chat-submit">送信</button>
 			</form>
 		</div>
-
 		
 		<div class="nav-back">
 			<a th:href="@{/messages/list}">🔙 メッセージ一覧に戻る</a>
 		</div>
+		</main>
 	</div>
-
 </body>
 
 </html>

@@ -7,58 +7,59 @@
 	<link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 
-<body>
-
+<body class="centered-layout">
 	<div class="container">
-		<h2>💬 メッセージ一覧</h2>
 
 		<!-- 共通ヘッダーの埋め込み -->
-		<div th:replace="~{header :: common-header(~{::extra})}">
-			<th:block th:fragment="extra"></th:block>
-		</div>
+		<header th:replace="~{header :: common-header(~{})}"></header>
 
-		<div class="card-container">
-			<!-- チャット履歴が一件もない場合 -->
-			<div th:if="${chatPartners.isEmpty()}" class="empty-message">
-				まだメッセージのやり取りはありません。
-			</div>
+		<main class="main-container">
+			<h2>💬 メッセージ一覧</h2>
 
-			<div th:each="entry : ${chatPartners}" class="user-card cursor-pointer"
-				th:onclick="|location.href='@{/messages/chat/{id}(id=${entry.key.id})}'|">
+			<div class="card-container">
+				<!-- チャット履歴が一件もない場合 -->
+				<div th:if="${chatPartners.isEmpty()}" class="empty-message">
+					まだメッセージのやり取りはありません。
+				</div>
 
-				<div class="user-info">
-					<div class="user-meta">
-						<div class="user-avatar-area">
-							<div class="user-avatar">
-								<img th:if="${entry.key.avatarUrl != null}" th:src="${entry.key.avatarUrl}" alt="icon">
-								<span th:if="${entry.key.avatarUrl == null}">👤</span>
+				<div th:each="entry : ${chatPartners}" class="user-card cursor-pointer"
+					th:onclick="|location.href='@{/messages/chat/{id}(id=${entry.key.id})}'|">
+
+					<div class="user-info">
+						<div class="user-meta">
+							<div class="user-avatar-area">
+								<div class="user-avatar">
+									<img th:if="${entry.key.avatarUrl != null}" th:src="${entry.key.avatarUrl}"
+										alt="icon">
+									<span th:if="${entry.key.avatarUrl == null}">👤</span>
+								</div>
+								<a th:href="@{/users/{id}(id=${entry.key.id})}" th:text="${entry.key.name}"></a>
 							</div>
-							<a th:href="@{/users/{id}(id=${entry.key.id})}" th:text="${entry.key.name}"></a>
-						</div>
-						
 
-						<!-- 相手からの未読メッセージがある場合だけ緑のバッヂを表示 -->
-						<span th:if="${unreadCounts.get(entry.key) > 0}" class="user-badge">
-							未読 <span th:text="${unreadCounts.get(entry.key)}">1</span> 件
-						</span>
+
+							<!-- 相手からの未読メッセージがある場合だけ緑のバッヂを表示 -->
+							<span th:if="${unreadCounts.get(entry.key) > 0}" class="user-badge">
+								未読 <span th:text="${unreadCounts.get(entry.key)}">1</span> 件
+							</span>
+						</div>
+
+						<!-- 最新のメッセージ内容のプレビュー -->
+						<p class="post-preview" th:text="${entry.value.content}">
+							最新のメッセージ内容がここに表示されます。
+						</p>
 					</div>
 
-					<!-- 最新のメッセージ内容のプレビュー -->
-					<p class="post-preview" th:text="${entry.value.content}">
-						最新のメッセージ内容がここに表示されます。
-					</p>
+					<div class="user-actions">
+						<span class="notification-time"
+							th:text="${#temporals.format(entry.value.createdAt, 'yyyy/MM/dd（E）HH:mm')}"></span>
+					</div>
 				</div>
 
-				<div class="user-actions">
-					<span class="notification-time"
-						th:text="${#temporals.format(entry.value.createdAt, 'yyyy/MM/dd（E）HH:mm')}"></span>
+				<div class="nav-back">
+					<a th:href="@{/posts}">🔙 タイムラインに戻る</a>
 				</div>
 			</div>
-		</div>
-
-		<div class="nav-back">
-			<a th:href="@{/posts}">🔙 タイムラインに戻る</a>
-		</div>
+		</main>
 	</div>
 
 </body>

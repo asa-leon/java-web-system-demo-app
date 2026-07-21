@@ -7,16 +7,18 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 
-<body>
+<body class="centered-layout">
     <div class="container">
-        <h2>👤 登録ユーザー一覧</h2>
 
-        <div th:replace="~{header :: common-header(~{:: .user-links})}">
+        <header th:replace="~{header :: common-header(~{:: .user-links})}">
             <!-- この中身が引数としてヘッダー側に送り込まれる -->
             <th:block class="user-links">
                 <a th:href="@{/users/new}" class="nav-links add-user">➕ <span class="smaller">新規ユーザー登録</span></a>
             </th:block>
-        </div>
+        </header>
+
+        <main class="main-content">
+        <h2>👤 登録ユーザー一覧</h2>
 
         <div th:if="${#lists.isEmpty(users)}" class="empty-message">
             <p>登録されているユーザーはいません。</p>
@@ -73,6 +75,7 @@
             </div>
 
         </div>
+        </main>
     </div>
 </body>
 

@@ -9,70 +9,77 @@
 
 <body class="centered-layout">
     <div class="container">
+
         <!-- 既存の共通ヘッダーを読み込み -->
         <div th:replace="~{header :: common-header(~{})}"></div>
 
-        <div class="card-container">
+        <main class="main-content">
             <h2 th:text="${user.id == null} ? '👤 ユーザー新規登録' : '📝 ユーザー情報編集'"></h2>
+            
+            <div class="card-container">
+                <form th:action="${user.id == null} ? @{/users/create} : @{/users/update}" th:object="${user}"
+                    method="post" enctype="multipart/form-data">
 
-            <form th:action="${user.id == null} ? @{/users/create} : @{/users/update}" th:object="${user}"
-                method="post" enctype="multipart/form-data">
+                    <!-- 主キー（自動採番などのid）用の隠し属性 -->
+                    <input type="hidden" th:field="*{id}">
 
-                <!-- 主キー（自動採番などのid）用の隠し属性 -->
-                <input type="hidden" th:field="*{id}">
-
-                <!-- 1. ユーザーID (user_id) ※新規登録時のみ入力可能にする -->
-                <div class="form-group">
-                    <label for="userId">ユーザーID：</label>
-                    <input type="text" id="userId" th:field="*{userId}" th:required="${user.id == null}"
-                        th:readonly="${user.id != null}" placeholder="英数字で入力してください...（例: gemini）" />
-                    <div th:if="${#fields.hasErrors('userId')}" th:errors="*{userId}" class="error-message"></div>
-                </div>
-
-                <!-- 2. 名前 (name) -->
-                <div class="form-group">
-                    <label for="name">名前：</label>
-                    <input type="text" id="name" th:field="*{name}" required placeholder="表示名を入力してください...（例: Gemini）" />
-                    <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-message"></div>
-                </div>
-
-                <!-- 3. メールアドレス (email) -->
-                <div class="form-group">
-                    <label for="email">メールアドレス：</label>
-                    <input type="email" id="email" th:field="*{email}" required placeholder="example@domain.com" />
-                    <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></div>
-                </div>
-
-                <!-- 4. パスワード (password) ※新規登録時のみ必須。編集時は空なら変更なしとする -->
-                <div class="form-group">
-                    <label for="password">パスワード：</label>
-                    <input type="password" id="password" th:field="*{password}" th:required="${user.id == null}"
-                        placeholder="パスワードを入力してください..." />
-                    <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-message"></div>
-                </div>
-
-                <!-- 5. プロフィールアイコン（アバター） -->
-                <div class="form-group" th:if="${user.id != null}">
-                    <label for="avatarFile">プロフィール画像を変更する：</label>
-                    
-                    <!-- 現在登録されているアバターのプレビュー（あれば表示、なければ人型マーク -->
-                    <div>
-                        <img class="profile-avatar" th:if="${user.avatarUrl != null}" th:src="${user.avatarUrl}" alt="アバタープレビュー" />
-                        <span class="profile-avatar" th:if="${user.avatarUrl == null}">👤</span>
+                    <!-- 1. ユーザーID (user_id) ※新規登録時のみ入力可能にする -->
+                    <div class="form-group">
+                        <label for="userId">ユーザーID：</label>
+                        <input type="text" id="userId" th:field="*{userId}" th:required="${user.id == null}"
+                            th:readonly="${user.id != null}" placeholder="英数字で入力してください...（例: gemini）" />
+                        <div th:if="${#fields.hasErrors('userId')}" th:errors="*{userId}" class="error-message"></div>
                     </div>
 
-                    <!-- ファイル選択欄（nameはControllerの引数名と完全ニッチさせる） -->
-                     <input type="file" name="avatarFile" id="avatarFile" accept="image/png, image/jpeg, image/gif" class="form-control-file">
-                    <p class="help-block">※PNG, JPEG, GIFのみ（最大10MB）</p>
+                    <!-- 2. 名前 (name) -->
+                    <div class="form-group">
+                        <label for="name">名前：</label>
+                        <input type="text" id="name" th:field="*{name}" required
+                            placeholder="表示名を入力してください...（例: Gemini）" />
+                        <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-message"></div>
+                    </div>
+
+                    <!-- 3. メールアドレス (email) -->
+                    <div class="form-group">
+                        <label for="email">メールアドレス：</label>
+                        <input type="email" id="email" th:field="*{email}" required placeholder="example@domain.com" />
+                        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></div>
+                    </div>
+
+                    <!-- 4. パスワード (password) ※新規登録時のみ必須。編集時は空なら変更なしとする -->
+                    <div class="form-group">
+                        <label for="password">パスワード：</label>
+                        <input type="password" id="password" th:field="*{password}" th:required="${user.id == null}"
+                            placeholder="パスワードを入力してください..." />
+                        <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-message">
+                        </div>
+                    </div>
+
+                    <!-- 5. プロフィールアイコン（アバター） -->
+                    <div class="form-group" th:if="${user.id != null}">
+                        <label for="avatarFile">プロフィール画像を変更する：</label>
+
+                        <!-- 現在登録されているアバターのプレビュー（あれば表示、なければ人型マーク -->
+                        <div>
+                            <img class="profile-avatar" th:if="${user.avatarUrl != null}" th:src="${user.avatarUrl}"
+                                alt="アバタープレビュー" />
+                            <span class="profile-avatar" th:if="${user.avatarUrl == null}">👤</span>
+                        </div>
+
+                        <!-- ファイル選択欄（nameはControllerの引数名と完全ニッチさせる） -->
+                        <input type="file" name="avatarFile" id="avatarFile" accept="image/png, image/jpeg, image/gif"
+                            class="form-control-file">
+                        <p class="help-block">※PNG, JPEG, GIFのみ（最大10MB）</p>
+                    </div>
+
+                    <button type="submit" class="submit-btn" th:text="${user.id == null} ? '登録する' : '更新する'"></button>
+                </form>
+
+                <div class="nav-back">
+                    <a th:href="@{/users}">🔙 一覧に戻る</a>
                 </div>
-
-                <button type="submit" class="submit-btn" th:text="${user.id == null} ? '登録する' : '更新する'"></button>
-            </form>
-
-            <div class="nav-back">
-                <a th:href="@{/users}">🔙 一覧に戻る</a>
             </div>
-        </div>
+        </main>
     </div>
 </body>
 

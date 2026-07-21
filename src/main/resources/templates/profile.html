@@ -8,54 +8,60 @@
 	<link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 
-<body>
+<body class="centered-layout">
 
 	<div class="container">
 		<!-- 既存の共通ヘッダーを読み込み -->
 		<div th:replace="~{header :: common-header(~{})}"></div>
 
-		<div class="card-container profile-page-card">
+		<main class="main-content">
+			<h2>👤 プロフィール</h2>
+			
+			<div class="card-container profile-page-card">
 
-			<!-- プロフィールヘッダーエリア -->
-			<div class="profile-header-area">
-				<!-- アバター画像を表示。なければデフォルトの👤を表示-->
-				 <div class="profile-avatar-container">
-					<img th:if="${targetUser.avatarUrl != null}" th:src="${targetUser.avatarUrl}" alt="アバター画像" class="profile-avatar">
-					<div th:if="${targetUser.avatarUrl == null}" class="profile-avatar">👤</div>
-				 </div>
-				 
-				<div class="profile-title-meta">
-					<h2 class="profile-display-name">
-						<span th:text="${targetUser.name}">ユーザー名</span>
-						<!-- フォロー関係が既に実装されていればバッヂを自動的用 -->
-						<span class="user-badge" th:if="${loginUser.following.contains(targetUser)}">フォロー中</span>
-					</h2>
-					<p class="profile-user-email" th:text="'@' + ${targetUser.email}">@email</p>
-				</div>
-			</div>
+				<!-- プロフィールヘッダーエリア -->
+				<div class="profile-header-area">
+					<!-- アバター画像を表示。なければデフォルトの👤を表示-->
+					<div class="user-avatar-area">
+						<div class="user-avatar lg">
+							<img th:if="${targetUser.avatarUrl != null}" th:src="${targetUser.avatarUrl}" alt="アバター画像">
+							<span th:if="${targetUser.avatarUrl == null}">👤</span>
+						</div>
+					</div>
 
-			<!-- アクションエリア（DM窓口 / 編集）-->
-			<div class="profile-actions-zone">
-				<!-- 拡張性の高いDM窓口：相手が自分自身でない場合のみ表示 -->
-				<div th:if="${loginUser.id != targetUser.id}" class="profile-action-wrapper">
-					<a th:href="@{/messages/chat/{id}(id=${targetUser.id})}" class="submit-btn text-center-link">
-						✉️ メッセージを送る
-					</a>
+					<div class="profile-title-meta">
+						<h2 class="profile-display-name">
+							<span th:text="${targetUser.name}">ユーザー名</span>
+							<!-- フォロー関係が既に実装されていればバッヂを自動的用 -->
+							<span class="user-badge" th:if="${loginUser.following.contains(targetUser)}">フォロー中</span>
+						</h2>
+						<p class="profile-user-email" th:text="'@' + ${targetUser.email}">@email</p>
+					</div>
 				</div>
 
-				<!-- 自分のプロフィールの場合は「編集」ボタン（将来の拡張枠） -->
-				<div th:if="${loginUser.id == targetUser.id}" class="profile-action-wrapper">
-					<a th:href="@{/users/edit/{id}(id=${loginUser.id})}" class="edit-link profile-edit-btn">
-						⚙️ プロフィールを編集
-					</a>
+				<!-- アクションエリア（DM窓口 / 編集）-->
+				<div class="profile-actions-zone">
+					<!-- 拡張性の高いDM窓口：相手が自分自身でない場合のみ表示 -->
+					<div th:if="${loginUser.id != targetUser.id}" class="profile-action-wrapper">
+						<a th:href="@{/messages/chat/{id}(id=${targetUser.id})}" class="submit-btn text-center-link">
+							✉️ メッセージを送る
+						</a>
+					</div>
+
+					<!-- 自分のプロフィールの場合は「編集」ボタン（将来の拡張枠） -->
+					<div th:if="${loginUser.id == targetUser.id}" class="profile-action-wrapper">
+						<a th:href="@{/users/edit/{id}(id=${loginUser.id})}" class="edit-link profile-edit-btn">
+							⚙️ プロフィールを編集
+						</a>
+					</div>
+				</div>
+
+				<!-- 将来の拡張エリア（自己紹介や投稿一覧タブなどをここにきれいに積み重ねられる） -->
+				<div class="profile-extended-content">
+					<!-- ここに将来的に th:each でこのユーザーの過去投稿などを出せる -->
 				</div>
 			</div>
-
-			<!-- 将来の拡張エリア（自己紹介や投稿一覧タブなどをここにきれいに積み重ねられる） -->
-			<div class="profile-extended-content">
-				<!-- ここに将来的に th:each でこのユーザーの過去投稿などを出せる -->
-			</div>
-		</div>
+		</main>
 	</div>
 
 </body>

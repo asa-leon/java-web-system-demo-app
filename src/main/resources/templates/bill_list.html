@@ -9,10 +9,12 @@
 
 <body>
 	<div class="container wide-layout">
-		<div class="main-content">
+		
+			<div th:replace="~{header :: common-header(~{})}"></div>
+
+		<main class="main-content">
 			<h2>🏛️ 法案審議一覧</h2>
 
-			<div th:replace="~{header :: common-header(~{})}"></div>
 
 			<div class="search-box">
 				<form th:action="@{/bills}" method="get">
@@ -100,9 +102,9 @@
 					</button>
 				</form>
 			</div>
-		</div>
+		</main>
 
-		<div class="sidebar">
+		<asiade class="sidebar">
 			<div class="trend-card">
 				<h3 class="trend-title">⚡ いまのトレンド</h3>
 				<p th:if="${#lists.isEmpty(trends)}" class="no-trends">まだトレンドはありません。</p>
@@ -110,7 +112,7 @@
 					<a th:href="@{/tags/{tagName}(tagName=${t.name})}" class="trend-link" th:text="'#' + ${t.name}"></a>
 				</div>
 			</div>
-		</div>
+		</asiade>
 	</div>
 
 	<div id="toast-container"></div>

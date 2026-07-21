@@ -9,10 +9,11 @@
 
 <body>
 	<div class="container wide-layout">
-		<div class="main-content">
+		<header th:replace="~{header :: common-header(~{})}"></header>
+
+		<main class="main-content">
 			<h2>🏛️ 法案詳細審議</h2>
 
-			<div th:replace="~{header :: common-header(~{})}"></div>
 
 			<!-- 法案メインカード -->
 			<div class="post-card">
@@ -117,9 +118,9 @@
 			<div class="nav-back">
 				<a th:href="@{/bills}">🔙 審議一覧に戻る</a>
 			</div>
-		</div>
+		</main>
 
-		<div class="sidebar">
+		<aside class="sidebar">
 			<div class="trend-card">
 				<h3 class="trend-title">⚡ いまのトレンド</h3>
 				<p th:if="${#lists.isEmpty(trends)}" class="no-trends">まだトレンドはありません。</p>
@@ -127,7 +128,7 @@
 					<a th:href="@{/tags/{tagName}(tagName=${t.name})}" class="trend-link" th:text="'#' + ${t.name}"></a>
 				</div>
 			</div>
-		</div>
+		</aside>
 	</div>
 
 	<div id="toast-container"></div>

@@ -9,7 +9,7 @@ body {
     padding: 20px;
     display: flex;
     justify-content: center;
-    min-height: 100vh;
+    /*min-height: 100vh;*/
     box-sizing: border-box;
 }
 
@@ -28,7 +28,8 @@ body.centered-layout {
 .container.wide-layout {
     max-width: 900px;
     display: flex;
-    gap: 30px;
+    flex-wrap: wrap;
+    column-gap: 30px;
 }
 
 .main-content {
@@ -803,6 +804,30 @@ form:has(.delete-btn) {
     font-size: 2.8rem;
 }
 
+.user-avatar.lg img {
+    background: rgba(255, 255, 255, 0.1);
+    width: 80px;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.user-avatar.lg span {
+    font-size: 3rem;
+    background: rgba(255, 255, 255, 0.1);
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
 
 .user-avatar.sm img {
     width: 32px;
@@ -903,6 +928,7 @@ form:has(.delete-btn) {
    ========================================== */
 .common-header {
     width: 100%;
+    height: fit-content;
     margin-bottom: 24px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     padding-bottom: 12px;
@@ -1186,15 +1212,7 @@ form:has(.delete-btn) {
 
 .profile-avatar {
     font-size: 3rem;
-    background: rgba(255, 255, 255, 0.1);
-    width: 80px;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    
 }
 
 .profile-title-meta {
@@ -1395,6 +1413,16 @@ form:has(.delete-btn) {
    ========================================== */
 @media screen and (max-width: 768px) {
     .sidebar {
-        display: none;
+        /*display: none;*/
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .trend-card {
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
     }
 }
