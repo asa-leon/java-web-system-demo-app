@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
 
 	// =====================
-	// ★ Voteボタンの制御
+	// ★ Voteボタンの制御用
 	// =====================
 	function showWarningToast(message) {
 		const container = document.getElementById('toast-container');
@@ -112,4 +112,49 @@ document.addEventListener("DOMContentLoaded", function () {
 		});
 	});
 
+	// =====================
+	// □ SP時：画面最下部付近でボトムバーを下に隠す処理
+	// =====================
+	const sidebar = document.getElementById('sidebar');
+
+	if (sidebar) {
+		let isTicking = false;
+
+		const handleScroll = () => {
+			// 768px以下のモバイル表示時のみ発動
+			if (window.innerWidth <= 768) {
+				// 画面全体の高さ、現在のスクロール位置、表示領域の高さを取得
+				const documentHeight = document.documentElement.scrollHeight;
+				const windowHeight = window.innerHeight;
+				const scrollTop = window.scrollY || document.documentElement.scrollTop;
+
+				// ページの最下部までの残りの距離（px）
+				const distanceToBottom = documentHeight - (scrollTop + windowHeight);
+
+				// 残り距離が80px以下になったら隠す
+				if (distanceToBottom <= 120) {
+					sidebar.classList.add('is-hidden');
+				} else {
+					sidebar.classList.remove('is-hidden');
+				}
+			} else {
+				// PC表示時は常にis-hiddenクラスは外しておく
+				sidebar.classList.remove('is-hidden');
+			}
+
+			// 後述のタイミングで発火した際にisTickingをfalseにしとかないと、
+			// 次のスクロール動作時にhandleScrollが動作しなくなる為、最後に必ず解除（false）にする。
+			isTicking = false;
+		};
+
+		// スクロールイベントの負荷軽減（requestAnimationFrame）
+		window.addEventListener('scroll', () => {
+			if (!isTicking) {
+				window.requestAnimationFrame(handleScroll);
+				isTicking = true;
+			}
+		});
+
+		windows.addEventListener('resize', handleScroll);
+		}
 });

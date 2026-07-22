@@ -1475,10 +1475,27 @@ form:has(.delete-btn) {
         left: 0;
         width: 100%;
         box-sizing: border-box;
+        z-index: 100;
+
+        transition: transform .3s ease-in-out, opaicty .3s ease-in-out;
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    #sidebar.is-hidden {
+        transform: translateY(100%);
+        opacity: 0;
+        pointer-events: none;
     }
 
     .trend-card {
         border-bottom-right-radius: 0;
         border-bottom-left-radius: 0;
+    }
+
+    .trend-item {
+        display: inline-block;
+        margin-right: 10px;
+        margin-bottom: 0;
     }
 }
