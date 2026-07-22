@@ -32,7 +32,7 @@ body.centered-layout {
     column-gap: 30px;
 }
 
-.main-content {
+#main-content {
     flex: 1;
     max-width: 600px;
 }
@@ -76,6 +76,18 @@ h3 {
     border-radius: 8px;
 }
 
+.card-container h3 {
+    color: #ffffff; margin-bottom: 16px; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;
+}
+
+.card-container p {
+    color: #d1d5db; font-size: 0.9rem; line-height: 1.5; margin-bottom: 12px;
+}
+
+.card-container p.no-content {
+    color: #9ca3af; padding: 24px 0; text-align: center;
+}
+
 .post-card {
     background: rgba(255, 255, 255, 0.06);
     backdrop-filter: blur(12px);
@@ -85,6 +97,10 @@ h3 {
     padding: 20px;
     margin-bottom: 16px;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.post-card.no-shadow {
+    box-shadow: none;
 }
 
 .parent-post {
@@ -558,7 +574,7 @@ form:has(.delete-btn) {
 }
 
 /* 3. タイムライン（サイドバー・検索・タブ） */
-.sidebar {
+#sidebar {
     width: 260px;
     flex-shrink: 0;
 }
@@ -1283,9 +1299,9 @@ form:has(.delete-btn) {
 }
 
 /* 2. 委員会・グリッドレイアウト */
-.committee-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+.committee-flex {
+    display: flex;
+    flex-direction: column;
     gap: 16px;
     margin-top: 20px;
     margin-bottom: 24px;
@@ -1408,11 +1424,51 @@ form:has(.delete-btn) {
     font-weight: bold;
 }
 
+.committee-card-footer a {
+    color: #63b3ed;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.committee-detail-header {
+    margin-bottom: 24px;
+}
+
+.committee-detail-header h2 {
+    display: flex; align-items: center; gap: 12px;
+}
+
+.bill-card {
+    background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 16px; margin-bottom: 12px;
+}
+
+.bill-card-title-wrapper {
+    display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;
+}
+
+.bill-card-title-wrapper h4 {
+    margin: 0; font-size: 1.1rem;
+}
+
+.bill-card-title-wrapper h4 a {
+    color: #ffffff; text-decoration: none;
+}
+
+.bill-card-description {
+    color: #d1d5db; font-size: 0.9rem; line-height: 1.5; margin-bottom: 12px;
+}
+
+.bill-card-meta {
+    display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #9ca3af;
+}
+
+
+
 /* ==========================================
    📱 レスポンシブ
    ========================================== */
 @media screen and (max-width: 768px) {
-    .sidebar {
+    #sidebar {
         /*display: none;*/
         position: fixed;
         bottom: 0;

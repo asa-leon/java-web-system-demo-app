@@ -12,7 +12,7 @@
 
         <div th:replace="~{header :: common-header(~{})}"></div>
 
-        <main class="main-content">
+        <main id="main-content">
             <h2 th:text="${targetUser != null} ? '👤 ' + ${targetUser.name} + ' の投稿一覧' : '👤 ユーザーの投稿一覧'"></h2>
 
             <div th:if="${loginUser != null && loginUser.id != targetUser.id}" class="follow-wrapper">

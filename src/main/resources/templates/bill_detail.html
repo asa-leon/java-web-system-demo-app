@@ -11,7 +11,7 @@
 	<div class="container wide-layout">
 		<header th:replace="~{header :: common-header(~{})}"></header>
 
-		<main class="main-content">
+		<main id="main-content">
 			<h2>🏛️ 法案詳細審議</h2>
 
 
@@ -120,7 +120,7 @@
 			</div>
 		</main>
 
-		<aside class="sidebar">
+		<aside id="sidebar">
 			<div class="trend-card">
 				<h3 class="trend-title">⚡ いまのトレンド</h3>
 				<p th:if="${#lists.isEmpty(trends)}" class="no-trends">まだトレンドはありません。</p>

@@ -13,16 +13,14 @@
 
 		<header th:replace="~{header :: common-header(~{})}"></header>
 
-		<main class="main-content">
+		<main id="main-content">
 			<h2>🏛️ 常任委員会案内</h2>
-
-
 			<p class="subtitle">机上院には5つの常任委員会が設置されています。<br>
 				提出された法案は各委員会にて議論・審議されます。</p>
 
 			<div class="card-container">
 				<!-- 委員会カード一覧 -->
-				<div class="committee-grid">
+				<div class="committee-flex">
 					<div class="committee-card" th:each="c : ${committees}">
 						<div class="committee-card-header">
 							<span class="committee-icon">
@@ -45,7 +43,7 @@
 			</div>
 		</main>
 
-		<aside class="sidebar">
+		<aside id="sidebar">
 			<div class="trend-card">
 				<h3 class="trend-title">⚡ いまのトレンド</h3>
 				<p th:if="${#lists.isEmpty(trends)}" class="no-trends">まだトレンドはありません。</p>
@@ -55,6 +53,12 @@
 			</div>
 		</aside>
 	</div>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			
+		});
+	</script>
 </body>
 
 </html>
