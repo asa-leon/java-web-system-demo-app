@@ -425,6 +425,23 @@ public class BillController {
 		comment.setContent(commentForm.getContent()); // フォームから値を取得
 		comment.setBill(bill);
 		comment.setUser(me); // 最新のユーザーオブジェクトを紐づける
+		comment.setQuestion(commentForm.isQuestion()); // 質疑通告フラグ
+
+		// 返信（答弁）の場合の処理
+		if (commentForm.getParentId() != null) {
+			Comment parentComment = commentRepository.findById(commentForm.getParentId())
+				.orElse(null);
+
+			if (parentComment != null) {
+				comment.setParent(parentComment);
+
+				// 提案者自身が質疑に返信（答弁）した場合は、親コメントを「答弁済み」にする
+				if (parentComment.isQuestion() && bill.getUser().getId().equals(me.getId())) {
+					parentComment.setAnswered(true);
+					commentRepository.save(parentComment);
+				}
+			}
+		}
 
 		// 4. データベースに保存
 		commentRepository.save(comment);

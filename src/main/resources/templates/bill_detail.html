@@ -84,13 +84,24 @@
 				<!-- コメント投稿フォーム -->
 				<form th:action="@{/bills/{id}/comments(id=${bill.id})}" th:object="${commentForm}" method="post"
 					class="comment-form">
+
 					<div class="form-group">
-						<textarea th:field="*{content}" rows="3"
-							placeholder="この法案に対する意見、質問、修正要求などを入力してください..."></textarea>
+						<textarea th:field="*{content}" rows="3" class="form-control"
+							placeholder="この法案に対する意見や質疑を入力してください..."></textarea>
 						<p class="error-message" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></p>
 					</div>
+					<div class="form-bottom-bar">
+						<!-- 質疑通告チェックボックス -->
+						 <div class="form-check">
+							<input type="checkbox" class="form-check-input" th:field="*{question}" 
+								id="isQuestionCheck">
+							<label for="isQuestionCheck" class="form-check-label question-label">
+								質疑通告として送信（提案者に答弁を求めます）
+							</label>
+						 </div>
 
-					<button type="submit" class="submit-btn comment">💬 発言する</button>
+						<button type="submit" class="submit-btn comment">💬 発言（通告）する</button>
+					</div>
 				</form>
 
 				<div class="comment-list">
@@ -98,18 +109,54 @@
 						<p>まだこの法案に対するコメントはありません。最初の議論を始めましょう。</p>
 					</div>
 
-					<div th:each="comment : ${bill.comments}" class="comment-card">
+					<div th:each="comment : ${bill.comments}" 
+						class="comment-card" 
+						th:classappend="${comment.isQuestion} ? 'question-card' : (${comment.parent != null} ? 'reply-card' : '')">
+
+						<!-- 返信（答弁）の場合のヘッダー補足 -->
+						<div th:if="${comment.parent != null}" class="reply-target-info">
+							<span>💬 <strong th:text="${comment.parent.user.name}">質問者</strong> 議員の質疑に対する答弁</span>
+						</div>
+
 						<div class="comment-meta">
 							<span class="comment-user">
 								<a th:href="@{/users/{id}(id=${comment.user.id})}" th:text="${comment.user.name}"></a>
 							</span>
 							<span class="user-id" th:text="'ID: ' + ${comment.user.id} + ')'"></span>
-							<span class="post-time"
-								th:text="${#temporals.format(comment.createdAt, 'MM/dd（E）HH:mm')}"></span>
+
+							<!-- 質疑通告バッヂ（質疑通告コメントの場合のみ表示 -->
+							<div th:if="${comment.isQuestion}" class="question-status-badge">
+								<span th:if="${!comment.isAnswered}" class="badge badge-waiting">⚠️ 答弁待ち</span>
+								<span th:if="${comment.isAnswered}" class="badge badge-answered">✅ 答弁完了</span>
+							</div>
+
+							<span class="post-time" th:text="${#temporals.format(comment.createdAt, 'MM/dd（E）HH:mm')}"></span>
 						</div>
-						<!-- コメント本文（開業を維持、ハッシュタグ自動リンク対象） -->
+
+						<!-- コメント本文（改行を維持、ハッシュタグ自動リンク対象） -->
 						<div class="comment-content">
 							<p th:text="${comment.content}"></p>
+						</div>
+
+						<!-- 提案者専用の答弁アクション領域 -->
+						<div th:if="${session.loginUser != null && bill.user.id == session.loginUser.id && comment.isQuestion && !comment.isAnswered}"
+							class="answer-action-area">
+							<button type="button" class="reply-toggle-btn" th:data-comment-id="${comment.id}">
+								🎤 この質疑に答弁する
+							</button>
+
+							<!-- 返信/答弁入力フォーム（初期は非表示） -->
+							<div th:id="'reply-form-' + ${comment.id}" class="reply-form-container">
+								<form th:action="@{/bills/{id}/comments(id=${bill.id})}" th:object="${commentForm}" method="post">
+									<input type="hidden" name="parentId" th:value="${comment.id}">
+									<div class="form-group">
+										<textarea name="content" rows="2" class="form-control" placeholder="提案者としての答弁を入力してください..."></textarea>
+									</div>
+									<div class="reply-form-actions">
+										<button type="submit" class="submit-btn answer-btn">答弁を送信する</button>
+									</div>
+								</form>
+							</div>
 						</div>
 					</div>
 				</div>

@@ -5,7 +5,8 @@
 <div th:fragment="common-header(extraLinks)" class="common-header">
 	<div class="header-wrapper">
 		<a th:href="@{/bills}" class="nav-links">🏠 <span class="smaller">タイムライン</span></a>
-		<a th:href="@{/bills/new}" class="nav-links">➕ <span class="smaller">新規投稿</span></a>
+		<a th:href="@{/committees}" class="nav-links">🏛️ <span class="smaller">委員会一覧</span></a>
+		<a th:href="@{/bills/new}" class="nav-links">➕ <span class="smaller">法案提出</span></a>
 		<a th:href="@{/users}" class="nav-links">👤 <span class="smaller">ユーザー一覧</span></a>
 
 		<!-- ポスト通知リンク（PostNotificationの未読数がある時だけ🔴バッヂを表示） -->

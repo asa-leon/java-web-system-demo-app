@@ -31,6 +31,19 @@ public class Comment {
     @JoinColumn(name = "bill_id", nullable = false)
     private Bill bill;
 
+    // 質疑通告フラグ（true: 質疑通告 / false: 通常コメント
+    @Column(name = "is_question", nullable = false)
+    private boolean isQuestion = false;
+
+    // 答弁済みフラグ（true: 答弁完了 / false: 答弁待ち）
+    @Column(name = "is_answered", nullable = false)
+    private boolean isAnswered = false;
+
+    // どの質疑（親コメント）に対する答弁か
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Comment parent;
+
     // データベース保存時に自動で日時を設定する
     @PrePersist
     protected void onCreate() {

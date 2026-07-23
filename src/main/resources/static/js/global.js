@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
 
 	// =====================
-	// ★ Voteボタンの制御用
+	// Voteボタンの制御用
 	// =====================
 	function showWarningToast(message) {
 		const container = document.getElementById('toast-container');
@@ -14,7 +14,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	document.querySelectorAll('[data-is-own="true"]').forEach(btn => btn.classList.add('own-post-btn'));
 
-	// 1. ハッシュタグ自動リンク処理
+	// =====================
+	// ハッシュタグ自動リンク処理
+	// =====================
 	const postElements = document.querySelectorAll('.post-content-text p');
 	postElements.forEach(function (element) {
 		const text = element.textContent;
@@ -28,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 
 	// ======================
-	// ❤️ いいねボタンの非同期処理
+	// いいねボタンの非同期処理
 	// ======================
 	document.querySelectorAll('.like-button').forEach(button => {
 		button.addEventListener('click', async (e) => {
@@ -69,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 
 	// =====================
-	// ★ Voteボタンの非同期処理
+	// Voteボタンの非同期処理
 	// =====================
 	document.querySelectorAll('.vote-button').forEach(button => {
 		button.addEventListener('click', async (e) => {
@@ -113,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 
 	// =====================
-	// □ SP時：画面最下部付近でボトムバーを下に隠す処理
+	// SP時：画面最下部付近でボトムバーを下に隠す処理
 	// =====================
 	const sidebar = document.getElementById('sidebar');
 
@@ -155,6 +157,25 @@ document.addEventListener("DOMContentLoaded", function () {
 			}
 		});
 
-		windows.addEventListener('resize', handleScroll);
-		}
+		window.addEventListener('resize', handleScroll);
+		handleScroll();
+	}
+
+	// =====================
+	// 答弁フォームの表示切り替え処理
+	// =====================
+	document.querySelectorAll('.reply-toggle-btn').forEach(button => {
+		button.addEventListener('click', (e) => {
+			const commentId = e.currentTarget.getAttribute('data-comment-id');
+			const targetForm = document.getElementById(`reply-form-${commentId}`);
+
+			if (targetForm) {
+				if (targetForm.style.display === 'none' || targetForm.style.display === '') {
+					targetForm.style.display = 'block';
+				} else {
+					targetForm.style.display = 'none';
+				}
+			}
+		});
+	});
 });
