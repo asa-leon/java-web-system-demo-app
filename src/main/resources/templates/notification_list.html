@@ -32,6 +32,7 @@
 					<span th:if="${n.billNotificationType == 'LIKE'}">❤️</span>
 					<span th:if="${n.billNotificationType == 'VOTE'}">🏛️</span>
 					<span th:if="${n.billNotificationType == 'COMMENT'}">💬</span>
+					<span th:if="${n.billNotificationType == 'AMENDMENT'}">📝</span>
 				</div>
 
 				<div class="notification-body">
@@ -42,6 +43,7 @@
 					<span th:if="${n.billNotificationType == 'LIKE'}">あなたの投稿に「いいね」しました。</span>
 					<span th:if="${n.billNotificationType == 'VOTE'}">あなたの提出法案に「投票」しました。</span>
 					<span th:if="${n.billNotificationType == 'COMMENT'}">あなたの投稿に「コメント」しました。</span>
+					<span th:if="${n.billNotificationType == 'AMENDMENT'}">あなたの提出法案に対する「修正案」を提出しました。</span>
 
 					<!-- 直接URLではなく、既読化コントローラー（PostController.readAndRedirect()）を通す -->
 					<a th:href="@{/notifications/{id}/read(id=${n.id})}" class="post-preview"

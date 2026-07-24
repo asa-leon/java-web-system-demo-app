@@ -79,7 +79,13 @@ public class NotificationController {
 		if (notification.isBillNotification()) {
 			// BillNotification型にキャストしてBillのIDを取得
 			BillNotification billNav = (BillNotification) notification;
-			return "redirect:/bills/" + billNav.getBill().getId();
+
+			if (billNav != null && billNav.getBill() != null) {
+				Long billId = billNav.getBill().getId();
+				return "redirect:/bills/" + billId;
+			} else {
+				return "redirect:/notifications";
+			}
 		} else if (notification.isMessageNotification()) {
 			// MessegaNotification型の場合は、送ってきた相手とのチャット画面へ
 			return "redirect:/messages/chat/" + notification.getSender().getId();

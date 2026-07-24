@@ -1075,6 +1075,209 @@ form:has(.delete-btn) {
     color: #ffffff;
 }
 
+/* ========================================== */
+/* 🏛️ 修正案（Amendment）用カスタムスタイル */
+/* ========================================== */
+
+/* セクション全体の余白設定 */
+.amendment-section {
+    margin-top: 2rem;
+}
+
+/* ヘッダー周り */
+.amendment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.amendment-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.amendment-badge {
+    background-color: #2563eb;
+    color: #ffffff;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    font-weight: bold;
+}
+
+/* ボタン類 */
+.btn-outline-light {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    padding: 0.4rem 0.85rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-outline-light:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.btn-primary {
+    background: #2563eb;
+    border: none;
+    color: #ffffff;
+    padding: 0.45rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: #ffffff;
+    padding: 0.45rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* フラッシュメッセージ */
+.alert-box {
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+}
+
+.alert-success {
+    background-color: rgba(16, 185, 129, 0.2);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    color: #6ee7b7;
+}
+
+.alert-danger {
+    background-color: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+}
+
+/* ガラスモルフィズム風カード */
+.glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1.25rem;
+}
+
+/* フォーム開閉制御 */
+.amendment-form-container {
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.amendment-form-container.is-closed {
+    display: none;
+}
+
+.amendment-form-container.is-open {
+    display: block;
+}
+
+.form-heading {
+    font-size: 1rem;
+    color: #ffffff;
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 0.4rem;
+}
+
+.form-control-input,
+.form-control-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    color: #ffffff;
+    font-size: 0.9rem;
+}
+
+.form-control-input:focus,
+.form-control-textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+/* 修正案一覧 */
+.empty-state-text {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 2rem 0;
+    font-size: 0.9rem;
+}
+
+.amendment-card {
+    margin-bottom: 1rem;
+}
+
+.amendment-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.amendment-item-title {
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: #ffffff;
+    margin: 0 0 0.5rem 0;
+}
+
+.amendment-item-body {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0;
+    white-space: pre-wrap; /* 改行を保持 */
+    line-height: 1.5;
+}
+
 /* ==========================================
    👥 6. 共通ヘッダー部品
    ========================================== */

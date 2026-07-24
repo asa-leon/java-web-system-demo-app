@@ -13,7 +13,7 @@ public class BillNotification extends Notification {
 	
 	// 投稿への通知特有のEnum
 	public enum BillNotificationType {
-		LIKE, VOTE, COMMENT
+		LIKE, VOTE, COMMENT, AMENDMENT
 	}
 
 	@Enumerated(EnumType.STRING)

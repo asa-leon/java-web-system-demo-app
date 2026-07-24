@@ -77,6 +77,97 @@
 				</form>
 			</div>
 
+			<!-- 修正案（Amendment）セクション -->
+			<section class="amendment-section post-card">
+				<div class="amendment-header">
+					<h3 class="amendment-title">
+						📌 提出された修正案
+						<span class="amendment-badge" th:text="${#lists.size(amendments)}">0</span>
+					</h3>
+
+					<!-- ログイン中のみ「修正案を提出する」ボタンを表示 -->
+					<button th:if="${loginUser != null}" id="toggleAmendmentBtn" class="btn-outline-light"
+						type="button">
+						＋ 修正案を提出する
+					</button>
+				</div>
+
+				<!-- フラッシュメッセージ（成功・エラー表示） -->
+				<div th:if="${successMessage}" class="alert-box alert-success">
+					<span th:text="${successMessage}"></span>
+				</div>
+				<div th:if="${amendmentError}" class="alert-box alert-danger">
+					<span th:text="${amendmentError}"></span>
+				</div>
+
+				<!-- 修正案の投稿フォーム（開閉エリア） -->
+				<div id="amendmentFormArea" class="amendment-form-container glass-card"
+					th:classappend="${amendmentError != null} ? 'is-open' : 'is-closed'">
+					<h4 class="form-heading">修正案の作成</h4>
+					<form th:action="@{/amendments/create}" th:object="${amendmentForm}" method="post">
+						<!-- 対象法案のID（hidden） -->
+						<input type="hidden" th:field="*{billId}" />
+
+						<!-- 修正案タイトル -->
+						<div class="form-group">
+							<label for="amendmentTitle" class="form-lavel">修正案のタイトル</label>
+							<input type="text" id="amendmentTitle" th:field="*{title}" class="form-control-input"
+								placeholder="例：第2条の要件緩和に関する修正案" required />
+						</div>
+
+						<!-- 修正内容・提案理由 -->
+						<div class="form-group">
+							<label for="amendmentDescription" class="form-label">修正内容および提案理由</label>
+							<textarea id="amendmentDescription" th:field="*{description}" class="form-control-textarea"
+								rows="4" placeholder="具体的な変更内容と、その理由を入力してください。" required></textarea>
+						</div>
+
+						<div class="form-actions">
+							<button type="button" id="cancelAmendmentBtn" class="btn-secondary">
+								キャンセル
+							</button>
+							<button type="submit" class="btn-primary">
+								送信する
+							</button>
+						</div>
+					</form>
+				</div>
+
+				<!-- 修正案の一覧表示 -->
+				<div class="amendment-list">
+					<!-- 修正案が存在しない場合 -->
+					<div th:if="${#lists.isEmpty(amendments)}" class="empty-state-text">
+						まだ修正案は提出されていません。
+					</div>
+
+					<!-- 修正案カードループ -->
+					<div th:each="amendment : ${amendments}" class="amendment-card glass-card">
+						<div class="amendment-card-header">
+							<span class="user-name">
+								<div class="user-avatar-area">
+									<div class="user-avatar">
+										<img th:if="${amendment.user != null && amendment.user.avatarUrl != null}"
+											th:src="${amendment.user.avatarUrl}" alt="ユーザーアバター">
+										<span th:if="${amendment.user == null || amendment.user.avatarUrl == null}">👤</span>
+									</div>
+									<a th:href="@{/users/{id}(id=${amendment.user.id})}" th:text="${amendment.user.name}"></a>
+								</div>
+							</span>
+							<span class="post-time"
+								th:text="${#temporals.format(amendment.createdAt, 'yyyy/MM/dd（E）HH:mm')}"></span>
+						</div>
+
+						<!-- 修正案タイトル -->
+						<h4 class="amendment-item-title" th:text="${amendment.title}">修正案タイトル</h4>
+
+						<!-- 修正内容・理由 -->
+						<p class="amendment-item-body" th:text="${amendment.description}">
+							修正内容本文...
+						</p>
+					</div>
+				</div>
+			</section>
+
 			<!-- 審議コメント（議論）セクション -->
 			<section class="comment-section">
 				<h3>💬 審議コメント・質疑応答</h3>
@@ -92,13 +183,12 @@
 					</div>
 					<div class="form-bottom-bar">
 						<!-- 質疑通告チェックボックス -->
-						 <div class="form-check">
-							<input type="checkbox" class="form-check-input" th:field="*{question}" 
-								id="isQuestionCheck">
+						<div class="form-check">
+							<input type="checkbox" class="form-check-input" th:field="*{question}" id="isQuestionCheck">
 							<label for="isQuestionCheck" class="form-check-label question-label">
 								質疑通告として送信（提案者に答弁を求めます）
 							</label>
-						 </div>
+						</div>
 
 						<button type="submit" class="submit-btn comment">💬 発言（通告）する</button>
 					</div>
@@ -109,8 +199,7 @@
 						<p>まだこの法案に対するコメントはありません。最初の議論を始めましょう。</p>
 					</div>
 
-					<div th:each="comment : ${bill.comments}" 
-						class="comment-card" 
+					<div th:each="comment : ${bill.comments}" class="comment-card"
 						th:classappend="${comment.isQuestion} ? 'question-card' : (${comment.parent != null} ? 'reply-card' : '')">
 
 						<!-- 返信（答弁）の場合のヘッダー補足 -->
@@ -130,7 +219,8 @@
 								<span th:if="${comment.isAnswered}" class="badge badge-answered">✅ 答弁完了</span>
 							</div>
 
-							<span class="post-time" th:text="${#temporals.format(comment.createdAt, 'MM/dd（E）HH:mm')}"></span>
+							<span class="post-time"
+								th:text="${#temporals.format(comment.createdAt, 'MM/dd（E）HH:mm')}"></span>
 						</div>
 
 						<!-- コメント本文（改行を維持、ハッシュタグ自動リンク対象） -->
@@ -147,10 +237,12 @@
 
 							<!-- 返信/答弁入力フォーム（初期は非表示） -->
 							<div th:id="'reply-form-' + ${comment.id}" class="reply-form-container">
-								<form th:action="@{/bills/{id}/comments(id=${bill.id})}" th:object="${commentForm}" method="post">
+								<form th:action="@{/bills/{id}/comments(id=${bill.id})}" th:object="${commentForm}"
+									method="post">
 									<input type="hidden" name="parentId" th:value="${comment.id}">
 									<div class="form-group">
-										<textarea name="content" rows="2" class="form-control" placeholder="提案者としての答弁を入力してください..."></textarea>
+										<textarea name="content" rows="2" class="form-control"
+											placeholder="提案者としての答弁を入力してください..."></textarea>
 									</div>
 									<div class="reply-form-actions">
 										<button type="submit" class="submit-btn answer-btn">答弁を送信する</button>
@@ -181,6 +273,32 @@
 	<div id="toast-container"></div>
 
 	<script th:src="@{/js/global.js}"></script>
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const toggleBtn = document.getElementById('toggleAmendmentBtn');
+			const cancelBtn = document.getElementById('cancelAmendmentBtn');
+			const formArea = document.getElementById('amendmentFormArea');
+
+			if (toggleBtn && formArea) {
+				toggleBtn.addEventListener('click', function () {
+					if (formArea.classList.contains('is-closed')) {
+						formArea.classList.remove('is-closed');
+						formArea.classList.add('is-open');
+					} else {
+						formArea.classList.remove('is-open');
+						formArea.classList.add('is-closed');
+					}
+				});
+			}
+
+			if (cancelBtn && formArea) {
+				cancelBtn.addEventListener('click', function () {
+					formArea.classList.remove('is-open');
+					formArea.classList.add('is-closed');
+				});
+			}
+		});
+	</script>
 </body>
 
 </html>

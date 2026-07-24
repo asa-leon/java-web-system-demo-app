@@ -22,10 +22,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.model.Comment;
 import com.example.demo.form.CommentForm;
+import com.example.demo.model.Amendment;
 import com.example.demo.model.Bill;
 import com.example.demo.model.BillNotification;
 import com.example.demo.model.User;
 import com.example.demo.model.Tag;
+import com.example.demo.form.AmendmentForm;
 import com.example.demo.form.BillForm;
 import com.example.demo.model.Committee;
 import com.example.demo.repository.CommentRepository;
@@ -35,6 +37,8 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.VoteRepository;
 import com.example.demo.repository.NotificationsRepository;
 import com.example.demo.repository.CommitteeRepository;
+import com.example.demo.service.AmendmentService;
+import com.example.demo.service.BillService;
 
 @Controller
 @RequiredArgsConstructor // これを書くことでconstructor(this.xx = xx)を書かなくて済む
@@ -48,6 +52,8 @@ public class BillController {
 	private final VoteRepository voteRepository;
 	private final NotificationsRepository notificationsRepository;
 	private final CommitteeRepository committeeRepository;
+	private final BillService billService;
+	private final AmendmentService amendmentService;
 
 	// 投稿一覧を表示する窓口
 	@GetMapping("/bills")
@@ -198,39 +204,8 @@ public class BillController {
 			.orElseThrow(() -> new IllegalArgumentException("無効な委員会IDです: " + billForm.getCommitteeId()));
 		bill.setCommittee(committee);
 
-		// MARK: ハッシュタグ抽出ロジック
-		String description = bill.getDescription();
-		List<Tag> tagList = new ArrayList<>();
-
-		if (description != null && !description.isEmpty()) {
-			// 正規表現で「#」から始まる単語を抽出（全角・半角対応）
-			Pattern pattern = Pattern.compile("[#＃][A-Za-z0-9ぁ-んァ-ヶ一-龠ー_]+");
-			Matcher matcher = pattern.matcher(description);
-
-			while (matcher.find()) {
-				// 先頭の「#」を消して、アルファベットは小文字に統一
-				String tagName = matcher.group().substring(1).toLowerCase();
-
-				// データベースに既存のタグがあるか探し、なければ新しく保存して取得
-				Tag tag = tagRepository.findByName(tagName)
-						.orElseGet(() -> {
-							Tag newTag = new Tag();
-							newTag.setName(tagName);
-							return tagRepository.save(newTag);
-						});
-
-				// リスト内での重複を防いで追加
-				if (!tagList.contains(tag)) {
-					tagList.add(tag);
-				}
-			}
-		}
-
-		// 投稿オブジェクトに、抽出したタグのリストをセット（これで中間テーブルに自動保存される）
-		bill.getTags().addAll(tagList);
-
-		// データベースに保存
-		billRepository.save(bill);
+		// MARK: ハッシュタグ抽出+bill自体の保存をbillServiceで実行
+		billService.createBill(bill);
 
 		return "redirect:/bills";
 	}
@@ -366,6 +341,17 @@ public class BillController {
 			bill.setLikedByMe(false);
 			bill.setVotedByMe(false);
 			model.addAttribute("loginUser", null);
+		}
+
+		// 法案に紐づく修正案一覧を追加
+		List<Amendment> amendments = amendmentService.getAmendmentsByBillId(id);
+		model.addAttribute("amendments", amendments);
+
+		// 修正案投稿フォーム用の空オブジェクトを追加
+		if (!model.containsAttribute("amendmentForm")) {
+			AmendmentForm amendmentForm = new AmendmentForm();
+			amendmentForm.setBillId(id);
+			model.addAttribute("amendmentForm", amendmentForm);
 		}
 
 		// 2. 画面にデータを渡す

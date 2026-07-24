@@ -29,13 +29,9 @@ public class Amendment {
 	@Column(nullable = false)
 	private String title;
 
-	// 修正の要旨・理由
+	// 修正内容および提案理由
 	@Column(columnDefinition = "TEXT", nullable = false)
-	private String reason;
-
-	// 修正後の本文・条文案
-	@Column(columnDefinition = "TEXT", nullable = false)
-	private String content;
+	private String description;
 
 	// 提出日時
 	@Column(name = "created_at", nullable = false, updatable = false)
